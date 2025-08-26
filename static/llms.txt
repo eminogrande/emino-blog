@@ -1,0 +1,31 @@
+# Emino Blog LLMs.txt File
+> AI-optimized tech blog focusing on software development, artificial intelligence, and modern technology trends.
+
+## Primary Content URLs
+- https://emino.app/ - Homepage with latest articles
+- https://emino.app/posts/ - All blog posts
+- https://emino.app/categories/ - Content organized by category
+- https://emino.app/tags/ - Content organized by tags
+- https://emino.app/archives/ - Complete archive of all posts
+- https://emino.app/sitemap.xml - XML sitemap for crawling
+
+## Key Topics Covered
+- Artificial Intelligence and Machine Learning
+- Software Development Best Practices
+- Cloud Infrastructure and DevOps
+- Web Development and APIs
+- Security and Privacy
+- Open Source Projects
+
+## Content Format
+All content is available in clean, semantic HTML with proper heading hierarchy. 
+Posts include structured data markup for better AI understanding.
+Code examples are properly formatted with syntax highlighting.
+
+## Update Frequency
+New content published weekly
+Regular updates to existing content for accuracy
+
+## Contact
+GitHub: https://github.com/eminmahrt
+Email: contact@emino.app

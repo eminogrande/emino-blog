@@ -2,12 +2,52 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
+    <loc>https://emino.app/posts/building-with-hugo-2025/</loc>
+    <lastmod>2025-08-26T09:00:00+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url><url>
+    <loc>https://emino.app/categories/</loc>
+    <lastmod>2025-08-26T09:00:00+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url><url>
     <loc>https://emino.app/</loc>
     <lastmod>2025-08-26T09:00:00+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
+    <loc>https://emino.app/tags/hugo/</loc>
+    <lastmod>2025-08-26T09:00:00+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url><url>
+    <loc>https://emino.app/tags/performance/</loc>
+    <lastmod>2025-08-26T09:00:00+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url><url>
     <loc>https://emino.app/posts/</loc>
+    <lastmod>2025-08-26T09:00:00+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url><url>
+    <loc>https://emino.app/tags/static-sites/</loc>
+    <lastmod>2025-08-26T09:00:00+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url><url>
+    <loc>https://emino.app/tags/</loc>
+    <lastmod>2025-08-26T09:00:00+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url><url>
+    <loc>https://emino.app/categories/web-development/</loc>
+    <lastmod>2025-08-26T09:00:00+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url><url>
+    <loc>https://emino.app/tags/web-development/</loc>
     <lastmod>2025-08-26T09:00:00+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
@@ -18,11 +58,6 @@
     <priority>0.5</priority>
   </url><url>
     <loc>https://emino.app/categories/ai-optimization/</loc>
-    <lastmod>2025-08-26T08:00:00+00:00</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url><url>
-    <loc>https://emino.app/categories/</loc>
     <lastmod>2025-08-26T08:00:00+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
@@ -52,8 +87,7 @@
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
-    <loc>https://emino.app/tags/</loc>
-    <lastmod>2025-08-26T08:00:00+00:00</lastmod>
+    <loc>https://emino.app/posts/test-deployment/</loc>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>

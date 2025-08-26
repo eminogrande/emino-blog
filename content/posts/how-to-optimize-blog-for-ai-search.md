@@ -1,6 +1,6 @@
 +++
 title = "How to Optimize Your Blog for AI Search Engines in 2025"
-date = 2025-08-26T08:00:00Z
+date = 2024-08-24T10:00:00Z
 draft = false
 tags = ["AI", "SEO", "ChatGPT", "Claude", "Search Optimization"]
 categories = ["AI Optimization"]

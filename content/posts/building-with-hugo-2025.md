@@ -1,6 +1,6 @@
 +++
 title = "Building Lightning-Fast Static Sites with Hugo in 2025"
-date = 2025-08-26T09:00:00Z
+date = 2024-08-25T09:00:00Z
 draft = false
 tags = ["Hugo", "Static Sites", "Web Development", "Performance"]
 categories = ["Web Development"]

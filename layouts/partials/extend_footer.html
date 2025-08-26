@@ -1,0 +1,27 @@
+<!-- Lightning Tips Widget -->
+{{ if .IsPage }}
+<div class="lightning-tips" style="margin: 60px 0; padding: 40px 0; border-top: 1px solid #e5e5e5; border-bottom: 1px solid #e5e5e5;">
+    <p style="font-size: 14px; color: #666; margin: 0 0 8px 0; letter-spacing: 0.5px;">SUPPORT VIA LIGHTNING</p>
+    <p style="font-family: monospace; font-size: 16px; color: #000; margin: 0 0 24px 0;">emin@nuri.com</p>
+    
+    <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+        <button class="tip-btn" data-amount="21" style="padding: 8px 16px; background: transparent; color: #000; border: 1px solid #000; font-size: 14px; cursor: pointer; transition: all 0.2s;">21 sats</button>
+        <button class="tip-btn" data-amount="100" style="padding: 8px 16px; background: transparent; color: #000; border: 1px solid #000; font-size: 14px; cursor: pointer; transition: all 0.2s;">100 sats</button>
+        <button class="tip-btn" data-amount="500" style="padding: 8px 16px; background: transparent; color: #000; border: 1px solid #000; font-size: 14px; cursor: pointer; transition: all 0.2s;">500 sats</button>
+        <button class="tip-btn" data-amount="1000" style="padding: 8px 16px; background: transparent; color: #000; border: 1px solid #000; font-size: 14px; cursor: pointer; transition: all 0.2s;">1k sats</button>
+        <button class="tip-btn" data-amount="5000" style="padding: 8px 16px; background: transparent; color: #000; border: 1px solid #000; font-size: 14px; cursor: pointer; transition: all 0.2s;">5k sats</button>
+    </div>
+    
+    <p id="webln-status" style="font-size: 12px; color: #999; margin: 16px 0 0 0;"></p>
+</div>
+
+<style>
+.tip-btn:hover {
+    background: #f7931a !important;
+    border-color: #f7931a !important;
+    color: white !important;
+}
+</style>
+
+<script src="/js/lightning-webln.js"></script>
+{{ end }}

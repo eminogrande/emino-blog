@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Infrastructure on Emino Blog - AI-Optimized Tech Insights</title>
+    <link>https://emino.app/tags/infrastructure/</link>
+    <description>Recent content in Infrastructure on Emino Blog - AI-Optimized Tech Insights</description>
+    <generator>Hugo -- 0.148.2</generator>
+    <language>en-us</language>
+    <lastBuildDate>Mon, 26 Aug 2024 15:45:00 +0000</lastBuildDate>
+    <atom:link href="https://emino.app/tags/infrastructure/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>The Complete Guide: Building a Full-Stack Blog Infrastructure with Lightning, Nostr, and Email Publishing</title>
+      <link>https://emino.app/posts/complete-blog-infrastructure-guide/</link>
+      <pubDate>Mon, 26 Aug 2024 15:45:00 +0000</pubDate>
+      <guid>https://emino.app/posts/complete-blog-infrastructure-guide/</guid>
+      <description>&lt;h2 id=&#34;what-we-built-a-complete-modern-blog-infrastructure&#34;&gt;What We Built: A Complete Modern Blog Infrastructure&lt;/h2&gt;
+&lt;p&gt;This comprehensive guide documents the creation of a fully-featured, decentralized blog platform with cutting-edge features including Bitcoin Lightning payments, Nostr integration, email-to-blog publishing, and automated GitHub deployments.&lt;/p&gt;
+&lt;h2 id=&#34;infrastructure-overview&#34;&gt;Infrastructure Overview&lt;/h2&gt;
+&lt;h3 id=&#34;core-components&#34;&gt;Core Components&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Server&lt;/strong&gt;: Hetzner Ubuntu VPS (188.34.194.25)&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Static Site Generator&lt;/strong&gt;: Hugo with PaperMod theme&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Web Server&lt;/strong&gt;: Nginx with SSL (Let&amp;rsquo;s Encrypt)&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Domain&lt;/strong&gt;: emino.app (via Porkbun DNS)&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Version Control&lt;/strong&gt;: GitHub with automated deployments&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Email Server&lt;/strong&gt;: Postfix + Dovecot for email-to-blog&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Containers&lt;/strong&gt;: Docker for services (Alby Hub, Nostr relay)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;features-implemented&#34;&gt;Features Implemented&lt;/h2&gt;
+&lt;h3 id=&#34;1-lightning-bitcoin-tips-&#34;&gt;1. Lightning Bitcoin Tips ⚡&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Address&lt;/strong&gt;: &lt;a href=&#34;mailto:emin@nuri.com&#34;&gt;emin@nuri.com&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Design&lt;/strong&gt;: Minimalist typography-focused interface&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Colors&lt;/strong&gt;: Bitcoin orange (#f7931a), black, and white only&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;WebLN Support&lt;/strong&gt;: Full integration with Alby browser extension&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Payment Options&lt;/strong&gt;:
+&lt;ul&gt;
+&lt;li&gt;One-click WebLN payments for Alby users&lt;/li&gt;
+&lt;li&gt;Lightning URI deep links for mobile wallets&lt;/li&gt;
+&lt;li&gt;Fallback modal for manual payments&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;2-nostr-integration-&#34;&gt;2. Nostr Integration 📡&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Personal Relay&lt;/strong&gt;: Running at &lt;code&gt;wss://relay.emino.app&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Long-form Content&lt;/strong&gt;: Posts published as NIP-23 events&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Publishing Script&lt;/strong&gt;: Automatic cross-posting to Nostr&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Media Handling&lt;/strong&gt;: Compressed images and videos&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Docker Container&lt;/strong&gt;: nostr-rs-relay for reliability&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;3-email-to-blog-publishing-&#34;&gt;3. Email-to-Blog Publishing 📧&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Email Address&lt;/strong&gt;: &lt;a href=&#34;mailto:post@emino.app&#34;&gt;post@emino.app&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Authorized Senders&lt;/strong&gt;:
+&lt;ul&gt;
+&lt;li&gt;&lt;a href=&#34;mailto:emin@nuri.com&#34;&gt;emin@nuri.com&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;mailto:emin@emin.de&#34;&gt;emin@emin.de&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a href=&#34;mailto:eminhenri@gmail.com&#34;&gt;eminhenri@gmail.com&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Features&lt;/strong&gt;:
+&lt;ul&gt;
+&lt;li&gt;Markdown file attachments supported&lt;/li&gt;
+&lt;li&gt;Automatic image compression (max 1920x1080)&lt;/li&gt;
+&lt;li&gt;Video compression with FFmpeg (H.264)&lt;/li&gt;
+&lt;li&gt;GitHub sync for every email post&lt;/li&gt;
+&lt;li&gt;Cron job checks every 15 minutes&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;4-dns-configuration-&#34;&gt;4. DNS Configuration 🌐&lt;/h3&gt;
+&lt;p&gt;The following DNS records were configured at Porkbun:&lt;/p&gt;</description>
+    </item>
+  </channel>
+</rss>

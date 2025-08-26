@@ -27,5 +27,5 @@ New content published weekly
 Regular updates to existing content for accuracy
 
 ## Contact
-GitHub: https://github.com/eminmahrt
+GitHub: https://github.com/eminogrande
 Email: contact@emino.app

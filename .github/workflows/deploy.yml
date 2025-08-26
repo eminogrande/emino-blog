@@ -35,3 +35,4 @@ jobs:
           git pull origin main
           hugo --minify
           rsync -av --delete public/ /var/www/apps/main/
+          bash /var/www/emino-blog/seo-optimizer.sh

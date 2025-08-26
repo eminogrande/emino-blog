@@ -71,5 +71,33 @@
       <guid>https://emino.app/tags/seo/</guid>
       <description></description>
     </item>
+    <item>
+      <title>Automation</title>
+      <link>https://emino.app/tags/automation/</link>
+      <pubDate>Mon, 26 Aug 2024 12:00:00 +0000</pubDate>
+      <guid>https://emino.app/tags/automation/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>DevOps</title>
+      <link>https://emino.app/tags/devops/</link>
+      <pubDate>Mon, 26 Aug 2024 12:00:00 +0000</pubDate>
+      <guid>https://emino.app/tags/devops/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>GitHub Actions</title>
+      <link>https://emino.app/tags/github-actions/</link>
+      <pubDate>Mon, 26 Aug 2024 12:00:00 +0000</pubDate>
+      <guid>https://emino.app/tags/github-actions/</guid>
+      <description></description>
+    </item>
+    <item>
+      <title>LLM Optimization</title>
+      <link>https://emino.app/tags/llm-optimization/</link>
+      <pubDate>Mon, 26 Aug 2024 12:00:00 +0000</pubDate>
+      <guid>https://emino.app/tags/llm-optimization/</guid>
+      <description></description>
+    </item>
   </channel>
 </rss>

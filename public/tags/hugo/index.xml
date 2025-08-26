@@ -15,5 +15,12 @@
       <guid>https://emino.app/posts/building-with-hugo-2025/</guid>
       <description>Complete guide to building and deploying Hugo static sites with modern best practices for performance and SEO.</description>
     </item>
+    <item>
+      <title>Building an AI-Optimized Blog with Hugo: A Complete DevOps Journey</title>
+      <link>https://emino.app/posts/building-ai-optimized-blog-complete-guide/</link>
+      <pubDate>Mon, 26 Aug 2024 12:00:00 +0000</pubDate>
+      <guid>https://emino.app/posts/building-ai-optimized-blog-complete-guide/</guid>
+      <description>A complete, real-world walkthrough of setting up a Hugo blog optimized for AI discovery, with automated deployment, health monitoring, and SEO optimization. Including every step, challenge, and solution.</description>
+    </item>
   </channel>
 </rss>

@@ -1,6 +1,6 @@
 +++
 title = "Building an AI-Optimized Blog with Hugo: A Complete DevOps Journey"
-date = 2025-08-26T16:00:00Z
+date = 2024-08-26T12:00:00Z
 draft = false
 tags = ["Hugo", "AI", "SEO", "DevOps", "GitHub Actions", "Automation", "LLM Optimization"]
 categories = ["Tutorial", "AI Optimization", "Web Development"]

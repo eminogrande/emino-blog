@@ -1,0 +1,5 @@
+# Authorized email addresses that can post to blog
+# One email per line
+emin@nuri.com
+emin@emin.de
+eminhenri@gmail.com

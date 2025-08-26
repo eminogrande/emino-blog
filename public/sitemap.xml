@@ -117,10 +117,6 @@
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
-    <loc>https://emino.app/posts/test-deployment/</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.5</priority>
-  </url><url>
     <loc>https://emino.app/archives/</loc>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>

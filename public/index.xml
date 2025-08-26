@@ -29,28 +29,5 @@
       <guid>https://emino.app/posts/building-ai-optimized-blog-complete-guide/</guid>
       <description>A complete, real-world walkthrough of setting up a Hugo blog optimized for AI discovery, with automated deployment, health monitoring, and SEO optimization. Including every step, challenge, and solution.</description>
     </item>
-    <item>
-      <title></title>
-      <link>https://emino.app/posts/test-deployment/</link>
-      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-      <guid>https://emino.app/posts/test-deployment/</guid>
-      <description>&lt;h1 id=&#34;test-post&#34;&gt;Test Post&lt;/h1&gt;
-&lt;p&gt;+++
-title = &amp;ldquo;Testing GitHub Actions Deployment&amp;rdquo;
-date = 2025-08-26T15:00:00Z
-draft = false
-tags = [&amp;ldquo;test&amp;rdquo;, &amp;ldquo;deployment&amp;rdquo;]
-categories = [&amp;ldquo;Testing&amp;rdquo;]
-description = &amp;ldquo;Testing our GitHub Actions automated deployment&amp;rdquo;
-+++&lt;/p&gt;
-&lt;p&gt;This is a test post to verify that our GitHub Actions deployment is working correctly.&lt;/p&gt;
-&lt;p&gt;If you can see this post on the live site, it means:&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;GitHub Actions is properly configured&lt;/li&gt;
-&lt;li&gt;SSH authentication is working&lt;/li&gt;
-&lt;li&gt;Automated deployment is successful&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;🚀 Deployment automation is working!&lt;/p&gt;</description>
-    </item>
   </channel>
 </rss>

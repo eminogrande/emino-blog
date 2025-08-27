@@ -1,0 +1,61 @@
+baseURL = "https://emino.app/"
+languageCode = "en-us"
+title = "emino.app"
+theme = "PaperMod"
+
+[params]
+dateFormat = "January 2, 2006"
+env = "production"
+title = "emino.app"
+description = "AI-optimized blog about technology, development, and innovation"
+keywords = ["blog", "technology", "AI", "development"]
+author = "Emin"
+defaultTheme = "auto"
+ShowShareButtons = true
+ShowReadingTime = true
+ShowToc = true
+ShowBreadCrumbs = true
+ShowPostNavLinks = true
+ShowCodeCopyButtons = true
+
+[params.profileMode]
+enabled = false
+
+[params.homeInfoParams]
+Title = "Welcome to emino.app"
+Content = "Exploring technology, AI, and the future of development"
+
+[[params.socialIcons]]
+name = "github"
+url = "https://github.com/eminogrande"
+
+[[params.socialIcons]]
+name = "email"
+url = "mailto:emin@nuri.com"
+
+[menu]
+[[menu.main]]
+name = "Posts"
+url = "/posts/"
+weight = 10
+
+[[menu.main]]
+name = "Tags"
+url = "/tags/"
+weight = 20
+
+[[menu.main]]
+name = "Archives"
+url = "/archives/"
+weight = 30
+
+[outputs]
+home = ["HTML", "RSS", "JSON"]
+
+[minify]
+disableXML = true
+minifyOutput = true
+
+[params]
+dateFormat = "January 2, 2006"
+dateFormat = "January 2, 2006"

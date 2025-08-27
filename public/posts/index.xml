@@ -6,8 +6,36 @@
     <description>Recent content in Posts on Emino Blog - AI-Optimized Tech Insights</description>
     <generator>Hugo -- 0.148.2</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 26 Aug 2024 15:45:00 +0000</lastBuildDate>
+    <lastBuildDate>Wed, 27 Aug 2025 14:45:02 +0000</lastBuildDate>
     <atom:link href="https://emino.app/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>This is a Chicken</title>
+      <link>https://emino.app/posts/this-is-a-chicken/</link>
+      <pubDate>Wed, 27 Aug 2025 14:45:02 +0000</pubDate>
+      <guid>https://emino.app/posts/this-is-a-chicken/</guid>
+      <description>&lt;p&gt;My Chicken&lt;/p&gt;
+&lt;p&gt;&lt;img alt=&#34;20250823-211005145.jpg&#34; loading=&#34;lazy&#34; src=&#34;https://emino.app/media/this-is-a-chicken/20250823-211005145.jpg&#34;&gt;&lt;/p&gt;
+&lt;hr&gt;
+&lt;p&gt;&lt;em&gt;This post was created via email by &lt;a href=&#34;mailto:emin@nuri.com&#34;&gt;emin@nuri.com&lt;/a&gt;&lt;/em&gt;&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Chicken-Car in Tanzania</title>
+      <link>https://emino.app/posts/chicken-car-in-tanzania/</link>
+      <pubDate>Wed, 27 Aug 2025 13:30:01 +0000</pubDate>
+      <guid>https://emino.app/posts/chicken-car-in-tanzania/</guid>
+      <description>&lt;p&gt;Live Chicken Street Sale&lt;/p&gt;
+&lt;hr&gt;
+&lt;p&gt;&lt;em&gt;This post was created via email by &lt;a href=&#34;mailto:emin@nuri.com&#34;&gt;emin@nuri.com&lt;/a&gt;&lt;/em&gt;&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Emin is cool</title>
+      <link>https://emino.app/posts/emin-is-cool/</link>
+      <pubDate>Wed, 27 Aug 2025 10:45:28 +0000</pubDate>
+      <guid>https://emino.app/posts/emin-is-cool/</guid>
+      <description>&lt;p&gt;It worked.&lt;/p&gt;
+&lt;hr&gt;
+&lt;p&gt;&lt;em&gt;This post was created via email by &lt;a href=&#34;mailto:emin@nuri.com&#34;&gt;emin@nuri.com&lt;/a&gt;&lt;/em&gt;&lt;/p&gt;</description>
+    </item>
     <item>
       <title>The Complete Guide: Building a Full-Stack Blog Infrastructure with Lightning, Nostr, and Email Publishing</title>
       <link>https://emino.app/posts/complete-blog-infrastructure-guide/</link>

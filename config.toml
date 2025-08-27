@@ -4,6 +4,7 @@ title = "emino.app"
 theme = "PaperMod"
 
 [params]
+dateFormat = "January 2, 2006"
 env = "production"
 title = "emino.app"
 description = "AI-optimized blog about technology, development, and innovation"

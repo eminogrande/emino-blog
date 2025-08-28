@@ -6,8 +6,25 @@
     <description>Recent content in Photos on Emino Blog - AI-Optimized Tech Insights</description>
     <generator>Hugo -- 0.148.2</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 28 Aug 2025 06:15:01 +0000</lastBuildDate>
+    <lastBuildDate>Thu, 28 Aug 2025 08:30:02 +0000</lastBuildDate>
     <atom:link href="https://emino.app/tags/photos/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Nuri Wallet iOS Expo App Mermaid Chart of the Architecture</title>
+      <link>https://emino.app/posts/nuri-wallet-ios-expo-app-mermaid-chart-of-the-architecture/</link>
+      <pubDate>Thu, 28 Aug 2025 08:30:02 +0000</pubDate>
+      <guid>https://emino.app/posts/nuri-wallet-ios-expo-app-mermaid-chart-of-the-architecture/</guid>
+      <description>&lt;p&gt;Based on my analysis of the codebase, including the README.md and the main
+App.tsx file, I&amp;rsquo;ll first provide a detailed explanation of the codebase.
+Then, I&amp;rsquo;ll include a Mermaid chart representing the application
+architecture.&lt;/p&gt;
+&lt;h3 id=&#34;codebase-explanation&#34;&gt;Codebase Explanation&lt;/h3&gt;
+&lt;p&gt;This is a React Native Expo application called &amp;ldquo;Nuri&amp;rdquo; focused on
+passkey-based Bitcoin seed encryption. It uses WebAuthn passkeys with the
+PRF (Pseudo-Random Function) extension to securely encrypt Bitcoin seeds,
+store them in iCloud Keychain, and enable recovery across multiple
+passkeys. The app is designed for iOS 16+ devices with biometric
+authentication (Face ID/Touch ID) and iCloud Keychain enabled.&lt;/p&gt;</description>
+    </item>
     <item>
       <title>Passing Facebooks Technical Interview 2017</title>
       <link>https://emino.app/posts/passing-facebooks-technical-interview-2017/</link>

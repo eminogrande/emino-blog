@@ -3,41 +3,46 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://emino.app/categories/blog/</loc>
-    <lastmod>2025-08-28T06:15:01+00:00</lastmod>
+    <lastmod>2025-08-28T08:30:02+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
     <loc>https://emino.app/categories/</loc>
-    <lastmod>2025-08-28T06:15:01+00:00</lastmod>
+    <lastmod>2025-08-28T08:30:02+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
     <loc>https://emino.app/tags/email-post/</loc>
-    <lastmod>2025-08-28T06:15:01+00:00</lastmod>
+    <lastmod>2025-08-28T08:30:02+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
     <loc>https://emino.app/</loc>
-    <lastmod>2025-08-28T06:15:01+00:00</lastmod>
+    <lastmod>2025-08-28T08:30:02+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
-    <loc>https://emino.app/posts/passing-facebooks-technical-interview-2017/</loc>
-    <lastmod>2025-08-28T06:15:01+00:00</lastmod>
+    <loc>https://emino.app/posts/nuri-wallet-ios-expo-app-mermaid-chart-of-the-architecture/</loc>
+    <lastmod>2025-08-28T08:30:02+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
     <loc>https://emino.app/tags/photos/</loc>
-    <lastmod>2025-08-28T06:15:01+00:00</lastmod>
+    <lastmod>2025-08-28T08:30:02+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
     <loc>https://emino.app/posts/</loc>
-    <lastmod>2025-08-28T06:15:01+00:00</lastmod>
+    <lastmod>2025-08-28T08:30:02+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>
   </url><url>
     <loc>https://emino.app/tags/</loc>
+    <lastmod>2025-08-28T08:30:02+00:00</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.5</priority>
+  </url><url>
+    <loc>https://emino.app/posts/passing-facebooks-technical-interview-2017/</loc>
     <lastmod>2025-08-28T06:15:01+00:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.5</priority>

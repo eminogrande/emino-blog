@@ -8,7 +8,7 @@ from datetime import datetime
 import subprocess
 import base64
 from pathlib import Path
-from PIL import Image
+from PIL import Image, ImageOps, ExifTags
 import io
 from html.parser import HTMLParser
 
@@ -48,6 +48,31 @@ def resize_image(image_data, filename):
     try:
         img = Image.open(io.BytesIO(image_data))
         
+        # IMPORTANT: Handle EXIF orientation
+        try:
+            # Get EXIF data
+            exif = img._getexif()
+            if exif:
+                # Find orientation tag
+                for tag, value in exif.items():
+                    if tag in ExifTags.TAGS and ExifTags.TAGS[tag] == 'Orientation':
+                        # Apply rotation based on orientation value
+                        if value == 3:
+                            img = img.rotate(180, expand=True)
+                        elif value == 6:
+                            img = img.rotate(270, expand=True)
+                        elif value == 8:
+                            img = img.rotate(90, expand=True)
+                        print(f'Applied EXIF rotation for {filename} (orientation={value})')
+                        break
+        except:
+            # If EXIF processing fails, try ImageOps.exif_transpose
+            try:
+                img = ImageOps.exif_transpose(img)
+                print(f'Applied EXIF transpose for {filename}')
+            except:
+                pass
+        
         # Convert RGBA to RGB
         if img.mode in ('RGBA', 'LA', 'P'):
             rgb_img = Image.new('RGB', img.size, (255, 255, 255))
@@ -62,7 +87,7 @@ def resize_image(image_data, filename):
             img.thumbnail((MAX_WIDTH, MAX_HEIGHT), Image.Resampling.LANCZOS)
             print(f'Resized {filename} to {img.width}x{img.height}')
         
-        # Save optimized
+        # Save optimized (strip EXIF to avoid future rotation issues)
         output = io.BytesIO()
         img.save(output, format='JPEG', quality=JPEG_QUALITY, optimize=True)
         return output.getvalue()
@@ -179,7 +204,7 @@ def create_blog_post(email_data):
             if not filename:
                 filename = f'image_{i+1}.jpg'
             
-            # Resize and save
+            # Resize and save (with EXIF rotation fix)
             resized_data = resize_image(img['data'], filename)
             img_path = f'{MEDIA_DIR}/{slug}/{filename}'
             
@@ -227,7 +252,7 @@ categories = ["blog"]
     return True
 
 def main():
-    print(f'\nChecking emails at {datetime.now()}')
+    print(f'\n=== Email Check at {datetime.now()} ===')
     
     authorized = get_authorized_senders()
     print(f'Authorized senders: {authorized}')
@@ -237,12 +262,14 @@ def main():
         with open('/var/mail/post', 'rb') as f:
             raw_content = f.read()
     except:
-        print('No mailbox file')
+        print('No mailbox file found')
         return
     
     if not raw_content:
-        print('Empty mailbox')
+        print('Mailbox is empty - no emails to process')
         return
+    
+    print(f'Mailbox size: {len(raw_content)} bytes')
     
     # Parse email
     try:
@@ -251,21 +278,26 @@ def main():
         
         print(f"Email from: {email_data['sender']}")
         print(f"Subject: {email_data['subject']}")
-        print(f"Content length: {len(email_data['content'])}")
+        print(f"Content length: {len(email_data['content'])} chars")
         print(f"Images: {len(email_data['images'])}")
         
         # Check authorization
         if email_data['sender'] not in authorized:
-            print(f'Unauthorized sender: {email_data["sender"]}')
+            print(f'REJECTED: Unauthorized sender: {email_data["sender"]}')
             return
         
         # Process if has content or images
         if email_data['content'] or email_data['images']:
+            print('Processing email into blog post...')
             if create_blog_post(email_data):
                 # Rebuild site
-                print('\nRebuilding site...')
+                print('\nRebuilding Hugo site...')
                 os.chdir(BLOG_DIR)
-                subprocess.run(['./build.sh'], check=True)
+                result = subprocess.run(['./build.sh'], capture_output=True, text=True)
+                if result.returncode == 0:
+                    print('Site rebuilt successfully!')
+                else:
+                    print(f'Build failed: {result.stderr}')
                 
                 # Clear mailbox
                 with open('/var/mail/post', 'w') as f:
@@ -274,17 +306,20 @@ def main():
                 
                 # Try GitHub sync
                 try:
+                    print('Syncing to GitHub...')
                     subprocess.run(['git', 'add', '.'], check=True)
                     subprocess.run(['git', 'commit', '-m', f'New post: {email_data["subject"]}'], check=True)
                     subprocess.run(['git', 'push'], check=True)
-                    print('GitHub sync complete')
+                    print('GitHub sync complete!')
                 except:
-                    print('GitHub sync failed')
+                    print('GitHub sync failed (may need manual push)')
+                
+                print('\n=== EMAIL SUCCESSFULLY PROCESSED ===')
         else:
             print('No content or images to process')
             
     except Exception as e:
-        print(f'Error: {e}')
+        print(f'Error processing email: {e}')
         import traceback
         traceback.print_exc()
 

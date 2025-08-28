@@ -1,5 +1,5 @@
 # Emino Blog - Complete Content for LLMs
-Generated: Wed Aug 27 03:00:01 AM UTC 2025
+Generated: Thu Aug 28 03:00:01 AM UTC 2025
 
 ## All Blog Posts
 
@@ -447,6 +447,15 @@ Use a CDN like Cloudflare for:
 Hugo remains one of the best choices for static site generation in 2025, offering unmatched speed, flexibility, and modern features that align perfectly with current web standards and AI discoverability requirements.
 
 ---
+## Chicken-Car in Tanzania
+
+
+Live Chicken Street Sale
+
+---
+*This post was created via email by emin@nuri.com*
+
+---
 ## The Complete Guide: Building a Full-Stack Blog Infrastructure with Lightning, Nostr, and Email Publishing
 emino.app
 
@@ -737,6 +746,15 @@ The entire stack is self-hosted, privacy-respecting, and built with open-source 
 *This post was created to document the complete infrastructure build process. If you can read this, all systems are working correctly!* ⚡🚀
 
 ---
+## Emin is cool
+
+
+It worked.
+
+---
+*This post was created via email by emin@nuri.com*
+
+---
 ## How to Optimize Your Blog for AI Search Engines in 2025
 
 
@@ -792,4 +810,28 @@ Track these metrics:
 ## Conclusion
 
 AI search optimization is becoming increasingly important as more users rely on AI assistants for information. By implementing these strategies, you can ensure your content is discoverable and properly cited by AI systems.
+
+---
+## The beautiful Mount Meru in Tanzania
+
+
+[Image post]
+
+
+![IMG 4437.jpeg](/media/the-beautiful-mount-meru-in-tanzania/IMG_4437.jpeg)
+
+---
+*This post was created via email by emin@nuri.com*
+
+---
+## This is a Chicken
+
+
+My Chicken
+
+
+![20250823-211005145.jpg](/media/this-is-a-chicken/20250823-211005145.jpg)
+
+---
+*This post was created via email by emin@nuri.com*
 

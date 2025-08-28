@@ -1,15 +1,15 @@
 baseURL = "https://emino.app/"
 languageCode = "en-us"
-title = "emino.app"
+title = "Emino.App's, Art's & Articles by Emin Mahrt"
 theme = "PaperMod"
 
 [params]
 dateFormat = "January 2, 2006"
 env = "production"
-title = "emino.app"
-description = "AI-optimized blog about technology, development, and innovation"
-keywords = ["blog", "technology", "AI", "development"]
-author = "Emin"
+title = "Emino.App's, Art's & Articles by Emin Mahrt"
+description = "Karibu to Emin Henri Mahrt's"
+keywords = ["blog", "art", "articles", "technology", "development"]
+author = "Emin Henri Mahrt"
 defaultTheme = "auto"
 ShowShareButtons = true
 ShowReadingTime = true
@@ -19,11 +19,11 @@ ShowPostNavLinks = true
 ShowCodeCopyButtons = true
 
 [params.profileMode]
-enabled = false
+enabled = true
 
 [params.homeInfoParams]
-Title = "Welcome to emino.app"
-Content = "Exploring technology, AI, and the future of development"
+Title = "Karibu to Emin Henri Mahrt's"
+Content = "Apps, Art & Articles"
 
 [[params.socialIcons]]
 name = "github"

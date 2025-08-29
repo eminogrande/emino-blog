@@ -1,0 +1,5 @@
+{{ if .Page.Params.image }}
+<div class="post-hero-image" style="width: 100%; margin-bottom: 2rem;">
+  <img src="{{ .Page.Params.image }}" alt="{{ .Page.Title }}" style="width: 100%; height: auto; max-height: 500px; object-fit: cover;">
+</div>
+{{ end }}

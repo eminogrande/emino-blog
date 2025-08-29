@@ -5,6 +5,7 @@ draft = false
 author = "Emino"
 tags = ["email-post", "photos"]
 categories = ["blog"]
+image = "/media/passing-facebooks-technical-interview-2017/IMG_4464.PNG"
 +++
 
 [Image post]

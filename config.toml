@@ -19,7 +19,7 @@ ShowPostNavLinks = true
 ShowCodeCopyButtons = true
 
 [params.profileMode]
-enabled = true
+enabled = false
 
 [params.homeInfoParams]
 Title = "Karibu to Emin Henri Mahrt's"

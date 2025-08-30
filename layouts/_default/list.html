@@ -1,21 +1,29 @@
 {{ define "main" }}
 
-{{ range .Paginator.Pages }}
+<div id="posts-container">
+{{ range .Pages }}
 <article class="post-entry">
   {{ $imagePath := "" }}
   {{ if .Params.image }}
     {{ $imagePath = .Params.image }}
   {{ else }}
     {{ $content := .Content }}
-    {{ $matches := findRE "!\\[.*?\\]\\((/[^)]+)\\)" $content 1 }}
+    {{ $matches := findRE "<img[^>]*src=\"([^\"]+)\"" $content 1 }}
     {{ if $matches }}
-      {{ $imagePath = replaceRE "!\\[.*?\\]\\((/[^)]+)\\)" "$1" (index $matches 0) }}
+      {{ range $matches }}
+        {{ $imagePath = replaceRE ".*src=\"([^\"]+)\".*" "$1" . }}
+      {{ end }}
+    {{ else }}
+      {{ $matches := findRE "!\\[.*?\\]\\((/[^)]+)\\)" $content 1 }}
+      {{ if $matches }}
+        {{ $imagePath = replaceRE "!\\[.*?\\]\\((/[^)]+)\\)" "$1" (index $matches 0) }}
+      {{ end }}
     {{ end }}
   {{ end }}
   
   {{ if $imagePath }}
   <div class="post-full-image" style="width: 100%; margin-bottom: 1rem;">
-    <img src="{{ $imagePath }}" alt="{{ .Title }}" style="width: 100%; height: auto; display: block;">
+    <img loading="lazy" src="{{ $imagePath }}" alt="{{ .Title }}" style="width: 100%; height: auto; display: block;">
   </div>
   {{ end }}
   
@@ -23,7 +31,8 @@
     <h2 class="entry-hint-parent">{{ .Title }}</h2>
   </header>
   <div class="entry-content">
-    <p>{{ .Summary }}</p>
+    {{ $summary := .Plain | truncate 160 }}
+    <p>{{ $summary }}</p>
   </div>
   <footer class="entry-footer">
     {{ partial "post_meta.html" . }}
@@ -31,6 +40,78 @@
   <a class="entry-link" aria-label="post link to {{ .Title }}" href="{{ .Permalink }}"></a>
 </article>
 {{ end }}
+</div>
 
-{{ template "_internal/pagination.html" . }}
+<div id="loading" style="text-align: center; padding: 2rem; display: none;">
+  <span style="color: #f7931a;">Loading more posts...</span>
+</div>
+
+<script>
+(function() {
+  let loading = false;
+  let allPostsLoaded = false;
+  const postsContainer = document.getElementById('posts-container');
+  const loadingIndicator = document.getElementById('loading');
+  
+  const postsPerPage = 10;
+  let displayedPosts = postsPerPage;
+  
+  // Initially hide posts beyond first page
+  const postElements = postsContainer.querySelectorAll('.post-entry');
+  postElements.forEach((post, index) => {
+    if (index >= postsPerPage) {
+      post.style.display = 'none';
+    }
+  });
+  
+  function showMorePosts() {
+    const postElements = postsContainer.querySelectorAll('.post-entry');
+    const start = displayedPosts;
+    const end = Math.min(displayedPosts + postsPerPage, postElements.length);
+    
+    for (let i = start; i < end; i++) {
+      if (postElements[i]) {
+        postElements[i].style.display = 'block';
+      }
+    }
+    
+    displayedPosts = end;
+    
+    if (displayedPosts >= postElements.length) {
+      allPostsLoaded = true;
+    }
+    
+    loading = false;
+    loadingIndicator.style.display = 'none';
+  }
+  
+  function checkScroll() {
+    if (loading || allPostsLoaded) return;
+    
+    const scrollPosition = window.innerHeight + window.scrollY;
+    const threshold = document.body.offsetHeight - 500;
+    
+    if (scrollPosition >= threshold) {
+      loading = true;
+      loadingIndicator.style.display = 'block';
+      
+      // Simulate loading delay for better UX
+      setTimeout(showMorePosts, 300);
+    }
+  }
+  
+  // Throttle scroll events
+  let scrollTimeout;
+  window.addEventListener('scroll', function() {
+    if (scrollTimeout) {
+      clearTimeout(scrollTimeout);
+    }
+    scrollTimeout = setTimeout(checkScroll, 100);
+  });
+  
+  // Initial check in case page is already scrolled
+  checkScroll();
+})();
+</script>
+
 {{ end }}

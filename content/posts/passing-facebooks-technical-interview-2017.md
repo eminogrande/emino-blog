@@ -8,7 +8,7 @@ categories = ["blog"]
 image = "/media/passing-facebooks-technical-interview-2017/IMG_4464.PNG"
 +++
 
-[Image post]
+
 
 
 ![IMG 4464.PNG](/media/passing-facebooks-technical-interview-2017/IMG_4464.PNG)

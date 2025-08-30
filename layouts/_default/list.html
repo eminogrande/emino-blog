@@ -1,5 +1,4 @@
 {{ define "main" }}
-<h1>{{ .Title }}</h1>
 
 {{ range .Paginator.Pages }}
 <article class="post-entry">
@@ -15,8 +14,8 @@
   {{ end }}
   
   {{ if $imagePath }}
-  <div class="post-preview-image" style="width: 100%; height: 200px; overflow: hidden; margin-bottom: 1rem;">
-    <img src="{{ $imagePath }}" alt="{{ .Title }}" style="width: 100%; height: 100%; object-fit: cover;">
+  <div class="post-full-image" style="width: 100%; margin-bottom: 1rem;">
+    <img src="{{ $imagePath }}" alt="{{ .Title }}" style="width: 100%; height: auto; display: block;">
   </div>
   {{ end }}
   

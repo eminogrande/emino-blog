@@ -1,0 +1,23 @@
+<article class="post-entry">
+  {{ if .Params.image }}
+  <div class="post-preview-image" style="width:100%; height:200px; overflow:hidden; margin-bottom:1rem;">
+    <img src="{{ .Params.image }}" alt="{{ .Title }}" style="width:100%; height:100%; object-fit:cover;">
+  </div>
+  {{ end }}
+  
+  <header class="entry-header">
+    <h2 class="entry-hint-parent">{{ .Title }}</h2>
+  </header>
+  
+  <div class="entry-content">
+    <p>{{ .Summary | truncate 160 }}</p>
+  </div>
+  
+  <footer class="entry-footer">
+    <span title='{{ .Date }}'>{{ .Date.Format "January 2, 2006" }}</span>
+    &nbsp;·&nbsp;{{ math.Round (div (countwords .Content) 220.0) }} min
+    &nbsp;·&nbsp;{{ .Params.author | default .Site.Params.author }}
+  </footer>
+  
+  <a class="entry-link" aria-label="post link to {{ .Title }}" href="{{ .Permalink }}"></a>
+</article>

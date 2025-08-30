@@ -7,7 +7,7 @@ tags = ["email-post", "photos"]
 categories = ["blog"]
 +++
 
-[Image post]
+
 
 
 ![EAF5372C-238A-45EE-BD7A-F74689B5D8DA.jpeg](/media/iceland/EAF5372C-238A-45EE-BD7A-F74689B5D8DA.jpeg)

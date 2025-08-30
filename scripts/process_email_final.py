@@ -177,7 +177,7 @@ def process_email_message(msg):
     
     # If no content but has images, create minimal content
     if not content and images:
-        content = f'[Image post]'
+        content = ''  # Removed [Image post] text
     
     return {
         'sender': sender,

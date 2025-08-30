@@ -8,7 +8,7 @@ categories = ["blog"]
 image = "/media/the-beautiful-mount-meru-in-tanzania/IMG_4437.jpeg"
 +++
 
-[Image post]
+
 
 
 ![IMG 4437.jpeg](/media/the-beautiful-mount-meru-in-tanzania/IMG_4437.jpeg)

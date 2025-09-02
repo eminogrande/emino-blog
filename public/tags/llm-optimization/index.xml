@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>LLM Optimization on Emino.App&#39;s, Art&#39;s &amp; Articles by Emin Mahrt</title>
+    <link>https://emino.app/tags/llm-optimization/</link>
+    <description>Recent content in LLM Optimization on Emino.App&#39;s, Art&#39;s &amp; Articles by Emin Mahrt</description>
+    <generator>Hugo -- 0.148.2</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sun, 25 Aug 2024 16:00:00 +0000</lastBuildDate>
+    <atom:link href="https://emino.app/tags/llm-optimization/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Building an AI-Optimized Blog with Hugo: A Complete DevOps Journey</title>
+      <link>https://emino.app/posts/building-ai-optimized-blog-complete-guide/</link>
+      <pubDate>Sun, 25 Aug 2024 16:00:00 +0000</pubDate>
+      <guid>https://emino.app/posts/building-ai-optimized-blog-complete-guide/</guid>
+      <description>A complete, real-world walkthrough of setting up a Hugo blog optimized for AI discovery, with automated deployment, health monitoring, and SEO optimization. Including every step, challenge, and solution.</description>
+    </item>
+  </channel>
+</rss>

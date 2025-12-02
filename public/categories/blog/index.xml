@@ -6,8 +6,45 @@
     <description>Recent content in Blog on Emino.App&#39;s, Art&#39;s &amp; Articles by Emin Mahrt</description>
     <generator>Hugo -- 0.148.2</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 02 Sep 2025 17:30:01 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 02 Dec 2025 08:55:02 +0000</lastBuildDate>
     <atom:link href="https://emino.app/categories/blog/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>How to start your own near solver: chart, technical bits (env, keys, services, deployment)</title>
+      <link>https://emino.app/posts/how-to-start-your-own-near-solver-chart-technical-bits-env-k/</link>
+      <pubDate>Tue, 02 Dec 2025 08:55:02 +0000</pubDate>
+      <guid>https://emino.app/posts/how-to-start-your-own-near-solver-chart-technical-bits-env-k/</guid>
+      <description>&lt;h2 id=&#34;1-what-this-solver-is-and-why-it-exists&#34;&gt;1. What this solver is and why it exists&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;The Near Intents protocol lets users express “I want to swap X for Y
+under conditions Z” as intents.&lt;/li&gt;
+&lt;li&gt;A solver (this app) watches intents and acts as a market maker:
+&lt;ul&gt;
+&lt;li&gt;Keeps track of an on‑chain AMM pool (reserves for two NEP‑141
+tokens).&lt;/li&gt;
+&lt;li&gt;Computes prices + margin for that pair.&lt;/li&gt;
+&lt;li&gt;When an intent is profitable (given your margin), it executes the
+swap via your NEAR account.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;The solver also exposes:
+&lt;ul&gt;
+&lt;li&gt;An HTTP status API (/status).&lt;/li&gt;
+&lt;li&gt;A dashboard (/dashboard) that shows health, reserves, quotes,
+intents, balances.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Your instance right now:&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Testing the Post by Email Function</title>
+      <link>https://emino.app/posts/testing-the-post-by-email-function/</link>
+      <pubDate>Tue, 02 Dec 2025 08:55:02 +0000</pubDate>
+      <guid>https://emino.app/posts/testing-the-post-by-email-function/</guid>
+      <description>&lt;p&gt;Pretty sure its not working.&lt;/p&gt;
+&lt;hr&gt;
+&lt;p&gt;&lt;em&gt;Post created via email from &lt;a href=&#34;mailto:emin@nuri.com&#34;&gt;emin@nuri.com&lt;/a&gt;&lt;/em&gt;&lt;/p&gt;</description>
+    </item>
     <item>
       <title>Yes, you can work more than 30 hours a day, if you multi-task on two devices.</title>
       <link>https://emino.app/posts/yes-you-can-work-more-than-30-hours-a-day-if-you-multi-task-on-two-devices/</link>

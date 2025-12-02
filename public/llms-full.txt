@@ -1,5 +1,5 @@
 # Emino Blog - Complete Content for LLMs
-Generated: Sat Aug 30 03:00:01 AM UTC 2025
+Generated: Tue Dec  2 03:00:01 AM UTC 2025
 
 ## All Blog Posts
 
@@ -445,15 +445,6 @@ Use a CDN like Cloudflare for:
 ## Conclusion
 
 Hugo remains one of the best choices for static site generation in 2025, offering unmatched speed, flexibility, and modern features that align perfectly with current web standards and AI discoverability requirements.
-
----
-## Chicken-Car in Tanzania
-
-
-Live Chicken Street Sale
-
----
-*This post was created via email by emin@nuri.com*
 
 ---
 ## The Complete Guide: Building a Full-Stack Blog Infrastructure with Lightning, Nostr, and Email Publishing
@@ -961,15 +952,6 @@ cloud service.
 *This post was created via email by emin@nuri.com*
 
 ---
-## Emin is cool
-
-
-It worked.
-
----
-*This post was created via email by emin@nuri.com*
-
----
 ## How to Optimize Your Blog for AI Search Engines in 2025
 
 
@@ -1030,10 +1012,20 @@ AI search optimization is becoming increasingly important as more users rely on 
 ## Iceland
 
 
-[Image post]
+
 
 
 ![EAF5372C-238A-45EE-BD7A-F74689B5D8DA.jpeg](/media/iceland/EAF5372C-238A-45EE-BD7A-F74689B5D8DA.jpeg)
+
+---
+*This post was created via email by emin@nuri.com*
+
+---
+## Nuri Bitcoin Wallet Logo
+
+
+
+![nuri-logo](/media/nuri-bitcoin-wallet-logo/nuri-logo.png)
 
 ---
 *This post was created via email by emin@nuri.com*
@@ -1168,7 +1160,7 @@ let me know if you'd like more details on specific parts.
 ## Passing Facebooks Technical Interview 2017
 
 
-[Image post]
+
 
 
 ![IMG 4464.PNG](/media/passing-facebooks-technical-interview-2017/IMG_4464.PNG)
@@ -1325,7 +1317,7 @@ https://mermaid.emino.app/?c=eJyNVmtv2zYU_SsX2T7SSTcMQRt0LeR33mmcNA8tGGjpyuZMkwJ
 ## The beautiful Mount Meru in Tanzania
 
 
-[Image post]
+
 
 
 ![IMG 4437.jpeg](/media/the-beautiful-mount-meru-in-tanzania/IMG_4437.jpeg)
@@ -1341,6 +1333,18 @@ My Chicken
 
 
 ![20250823-211005145.jpg](/media/this-is-a-chicken/20250823-211005145.jpg)
+
+---
+*This post was created via email by emin@nuri.com*
+
+---
+## Yes, you can work more than 30 hours a day, if you multi-task on two devices.
+
+
+[image: image.png]
+
+
+![image](/media/yes-you-can-work-more-than-30-hours-a-day-if-you-multi-task-on-two-devices/image.png)
 
 ---
 *This post was created via email by emin@nuri.com*

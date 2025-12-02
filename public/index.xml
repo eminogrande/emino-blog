@@ -6,8 +6,28 @@
     <description>Recent content on Emino.App&#39;s, Art&#39;s &amp; Articles by Emin Mahrt</description>
     <generator>Hugo -- 0.148.2</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 02 Dec 2025 18:15:02 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 02 Dec 2025 18:20:01 +0000</lastBuildDate>
     <atom:link href="https://emino.app/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Continuous Clearing Auctions (CCA): Simple &#43; Technical Walkthrough</title>
+      <link>https://emino.app/posts/continuous-clearing-auctions-cca-simple-technical-walkthroug/</link>
+      <pubDate>Tue, 02 Dec 2025 18:20:01 +0000</pubDate>
+      <guid>https://emino.app/posts/continuous-clearing-auctions-cca-simple-technical-walkthroug/</guid>
+      <description>&lt;h1 id=&#34;continuous-clearing-auctions-cca-simple--technical-walkthrough&#34;&gt;Continuous Clearing Auctions (CCA): Simple + Technical Walkthrough&lt;/h1&gt;
+&lt;p&gt;Below is a simplified, thread-style explanation (similar structure to the
+screenshots), followed by a more technical appendix with math and a small
+simulation.&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;1-token-sales-are-generally-messy&#34;&gt;1. Token Sales Are Generally Messy&lt;/h2&gt;
+&lt;p&gt;Traditional token launches often look like this:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;A fixed launch time.&lt;/li&gt;
+&lt;li&gt;Everyone tries to buy at once.&lt;/li&gt;
+&lt;li&gt;Bots and fast traders usually win.&lt;/li&gt;
+&lt;li&gt;The final “price” is unclear and volatile for the first hours or days.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;This leads to:&lt;/p&gt;</description>
+    </item>
     <item>
       <title>Untitled Post</title>
       <link>https://emino.app/posts/untitled-post/</link>

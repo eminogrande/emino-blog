@@ -2,25 +2,28 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
+    <loc>https://emino.app/posts/a-passkey-derived-2-of-2-taproot-wallet-architecture-elimina/</loc>
+    <lastmod>2025-12-02T09:50:01+00:00</lastmod>
+  </url><url>
     <loc>https://emino.app/categories/blog/</loc>
-    <lastmod>2025-12-02T09:10:01+00:00</lastmod>
+    <lastmod>2025-12-02T09:50:01+00:00</lastmod>
   </url><url>
     <loc>https://emino.app/categories/</loc>
-    <lastmod>2025-12-02T09:10:01+00:00</lastmod>
+    <lastmod>2025-12-02T09:50:01+00:00</lastmod>
   </url><url>
     <loc>https://emino.app/tags/email-post/</loc>
-    <lastmod>2025-12-02T09:10:01+00:00</lastmod>
+    <lastmod>2025-12-02T09:50:01+00:00</lastmod>
   </url><url>
     <loc>https://emino.app/</loc>
-    <lastmod>2025-12-02T09:10:01+00:00</lastmod>
-  </url><url>
-    <loc>https://emino.app/posts/how-email-to-blog-publishing-works-on-emino-app/</loc>
-    <lastmod>2025-12-02T09:10:01+00:00</lastmod>
+    <lastmod>2025-12-02T09:50:01+00:00</lastmod>
   </url><url>
     <loc>https://emino.app/posts/</loc>
-    <lastmod>2025-12-02T09:10:01+00:00</lastmod>
+    <lastmod>2025-12-02T09:50:01+00:00</lastmod>
   </url><url>
     <loc>https://emino.app/tags/</loc>
+    <lastmod>2025-12-02T09:50:01+00:00</lastmod>
+  </url><url>
+    <loc>https://emino.app/posts/how-email-to-blog-publishing-works-on-emino-app/</loc>
     <lastmod>2025-12-02T09:10:01+00:00</lastmod>
   </url><url>
     <loc>https://emino.app/posts/how-to-start-your-own-near-solver-chart-technical-bits-env-k/</loc>

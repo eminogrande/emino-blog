@@ -6,8 +6,26 @@
     <description>Recent content in Posts on Emino.App&#39;s, Art&#39;s &amp; Articles by Emin Mahrt</description>
     <generator>Hugo -- 0.148.2</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 02 Dec 2025 09:10:01 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 02 Dec 2025 09:50:01 +0000</lastBuildDate>
     <atom:link href="https://emino.app/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>A Passkey-Derived 2-of-2 Taproot Wallet Architecture Eliminating Seed Phrases, Mitigating Supply-Chain Risk, and Enforcing Verified, Non-Blind Signing</title>
+      <link>https://emino.app/posts/a-passkey-derived-2-of-2-taproot-wallet-architecture-elimina/</link>
+      <pubDate>Tue, 02 Dec 2025 09:50:01 +0000</pubDate>
+      <guid>https://emino.app/posts/a-passkey-derived-2-of-2-taproot-wallet-architecture-elimina/</guid>
+      <description>&lt;p&gt;This post
+describes a wallet architecture that removes seed phrases entirely, avoids
+storing long-term private keys, and mitigates one of the largest practical
+threats to software wallets today: compromise of the client application&amp;rsquo;s
+dependency graph or build pipeline.&lt;/p&gt;
+&lt;p&gt;The design employs two independent &lt;strong&gt;passkeys&lt;/strong&gt;, each bound to a different
+domain and each invoking the &lt;strong&gt;WebAuthn PRF extension&lt;/strong&gt; to derive
+deterministic key material. These two keys form a &lt;strong&gt;2-of-2 MuSig Taproot
+aggregated key&lt;/strong&gt;, requiring both signatures for every spend. One signing
+flow occurs inside the user&amp;rsquo;s application environment, and the second
+occurs on a completely separate, isolated co-signing domain with
+user-visible transaction decoding.&lt;/p&gt;</description>
+    </item>
     <item>
       <title>How Email‑to‑Blog Publishing Works on emino.app</title>
       <link>https://emino.app/posts/how-email-to-blog-publishing-works-on-emino-app/</link>

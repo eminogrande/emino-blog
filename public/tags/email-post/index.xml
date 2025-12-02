@@ -6,8 +6,74 @@
     <description>Recent content in Email-Post on Emino.App&#39;s, Art&#39;s &amp; Articles by Emin Mahrt</description>
     <generator>Hugo -- 0.148.2</generator>
     <language>en-us</language>
-    <lastBuildDate>Tue, 02 Dec 2025 08:55:02 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 02 Dec 2025 09:10:01 +0000</lastBuildDate>
     <atom:link href="https://emino.app/tags/email-post/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>How Email‑to‑Blog Publishing Works on emino.app</title>
+      <link>https://emino.app/posts/how-email-to-blog-publishing-works-on-emino-app/</link>
+      <pubDate>Tue, 02 Dec 2025 09:10:01 +0000</pubDate>
+      <guid>https://emino.app/posts/how-email-to-blog-publishing-works-on-emino-app/</guid>
+      <description>&lt;p&gt;This is the full, technical path from an email sent to &lt;a href=&#34;mailto:post@emino.app&#34;&gt;post@emino.app&lt;/a&gt; to a
+published post, including DNS/TLS, SMTP/IMAP, filtering/
+validation, and the importer internals. The flowchart now includes sender
+checks and parsing.&lt;/p&gt;
+&lt;h2 id=&#34;pipeline-at-a-glance&#34;&gt;Pipeline at a Glance&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;DNS: A record emino.app → 188.34.194.25; MX record 0 emino.app.&lt;/li&gt;
+&lt;li&gt;TLS: Let’s Encrypt cert at /etc/letsencrypt/live/emino.app/ used by
+Nginx, Postfix (STARTTLS), Dovecot (IMAPS); certbot.timer auto-
+renews.&lt;/li&gt;
+&lt;li&gt;SMTP inbound: Postfix on :25, virtual mailbox &lt;a href=&#34;mailto:post@emino.app&#34;&gt;post@emino.app&lt;/a&gt; → Maildir
+/var/mail/vhosts/emino.app/post/.&lt;/li&gt;
+&lt;li&gt;IMAP access (for importer/clients): Dovecot on :993 with the same LE
+cert.&lt;/li&gt;
+&lt;li&gt;Firewall: ufw open for 22, 80, 443, 25; 993 if IMAP access is needed.&lt;/li&gt;
+&lt;li&gt;Importer: polls Maildir/IMAP, validates sender, parses/sanitizes,
+converts to Markdown, writes to posts/ (or your content dir),
+triggers build/deploy.&lt;/li&gt;
+&lt;li&gt;Web: Nginx serves the static blog on HTTPS.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;importer-technical-behavior&#34;&gt;Importer: Technical Behavior&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;Polling: runs on a timer (systemd timer/cron) or long-lived watcher;
+reads Maildir new/ and cur/ or IMAP inbox.&lt;/li&gt;
+&lt;li&gt;Sender validation: checks From: against an allowlist (e.g., your
+addresses). Unknown senders are skipped/logged.&lt;/li&gt;
+&lt;li&gt;Parsing:
+&lt;ul&gt;
+&lt;li&gt;Subject → title/slug; body → Markdown body.&lt;/li&gt;
+&lt;li&gt;Attachments: can be ignored or saved; filter to text/image types if
+enabled.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;Sanitization: strip dangerous HTML, normalize encodings, optional
+link/emoji cleanup.&lt;/li&gt;
+&lt;li&gt;Conversion: build frontmatter (title, date, tags, author) + body in
+Markdown; filename into content/posts/ (or configured path).&lt;/li&gt;
+&lt;li&gt;Publishing: optionally runs a build/deploy hook (static site generator,
+cache refresh) after writing the file.&lt;/li&gt;
+&lt;li&gt;Logging: importer logs to its own file; failures should log and leave
+messages in Maildir for retry.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;configuration-checklist&#34;&gt;Configuration Checklist&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;DNS
+&lt;ul&gt;
+&lt;li&gt;A emino.app 188.34.194.25&lt;/li&gt;
+&lt;li&gt;MX 0 emino.app.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;TLS
+&lt;ul&gt;
+&lt;li&gt;certbot &amp;ndash;nginx -d emino.app -d &lt;a href=&#34;https://www.emino.app&#34;&gt;www.emino.app&lt;/a&gt; &amp;ndash;redirect&lt;/li&gt;
+&lt;li&gt;Verify certbot.timer (systemctl list-timers | grep certbot)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;Postfix (virtual mailbox)
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;/etc/postfix/vmailbox:&lt;/p&gt;</description>
+    </item>
     <item>
       <title>How to start your own near solver: chart, technical bits (env, keys, services, deployment)</title>
       <link>https://emino.app/posts/how-to-start-your-own-near-solver-chart-technical-bits-env-k/</link>

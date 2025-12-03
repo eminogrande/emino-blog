@@ -1,7 +1,1504 @@
 # Emino Blog - Complete Content for LLMs
-Generated: Tue Dec  2 03:00:01 AM UTC 2025
+Generated: Wed Dec  3 03:00:01 AM UTC 2025
 
 ## All Blog Posts
+
+---
+## How to start your own near solver: chart, technical bits (env, keys, services, deployment)
+
+
+
+## 1. What this solver is and why it exists
+
+  - The Near Intents protocol lets users express “I want to swap X for Y
+under conditions Z” as intents.
+  - A solver (this app) watches intents and acts as a market maker:
+      - Keeps track of an on‑chain AMM pool (reserves for two NEP‑141
+tokens).
+      - Computes prices + margin for that pair.
+      - When an intent is profitable (given your margin), it executes the
+swap via your NEAR account.
+  - The solver also exposes:
+      - An HTTP status API (/status).
+      - A dashboard (/dashboard) that shows health, reserves, quotes,
+intents, balances.
+
+  Your instance right now:
+
+  - Runs as pm2 process near-solver, listening on 127.0.0.1:4010.
+  - Is reachable via:
+      - https://emino.app/status (JSON health).
+      - https://emino.app/solver/ (dashboard UI).
+  - ready:true and ws_connected:true → the solver is live and processing
+relay traffic.
+
+  ———
+
+  ## 2. Walking through the components in the chart
+
+  ### 2.1 User → Nginx → Solver
+
+  - A user opens https://emino.app/solver/ in a browser.
+  - Nginx vhost (emino.app):
+      - Terminates TLS using a Let’s Encrypt certificate.
+      - Has locations:
+          - /solver/ → proxy_pass http://127.0.0.1:4010/dashboard
+          - /status → proxy_pass http://127.0.0.1:4010/status
+  - The browser:
+      - Loads the HTML dashboard from /dashboard.
+      - The inline JS immediately calls /status and then polls it every few
+seconds for live data.
+  - The solver’s HttpService builds the payload for /status and renders the
+dashboard template for /
+    dashboard.
+
+  ### 2.2 The solver process (Node.js, pm2)
+
+  The process is started roughly as:
+
+  NODE_ENV=local pm2 start "npm start" --name near-solver
+
+  - npm start runs:
+    node -r tsconfig-paths/register -r ts-node/register src/main.ts
+
+  The important files:
+
+  - src/main.ts
+      - Calls loadEnv() (from src/utils/load-env.ts).
+      - Then require('./app').app().
+  - src/utils/load-env.ts
+      - Calls dotenv.config with:
+          - path: ./env/.env.local (because NODE_ENV=local).
+      - Validates process.env against a Joi schema
+(src/configs/env.validation.ts).
+      - Throws if anything required is missing/invalid.
+      - Copies validated values back into process.env.
+  - src/app.ts
+      - Instantiates services:
+
+        const cacheService   = new CacheService();
+        const nearService    = new NearService(); await nearService.init();
+        const intentsService = new IntentsService(nearService);
+        const quoterService  = new QuoterService(cacheService, nearService,
+intentsService);
+        await quoterService.updateCurrentState();
+        const cronService    = new CronService(quoterService);
+cronService.start();
+        const websocketSvc   = new
+WebsocketConnectionService(quoterService, cacheService);
+  websocketSvc.start();
+        const httpService    = new HttpService(cacheService, quoterService,
+nearService);
+  httpService.start();
+      - This gives you:
+          - Live NEAR connection.
+          - AMM pricing + state.
+          - WebSocket stream from the solver relay.
+          - Periodic state refresh.
+          - HTTP API.
+
+  ### 2.3 Services and their roles
+
+  NearService
+
+  - Uses near-api-js to construct connections:
+      - Network: NEAR_NETWORK_ID (mainnet or testnet).
+      - Node URLs: from NEAR_NODE_URLS or NEAR_NODE_URL, or defaults:
+          - Mainnet: https://free.rpc.fastnear.com, https://near.lava.build
+          - Testnet: https://test.rpc.fastnear.com, https://neart.lava.build
+  - Loads solver identity from env:
+      - NEAR_ACCOUNT_ID – your solver account, e.g. my-solver.near.
+      - NEAR_PRIVATE_KEY – an ed25519:... key string for that account.
+  - Exposes helpers:
+      - getBalance() – to show how much NEAR the solver holds (gas +
+liquidity).
+      - Make view calls / send signed transactions against NEAR contracts.
+
+  IntentsService
+
+  - Wraps the intents contract API (INTENTS_CONTRACT env if used).
+  - Lets the solver:
+      - Read pool data / reserves.
+      - Interact with intents (e.g., settlement logic).
+
+  QuoterService
+
+  - Knows:
+      - The two token IDs (from AMM_TOKEN1_ID / AMM_TOKEN2_ID).
+      - The margin you want: MARGIN_PERCENT (e.g. 0.3 = 0.3%).
+  - Maintains an internal state snapshot:
+      - Reserves for each NEP‑141 token.
+      - Any other AMM parameters needed.
+  - Methods:
+      - updateCurrentState() – fetches fresh on‑chain pool state via
+NearService and IntentsService.
+      - Methods invoked by WebSocket events to adjust state per new
+quotes/intents.
+  - Quoter decides whether a given intent is worth executing given your
+current pool and margin.
+
+  CacheService
+
+  - In‑memory key‑value cache.
+  - Keys you’ll see:
+      - ws_connected – boolean.
+      - ws_last_event_at – timestamp of last relay event.
+      - reserves – current pool reserves.
+      - reserves_updated_at – when reserves were last refreshed.
+      - recent_quotes – list of latest quotes.
+      - recent_intents – list of latest intents with tx hashes.
+      - total_supply – cached for 60s so you don’t spam NEAR RPC.
+
+  WebsocketConnectionService
+
+  - Connects to the solver relay:
+      - RELAY_WS_URL – e.g. wss://solver-relay-v2.chaindefuser.com/ws.
+      - RELAY_AUTH_KEY – a JWT / auth token issued by the relay operator.
+  - Behavior:
+      - Opens a WebSocket.
+      - Authenticates using the auth key.
+      - Receives:
+          - New quotes (price offers).
+          - New intents (user swap requests).
+          - Execution/settlement updates.
+      - For each event:
+          - Updates CacheService with recent quotes/intents and timestamps.
+          - Tells QuoterService about relevant changes so prices and state
+are fresh.
+
+  CronService
+
+  - Runs a periodic job (e.g. every 5–10 seconds depending on
+implementation) that:
+      - Calls QuoterService.updateCurrentState().
+      - Ensures that even if WebSocket traffic stutters, the solver’s
+picture of the pool stays correct.
+
+  HttpService
+
+  - Pure Node http server; no Express.
+  - Listens on APP_PORT (in your case 4010).
+  - Routes:
+      - / – simple JSON: { ready: true }
+      - /status – builds a full status payload:
+          - ready – constant true if process is up.
+          - ws_connected, ws_last_event_at.
+          - reserves + reserves_updated_at.
+          - margin_percent.
+          - recent_quotes, recent_intents.
+          - deposit_addresses – BTC + EURe deposit addresses.
+          - near_balance – yocto NEAR.
+          - near_balance_near – human-readable NEAR via a formatYocto
+helper.
+          - total_supply – token supplies via ft_total_supply view calls.
+      - /dashboard – returns a static HTML page with embedded JS:
+          - Injects bootstrap data = current /status JSON.
+          - Injects the list of token IDs and token meta (symbols,
+decimals).
+          - Renders a grid of cards:
+              - Health + readiness.
+              - Deposit addresses.
+              - WebSocket status.
+              - Reserves on the intents contract.
+              - Total supply on NEAR.
+              - Recent quotes.
+              - Recent intents.
+          - Starts a loop that re‑calls /status every few seconds and
+updates the UI.
+
+  ———
+
+  ## 3. External systems
+
+  The solver doesn’t live in isolation; it’s part of this broader system:
+
+  - Solver relay (RELAY_WS_URL):
+      - A central hub that feeds intents and quotes to registered solvers.
+      - You authenticate via RELAY_AUTH_KEY.
+      - Solvers send signed transactions that correspond to accepted
+intents.
+  - NEAR RPC nodes:
+      - Used for:
+          - View calls (e.g. ft_total_supply, pool state).
+          - Sending transactions from NEAR_ACCOUNT_ID.
+      - The solver uses multiple URLs for redundancy and simple failover.
+  - Intents contract (INTENTS_CONTRACT):
+      - Holds the logic and pools for EURe/BTC (and other pairs).
+      - Manages reserves and settlement.
+  - Deposit addresses (off-chain bridge):
+      - BTC mainnet address: where users send BTC.
+      - EURe (Gnosis) address: where users send EURe tokens.
+      - A separate bridge system (outside this repo) watches those and
+mints / burns the corresponding
+        NEP‑141 tokens on NEAR.
+
+  ———
+
+  ## 4. How to start your own solver (step-by-step)
+
+  This section turns the chart into a checklist.
+
+  ### 4.1 Prerequisites
+
+  - A machine or VPS (Linux) with:
+      - Node.js 20+
+      - npm or pnpm
+  - A NEAR account dedicated to the solver, e.g. your-solver.near:
+      - Never use your personal main wallet; create a new account just for
+the solver.
+      - Fund it with enough NEAR for gas + desired liquidity.
+  - A full access private key for that solver account:
+      - Export from NEAR CLI or wallet; format must be ed25519:....
+      - This must be kept secret. Never commit it to git, never paste into
+chat, never share it.
+  - A relay auth key (RELAY_AUTH_KEY):
+      - Provided by the relay / intents operator.
+      - Usually a JWT-like token that identifies your solver.
+  - Optionally:
+      - A domain name + TLS (e.g. a subdomain like solver.example.com) if
+you want a nice dashboard URL.
+      - Nginx to proxy from HTTPS to the internal port.
+
+  ### 4.2 Clone and install
+
+  git clone https://github.com/near-intents/near-intents-examples.git
+  cd near-intents-examples/near-intents-amm-solver
+
+  # Using npm
+  npm install
+
+  (Replace repo URL with whichever remote you’re actually using.)
+
+  ### 4.3 Create and fill your env file
+
+  The solver looks for env in ./env/.env.<NODE_ENV>.
+
+  For local/dev, we typically use NODE_ENV=local, so:
+
+  cd near-intents-examples/near-intents-amm-solver
+  mkdir -p env
+  cp env/.env.example env/.env.local
+
+  Open env/.env.local and set:
+
+  Required core variables
+
+  # Network
+  NEAR_NETWORK_ID=mainnet
+
+  # Tokens for this solver (example: EURe ↔ BTC)
+
+AMM_TOKEN1_ID=nep141:gnosis-0x420ca0f9b9b604ce0fd9c18ef134c705e5fa3430.omft.near
+  AMM_TOKEN2_ID=nep141:btc.omft.near
+
+  # Non-TEE mode (simplest setup)
+  TEE_ENABLED=false
+
+  # Your solver NEAR account (dedicated!)
+  NEAR_ACCOUNT_ID=your-solver.near
+  NEAR_PRIVATE_KEY=ed25519:YOUR_SOLVER_PRIVATE_KEY_HERE
+
+  Node / relay / margin
+
+  # NEAR RPC – you can override; otherwise defaults are fine
+  NEAR_NODE_URL=https://rpc.mainnet.near.org
+  # or:
+  # NEAR_NODE_URLS=https://free.rpc.fastnear.com,https://near.lava.build
+
+  # Relay endpoint and auth
+  RELAY_WS_URL=wss://solver-relay-v2.chaindefuser.com/ws
+  RELAY_AUTH_KEY=YOUR_RELAY_AUTH_TOKEN
+
+  # HTTP server port for the solver
+  APP_PORT=3000          # or 4010 on your server
+
+  # Logging and margin
+  LOG_LEVEL=info         # error | warn | info | debug
+  MARGIN_PERCENT=0.3     # 0.3% margin, adjust to your risk
+  ONE_CLICK_API_ONLY=true
+
+  Notes:
+
+  - The Joi schema (src/configs/env.validation.ts) will enforce:
+      - AMM_TOKEN1_ID, AMM_TOKEN2_ID are required.
+      - Either TEE mode or NEAR_ACCOUNT_ID/NEAR_PRIVATE_KEY must be set
+appropriately.
+      - MARGIN_PERCENT must be positive.
+
+  If the solver fails at startup with a validation error, it will list
+which env variables are missing
+  or invalid.
+
+  ### 4.4 Run locally
+
+  From the solver directory:
+
+  # Make sure you're in near-intents-amm-solver
+  NODE_ENV=local npm start
+
+  You should see logs like:
+
+  - Using Near RPC nodes: ...
+  - Cron service started
+  - WebSocket logs like Received intent: {...} once connected.
+
+  Check:
+
+  curl http://localhost:3000/status   # or your APP_PORT
+
+  And open in browser:
+
+  - http://localhost:3000/dashboard
+
+  You should see the Solver Monitor dashboard.
+
+  ### 4.5 Run in the background with pm2 (production-ish)
+
+  On your server:
+
+  cd /path/to/near-intents-examples/near-intents-amm-solver
+
+  NODE_ENV=local pm2 start "npm start" --name near-solver
+  pm2 save
+  pm2 startup   # sets up pm2 to auto-start on boot
+
+  Check logs:
+
+  pm2 logs near-solver --lines 50
+
+  Check HTTP:
+
+  curl http://127.0.0.1:3000/status
+
+  (Use your APP_PORT.)
+
+  ### 4.6 Put it behind Nginx + TLS (optional but recommended)
+
+  Basic Nginx server block (for a domain solver.example.com):
+
+  server {
+      listen 443 ssl http2;
+      server_name solver.example.com;
+
+      ssl_certificate     /etc/letsencrypt/live/
+solver.example.com/fullchain.pem;
+      ssl_certificate_key /etc/letsencrypt/live/
+solver.example.com/privkey.pem;
+
+      location / {
+          proxy_pass http://127.0.0.1:3000;  # APP_PORT
+          proxy_set_header Host $host;
+          proxy_set_header X-Real-IP $remote_addr;
+          proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+          proxy_set_header X-Forwarded-Proto $scheme;
+      }
+  }
+
+  For your specific setup on emino.app, we instead:
+
+  - Keep the existing blog at /.
+  - Add:
+
+  # Already configured in your vhost:
+  location = /solver/ {
+      proxy_pass http://127.0.0.1:4010/dashboard;
+      ...
+  }
+
+  location /solver/ {
+      proxy_pass http://127.0.0.1:4010/;
+      ...
+  }
+
+  location /status {
+      proxy_pass http://127.0.0.1:4010/status;
+      ...
+  }
+
+  Then:
+
+  nginx -t
+  systemctl reload nginx
+
+  Now your solver is reachable at:
+
+  - https://yourdomain/solver/ – dashboard.
+  - https://yourdomain/status – status JSON.
+
+  ———
+
+  ## 5. Security and operational notes
+
+  - Keys:
+      - Use a dedicated NEAR account for the solver.
+      - The private key must have full access, or the solver can’t send txs.
+      - Treat NEAR_PRIVATE_KEY and RELAY_AUTH_KEY as secrets:
+          - Store in .env.local on the server.
+          - Make sure the repo directory is not world-readable.
+          - Never commit .env* files to git.
+  - Funds:
+      - Only keep as much liquidity/NEAR as you are willing to risk.
+      - Withdraw profits periodically; think of the solver account as a
+“hot wallet”.
+  - Monitoring:
+      - pm2 logs near-solver for runtime behavior.
+      - curl /status for programmatic monitoring (you could plug this into
+Prometheus / a health check).
+  - Upgrades:
+      - Pull new code, run npm install if dependencies changed.
+      - Restart with pm2 restart near-solver.
+
+
+https://mermaid.emino.app/?c=eJx1Vt1u6zYMfhXCwLk6-WmKYcNyMaAJip0ztFkXtygwpSgUW4m1Y0s-kuIkWHe7B9gj7klGSvJP0B0EsE3qI0V-JKX8mWQ6F8k82RteF3C33iiADx_gyQoDH0EoZ861lsqR3h62AUarpABYsIXRRxI3qnCutvPpVFRS6Qmv66nVZSPM9IWwQuUbdeHlNt8LtklWe6lOuNfjXQqss33ZJC9hixULiKbQ1uE2A8jQ7QLG45_eNsmnx8eHFNqtgT19fkGjVuu4O1hgv6S_rnCHN1gFY8w49QZQG50Jay8CDUsYqhLcjJEMpMWOeVWNwy7A6up6Dn41aPro77lUrMLHxFmMo9Q8v1UNOA1tBgA3dc1QCoijNAKQ0EZiHBHwCZll9EiDHmG1Ng6-u5pd4XdMawTTnNtiq7nJo-Fzyp7F1ursi3BLrZTInNSq92JEyc-AkNRDICsl5haNl0YrRo_BrsJIncsMjNgZYYuI_O2gHRIUXj365v4e-ZSZVHusLwUpWtc8KwTzzx4u1bgSlTZnhGrTQlfIKqNHD1zd3qxh_bAkp3KviG4P_Rwqw-J76NkrINPYzzxzUIiyjmZdA2EPkKFRvAQsAgZNWqofdRYViWR8eZGqMZSf06FErA3lwMwFgnIfKijFoRyT6GKjDoZdqY8kr2KzY7eezn2zY1fNrn-YXOFvNqfm6BuCihfBYQbeY8MCTUWbHL0vo-00fUadqs2gVWB8NGdINi9d4buN-lpgo34la3zHwoxgy0uusOFp90WX84JnX_ZGH1QOf-itH0piNjrHD7I3DS_JrI8ofEWUbzuwite20M5vELOJm6z9DHxsY-k47s-pU-gKPADaT7Bn60RluzH3Tlg8Q7xAo2zpOAzFGftRGzfXk8mktXlYsq6VFR7DNP47bh0dJCMoecNHYOpsQseHEu6yy5dtm3ddjda3T2tBlV08LqHWuowmKDJSRUeQi1pbSQazu4X8vQ-J7Jl3guT-rBBEMV2dZj9-v2xR3cAE4ojlUM4Bh3hznEQGhzpH8u1bnI7nNNYk6H1HZIh_jfZTiHJ04yl8zcK5JXJcL5GdV9Hg4qCOA8c7gTC_boct4aNFkgnUSHGEjJelbY-PHNwJY2zbt6V1MITLgX75fjqJ2pgYXZuRXQqfVkr59SBz6c4U0dCh5_n_7fzSNwzfdXguMpkLurl20vFtKaDnj-Po8AonKBAy3J7ybWcEaSA2qLQbZY8cr27hHHpCZoZ2yShxEvXtH4Y5XN7f3d0M__79D3zj3iYn55p80KhlBTcu-es_a-zoSA
+
+![graph_browsernhttpseminoappsolver_nginx-_nginx-vhostneminoapp_2025-12-02T08-15-25](/media/how-to-start-your-own-near-solver-chart-technical-bits-env-k/graph_browsernhttpseminoappsolver_nginx-_nginx-vhostneminoapp_2025-12-02T08-15-25.svg)
+
+![graph_browsernhttpseminoappsolver_nginx-_nginx-vhostneminoapp_2025-12-02T08-25-20](/media/how-to-start-your-own-near-solver-chart-technical-bits-env-k/graph_browsernhttpseminoappsolver_nginx-_nginx-vhostneminoapp_2025-12-02T08-25-20.svg)
+
+---
+*Post created via email from emin@nuri.com*
+
+---
+## Testing the Post by Email Function
+
+
+
+Pretty sure its not working.
+
+---
+*Post created via email from emin@nuri.com*
+
+---
+## How Email‑to‑Blog Publishing Works on emino.app
+
+
+
+This is the full, technical path from an email sent to post@emino.app to a
+published post, including DNS/TLS, SMTP/IMAP, filtering/
+  validation, and the importer internals. The flowchart now includes sender
+checks and parsing.
+
+  ## Pipeline at a Glance
+
+  - DNS: A record emino.app → 188.34.194.25; MX record 0 emino.app.
+  - TLS: Let’s Encrypt cert at /etc/letsencrypt/live/emino.app/ used by
+Nginx, Postfix (STARTTLS), Dovecot (IMAPS); certbot.timer auto-
+    renews.
+  - SMTP inbound: Postfix on :25, virtual mailbox post@emino.app → Maildir
+/var/mail/vhosts/emino.app/post/.
+  - IMAP access (for importer/clients): Dovecot on :993 with the same LE
+cert.
+  - Firewall: ufw open for 22, 80, 443, 25; 993 if IMAP access is needed.
+  - Importer: polls Maildir/IMAP, validates sender, parses/sanitizes,
+converts to Markdown, writes to posts/ (or your content dir),
+    triggers build/deploy.
+  - Web: Nginx serves the static blog on HTTPS.
+
+  ## Importer: Technical Behavior
+
+  - Polling: runs on a timer (systemd timer/cron) or long-lived watcher;
+reads Maildir new/ and cur/ or IMAP inbox.
+  - Sender validation: checks From: against an allowlist (e.g., your
+addresses). Unknown senders are skipped/logged.
+  - Parsing:
+      - Subject → title/slug; body → Markdown body.
+      - Attachments: can be ignored or saved; filter to text/image types if
+enabled.
+  - Sanitization: strip dangerous HTML, normalize encodings, optional
+link/emoji cleanup.
+  - Conversion: build frontmatter (title, date, tags, author) + body in
+Markdown; filename into content/posts/ (or configured path).
+  - Publishing: optionally runs a build/deploy hook (static site generator,
+cache refresh) after writing the file.
+  - Logging: importer logs to its own file; failures should log and leave
+messages in Maildir for retry.
+
+  ## Configuration Checklist
+
+  1. DNS
+      - A emino.app 188.34.194.25
+      - MX 0 emino.app.
+  2. TLS
+      - certbot --nginx -d emino.app -d www.emino.app --redirect
+      - Verify certbot.timer (systemctl list-timers | grep certbot)
+  3. Postfix (virtual mailbox)
+      - /etc/postfix/vmailbox:
+
+        post@emino.app emino.app/post/
+      - postmap /etc/postfix/vmailbox
+      - postconf -e "virtual_mailbox_domains=emino.app"
+      - postconf -e "virtual_mailbox_maps=hash:/etc/postfix/vmailbox"
+      - TLS:
+
+        postconf -e "smtpd_tls_cert_file=/etc/letsencrypt/live/
+emino.app/fullchain.pem"
+        postconf -e "smtpd_tls_key_file=/etc/letsencrypt/live/
+emino.app/privkey.pem"
+        systemctl reload postfix
+  4. Dovecot (IMAP/IMAPS)
+      - /etc/dovecot/conf.d/10-ssl.conf:
+
+        ssl_cert = </etc/letsencrypt/live/emino.app/fullchain.pem
+        ssl_key  = </etc/letsencrypt/live/emino.app/privkey.pem
+      - systemctl reload dovecot
+  5. Maildir permissions
+      - /var/mail/vhosts/emino.app/post/ owned by vmail:vmail, mode 700/600.
+  6. Firewall (ufw)
+      - ufw allow 25/tcp
+      - ufw allow 993/tcp (if IMAP access needed)
+      - ufw allow 80,443/tcp
+  7. Importer job
+      - Read from Maildir or IMAP for post@emino.app.
+      - Allowlist sender addresses.
+      - Write posts into your blog content path (e.g., content/posts/ or
+posts/).
+      - Run via systemd timer/cron; log to a dedicated file; trigger
+build/deploy if required.
+  8. Nginx
+      - Port 80 → return 301 https://$host$request_uri;
+      - Port 443 with LE cert paths; root at your blog directory; serve
+static site.
+
+  ## Monitoring & Reliability
+
+  - TLS expiry: openssl x509 -in /etc/letsencrypt/live/
+emino.app/fullchain.pem -noout -enddate
+  - Mail flow: /var/log/mail.log (Postfix/Dovecot)
+  - Importer: its dedicated log; alert on failures
+  - Renewals: journalctl -u certbot if renewals misbehave
+  - Health checks: periodic test mail to post@emino.app, confirm file lands
+in Maildir and importer publishes.
+
+  ## Common Failure Modes (and fixes)
+
+  - Expired cert → use nginx HTTP challenge + certbot.timer (already in
+place).
+  - Port 25 blocked → open in ufw (done).
+  - Importer down → ensure timer/service is active; check logs.
+  - Maildir perms → keep vmail ownership and 700/600 modes.
+  - Unknown sender → email skipped; add to allowlist if desired.
+
+  This covers the complete, reproducible “email to blog” setup on
+emino.app—from
+DNS/TLS through SMTP/IMAP and sender validation to
+  Markdown generation and publishing.
+
+![sequenceDiagram_2025-12-02T09-05-40](/media/how-email-to-blog-publishing-works-on-emino-app/sequenceDiagram_2025-12-02T09-05-40.svg)
+
+---
+*Post created via email from emin@nuri.com*
+
+---
+## A Passkey-Derived 2-of-2 Taproot Wallet Architecture Eliminating Seed Phrases, Mitigating Supply-Chain Risk, and Enforcing Verified, Non-Blind Signing
+
+
+
+This post
+describes a wallet architecture that removes seed phrases entirely, avoids
+storing long-term private keys, and mitigates one of the largest practical
+threats to software wallets today: compromise of the client application's
+dependency graph or build pipeline.
+
+The design employs two independent **passkeys**, each bound to a different
+domain and each invoking the **WebAuthn PRF extension** to derive
+deterministic key material. These two keys form a **2-of-2 MuSig Taproot
+aggregated key**, requiring both signatures for every spend. One signing
+flow occurs inside the user's application environment, and the second
+occurs on a completely separate, isolated co-signing domain with
+user-visible transaction decoding.
+
+The architecture is built to address specific weaknesses in conventional
+wallet designs, including seed-phrase exposure, blind signing, and
+dependency-chain compromise.
+
+---
+
+## **1. Motivation**
+
+### **1.1 Seed phrase exposure during import**
+Seed-phrase–based wallets require the user to type or paste a BIP-39
+mnemonic or private key during wallet creation or recovery. This moment is
+extremely fragile:
+
+- Mnemonics appear in plaintext in memory, visible to any malicious script
+or compromised dependency.
+- Clipboard use exposes secrets to OS-level observers or background
+applications.
+- Mobile and web environments permit DOM injection, overlay attacks,
+accessibility scraping, or clipboard listeners.
+- Even brief exposure is enough for silent key theft.
+
+If the application itself (or its dependencies) is compromised, a seed
+phrase can be exfiltrated the instant it touches memory. Eliminating this
+step entirely removes one of the largest security liabilities in software
+wallets.
+
+### **1.2 Supply-chain compromise**
+Modern front-end stacks (React, React Native, Expo, etc.) routinely
+incorporate hundreds of transitive dependencies. A single dependency update
+or injected build-step modification can:
+
+- Transmit sensitive material over the network
+- Alter transaction parameters
+- Manipulate UI rendering of transaction data
+- Log or forward key material
+
+When a wallet relies on a single private key stored or derived within such
+an environment, a supply-chain compromise allows complete and silent
+draining of user funds.
+
+### **1.3 Blind signing and misrepresentation**
+In single-environment wallets, the application that constructs the
+transaction is the same one that displays the transaction summary and
+performs the signing. A compromised or manipulated UI can:
+
+- Modify destination addresses
+- Misrepresent amounts or fees
+- Construct valid signatures over malicious transactions while showing
+benign data
+
+Without an independent verification step, the user cannot detect tampering.
+
+---
+
+## **2. Architectural Overview**
+
+The system uses two passkeys:
+
+- **Passkey A**
+Registered to RPID `nuri.com` and used in the client application (web, iOS,
+Android).
+
+- **Passkey B**
+Registered to RPID `confirm.nuri.com` and used exclusively on a separate
+co-signing website.
+
+Both passkeys use the **WebAuthn PRF extension**, yielding deterministic
+high-entropy PRF outputs:
+
+- `PRF_A` → used to derive signing key `k₁`
+- `PRF_B` → used to derive signing key `k₂`
+
+These keys are combined into a **MuSig 2-of-2 Taproot key**, producing a
+single aggregated on-chain public key. Spending from the Taproot output
+requires **both partial signatures**.
+
+The application environment controls one signing factor.
+A separate web domain controls the second.
+Neither domain can access the passkey of the other due to the RPID boundary
+enforced by the platform.
+
+---
+
+## **3. Signing Flow**
+
+### **3.1 Transaction preparation and partial signing (`nuri.com`)**
+
+1. The user constructs a transaction inside the application.
+2. The application creates a PSBT (inputs, outputs, fees).
+3. The user authenticates with **Passkey A**, generating `PRF_A`.
+4. A deterministic KDF derives the key `k₁`.
+5. The application creates a partial MuSig signature using `k₁`.
+6. The partially signed PSBT is forwarded to the independent co-signing
+domain.
+
+The application cannot finalize the transaction. A compromised client can
+only prepare a PSBT—not complete it.
+
+---
+
+### **3.2 Independent verification and co-signing (`confirm.nuri.com`)**
+
+1. The user is redirected to the co-signing site.
+This domain is isolated from the app by the browser and the WebAuthn RPID
+model.
+2. The co-signing server independently parses and decodes the PSBT.
+It displays a clear, human-readable summary of the spend:
+- Inputs and amounts
+- Destination addresses
+- Fees
+- Change outputs
+3. The user authenticates with **Passkey B**, producing `PRF_B`.
+4. A deterministic KDF derives key `k₂`.
+5. After validating the PSBT, the co-signer generates the second partial
+MuSig signature.
+6. `PRF_B` and `k₂` are zeroized immediately. Nothing is stored server-side.
+7. The fully signed PSBT is returned to the application or broadcast to the
+network.
+
+This step provides both a second signature and an independent confirmation
+of intent, mitigating blind-signing attacks.
+
+---
+
+## **4. Threat Analysis**
+
+### **4.1 Seed phrase risks eliminated**
+No seed phrase is ever generated, displayed, entered, or stored.
+There is no clipboard exposure, no import form, no secret material in
+JavaScript memory, and no attack window during wallet creation.
+
+### **4.2 Protection against supply-chain compromise (client side)**
+If the application or its dependencies are compromised:
+
+- The malicious code cannot derive `k₂`.
+- It cannot impersonate `confirm.nuri.com` or invoke Passkey B.
+- It cannot finalize the signature without the co-signer’s partial
+signature.
+- The co-signer independently displays the true transaction details, making
+tampering visible.
+
+A client-only compromise is insufficient to steal funds.
+
+### **4.3 Protection against co-signer compromise**
+If the co-signing server or its front-end is compromised:
+
+- The attacker cannot derive `k₁`.
+- They cannot initiate a transaction because they cannot sign the first
+partial.
+- They cannot obtain Passkey A's PRF output due to RPID binding.
+
+A co-signer-only compromise is also insufficient to steal funds.
+
+### **4.4 Combined compromise requirement**
+Fund theft requires coordinated compromise of:
+
+- The application supply chain **and**
+- The co-signing site supply chain
+- Or a phishing attack that manipulates transaction details on **both**
+sites in a consistent manner
+
+This significantly increases the difficulty of a successful attack.
+
+### **4.5 Blind signing mitigated**
+Because transaction verification occurs at both:
+
+- The application (initial display)
+- The co-signing domain (independent decoding and display)
+
+…the user receives two authenticated views of the same intent, closing the
+common blind-signing hole that afflicts single-environment wallets.
+
+### **4.6 No server-stored private keys**
+The co-signer:
+
+- Stores no key material
+- Derives k₂ only during the WebAuthn operation
+- Immediately zeroizes all sensitive data
+
+There is no long-term key database to compromise.
+
+### **4.7 Domain isolation via WebAuthn RPID**
+The RPID binding ensures:
+
+- The app cannot use Passkey B
+- The co-signer cannot use Passkey A
+- Phishing domains cannot reuse existing passkeys
+- Mobile/native apps cannot trick the OS into unlocking a passkey for a
+different domain
+
+Hardware and OS enforce this isolation boundary.
+
+---
+
+## **5. Resulting Security Properties**
+
+| Property | Description |
+|---------|-------------|
+| No seed phrases | No user-entered secrets; no import fields; no clipboard
+exposure |
+| Hardware-backed keys | Secrets originate in Secure Enclave / FIDO
+authenticators |
+| 2-of-2 MuSig | Both keys required; no unilateral spending |
+| Isolation via domains | Two separate RPIDs, enforced by the platform |
+| Stateless co-signer | No long-term keys; nothing to steal from the server
+|
+| Independent verification | Prevents blind signing; detects tampered PSBTs
+|
+| Supply-chain resilience | Single environment compromise is insufficient |
+| Cross-platform compatibility | Works on web, iOS, Android without
+extensions |
+
+---
+
+## **6. Conclusion**
+
+This architecture addresses the primary attack vectors in software wallets:
+
+- Seed phrase exposure
+- Supply-chain compromise
+- Blind-signing UI manipulation
+- Single-key failure modes
+- Server-side key theft
+
+By distributing signing authority across two independent domains, each
+backed by its own passkey and PRF output, and by requiring both signatures
+for every spend, the design substantially increases the security margin
+while remaining deployable in ordinary browsers and mobile apps.
+
+It creates a practical path toward secure, cross-platform Bitcoin
+self-custody without seed phrases, without extensions, and without reliance
+on a trusted client software stack.
+
+If needed, this can be expanded into a formal specification, security
+analysis, or developer implementation guide.
+
+![IMG_6836](/media/a-passkey-derived-2-of-2-taproot-wallet-architecture-elimina/IMG_6836.jpeg)
+
+---
+*Post created via email from emin@nuri.com*
+
+---
+## Untitled Post
+
+
+
+# Continuous Clearing Auctions (CCA): Technical Overview
+
+Continuous Clearing Auctions (CCA) are an on-chain auction protocol
+designed by Uniswap (Universal Navigation Inc.) to conduct multi-period
+token sales with automated liquidity bootstrapping into a Uniswap v4 pool.
+Projects configure a sale that runs over many discrete auction blocks;
+bidders submit size–price instructions that are split across blocks, and
+each block clears at a uniform “market” price based on the submitted demand.
+
+The protocol is implemented as a separate smart-contract system
+(“Continuous Clearing Auction” + factory) and is intended to be used
+together with the Uniswap Liquidity Launcher. The Aztec Network public
+token sale is the first large production use of this mechanism.
+
+---
+
+## 1. Mechanism Outline
+
+### 1.1 Setup
+
+A project defines at minimum:
+
+- Total tokens to sell `Q_total`
+- Auction duration (number of blocks or time range)
+- Initial guidance parameters (e.g., starting price, optional price floor
+or reserve curve)
+- Graduation conditions / completion checks (for example: minimum capital
+raised, minimum average price, or other criteria)
+- Liquidity seeding rules (e.g., what fraction of raised assets and
+remaining tokens are deposited into a Uniswap v4 pool at the end)
+
+The auction smart contract then acts as the sole seller of the token during
+the sale window.
+
+### 1.2 Bid Model
+
+A bidder submits a single order specifying:
+
+- Maximum spend or desired quantity
+- Maximum acceptable price `P_max`
+- (Optionally) additional preferences such as minimum fill size
+
+The protocol conceptually “spreads” this bid across all remaining auction
+blocks. In each block, a portion of the bid participates in price discovery.
+
+For a given block `t`:
+
+- Let `S_t` be the token supply allocated to block `t`
+- Let `B_t` be the multiset of active bid slices for block `t`, each with
+`(P_max_i, Q_i^t)`
+
+The block’s **clearing price** `P_clear_t` is the lowest price such that
+cumulative demand at or above that price weakly exceeds `S_t`.
+
+Formally, if we sort all `P_max_i` in descending order and accumulate the
+corresponding `Q_i^t` until:
+
+\[
+\sum_{i: P_{\text{max},i} \ge P_{\text{clear},t}} Q_i^t \ge S_t
+\]
+
+then `P_clear_t` is the threshold price for that block.
+
+All filled slices in block `t` transact at `P_clear_t`, subject to pro-rata
+scaling when demand at or above the clearing price strictly exceeds `S_t`.
+
+### 1.3 Pro-Rata Allocation at the Margin
+
+If the last price level that allows filling the block is oversubscribed,
+the protocol scales allocations of bidders at that exact threshold price:
+
+- Let `D_strict` be total demand from bids with `P_max > P_clear_t`
+- Let `D_equal` be total demand from bids with `P_max = P_clear_t`
+- If `D_strict ≥ S_t`, then all volume is filled strictly above the
+threshold and a slightly higher clearing price is chosen.
+- Otherwise, the remaining capacity is `S_t - D_strict`. Bids at
+`P_clear_t` are scaled:
+
+\[
+\text{allocation}_i = Q_i^t \times \frac{S_t -
+D_{\text{strict}}}{D_{\text{equal}}}
+\]
+
+All allocations pay exactly `P_clear_t`.
+
+### 1.4 Max-Price Safety
+
+For every bidder `i` and every block `t`, if:
+
+\[
+P_{\text{clear},t} > P_{\text{max},i}
+\]
+
+then their slice for that block is not executed. Unused slices remain
+available for future blocks (as long as the auction is ongoing) or can be
+withdrawn according to the sale’s rules.
+
+---
+
+## 2. Simple Numerical Example
+
+Assume:
+
+- Single-block auction (for simplicity)
+- Supply in this block: `S = 1,000` tokens
+- 10 participants, each with `(P_max, Q)` as below
+
+### 2.1 Raw Bids
+
+| Participant | Max Price `P_max` | Quantity `Q` |
+|------------|-------------------|--------------|
+| A | 1.80 | 150 |
+| B | 2.20 | 200 |
+| C | 1.00 | 50 |
+| D | 2.50 | 400 |
+| E | 0.90 | 80 |
+| F | 1.60 | 120 |
+| G | 3.00 | 500 |
+| H | 2.00 | 200 |
+| I | 1.20 | 100 |
+| J | 0.75 | 40 |
+
+### 2.2 Order Book by Descending `P_max`
+
+Sort bidders by decreasing `P_max` and compute cumulative demand:
+
+| Rank | Participant | `P_max` | `Q` | Cumulative Demand |
+|------|-------------|---------|-----|-------------------|
+| 1 | G | 3.00 | 500 | 500 |
+| 2 | D | 2.50 | 400 | 900 |
+| 3 | B | 2.20 | 200 | 1,100 |
+| 4 | H | 2.00 | 200 | 1,300 |
+| 5 | A | 1.80 | 150 | 1,450 |
+| ... | others | ≤ 1.60 | ... | ... |
+
+We first cross the supply `S = 1,000` when including B.
+This implies **clearing price**:
+
+\[
+P_{\text{clear}} = 2.20
+\]
+
+Eligible bidders are those with `P_max ≥ 2.20`:
+
+- G: 500
+- D: 400
+- B: 200
+
+Total eligible demand:
+
+\[
+D_{\text{eligible}} = 500 + 400 + 200 = 1{,}100
+\]
+
+Pro-rata factor on the margin:
+
+\[
+\alpha = \frac{S}{D_{\text{eligible}}} = \frac{1{,}000}{1{,}100} \approx
+0.909
+\]
+
+### 2.3 Final Allocations
+
+| Participant | Demand | Allocation `= Q × α` | Price Paid |
+|------------|--------|----------------------|------------|
+| G | 500 | 454.5 | 2.20 |
+| D | 400 | 363.6 | 2.20 |
+| B | 200 | 181.8 | 2.20 |
+
+- All other participants receive zero in this block.
+- No one pays above their specified `P_max`.
+- Every filled unit transacts at the same uniform price `2.20`.
+
+A multi-block auction generalizes this logic by re-running the clearing
+process for each block with its share of tokens and the active bid slices.
+
+---
+
+## 3. Integration With Uniswap v4 and Liquidity Bootstrapping
+
+In Uniswap’s implementation:
+
+- CCA is exposed as a distinct protocol, but is designed to feed directly
+into a Uniswap v4 pool via hooks at the end of the sale.
+- The final auction state (total capital raised, terminal clearing price,
+remaining tokens) is used to parameterize an initial liquidity position.
+- The auction thus serves both as a price-discovery phase and as a way to
+pre-fund the pool, avoiding a separate “figure out liquidity later” step.
+
+The Aztec sale uses this infrastructure, with the CCA contract handling
+price discovery and a dedicated “Aztec: Continuous Clearing Auction”
+contract address on Ethereum tracking bids and fills.
+
+---
+
+## 4. Comparison With Other Token Sale Mechanisms
+
+### 4.1 Fixed-Price Sales
+
+- Project sets a single sale price ex-ante.
+- First-come-first-served fills the allocation until exhausted.
+- Latency and gas-bidding advantages dominate early access.
+- Mispricing is common: either the issuer leaves capital on the table or
+buyers immediately see slippage once secondary trading starts.
+
+**CCA contrast:**
+
+- Clearing price is endogenously determined from the order book per block.
+- Allocation is based on price tolerance, not transaction speed.
+- Final price is by construction consistent with the aggregate demand
+profile.
+
+### 4.2 Dutch Auctions (Descending Price)
+
+- Price starts high and ticks downward over time.
+- Rational bidders attempt to wait for lower prices but not so long that
+supply runs out.
+- Strategic timing and block-level sniping play a large role.
+- The observed clearing price may reflect game-theoretic timing rather than
+a best estimate of long-run value.
+
+**CCA contrast:**
+
+- Bidders state their `P_max` once; their bids are sliced across blocks.
+- No requirement to monitor and re-submit as price changes.
+- Clearing is continuous in blocks, not a single descending path; the
+mechanism is closer to repeated uniform-price auctions than a single Dutch
+clock.
+
+### 4.3 One-Shot Uniform-Price (Sealed-Bid) Auctions
+
+- All bids submitted once.
+- A single clearing price is computed, with pro-rata scaling at the margin.
+- Does not naturally bootstrap AMM liquidity; often followed by a separate
+pool-creation transaction.
+- No intra-auction adaptation: bidders cannot react to emerging information
+between blocks.
+
+**CCA contrast:**
+
+- Keeps the uniform-price property but repeats clearing over many intervals.
+- Facilitates automated connection to a Uniswap v4 pool at completion.
+- Allows longer sale windows with evolving participation while still
+computing a clear per-block price.
+
+### 4.4 AMM Instant Listings (e.g., Direct Uniswap v3/v4 Pool Launch)
+
+- Tokens are deposited into a pool and trading goes live immediately.
+- Early trades suffer from thin liquidity and high slippage.
+- MEV and mempool competition strongly influence the realized “launch
+price.”
+- No explicit notion of a clearing price or ordered demand curves.
+
+**CCA contrast:**
+
+- Trading is replaced by explicit bidding during the sale.
+- Price discovery happens via order-book style aggregation rather than a
+constant-product curve.
+- The terminal clearing state is then used to parameterize the pool,
+separating “sale” from “secondary trading” phases.
+
+---
+
+## 5. Relation to the Aztec Token Sale
+
+- The Aztec Network public auction terms describe the use of a “novel
+Uniswap Continuous Clearing Auction (CCA) format,” designed to reduce price
+manipulation and foster open, on-chain price discovery.
+- Bids for the Aztec sale are placed via the CCA contract, which
+periodically computes clearing prices and token allocations.
+- After the sale, remaining tokens plus a portion of funds raised are
+expected to seed a Uniswap v4 pool, as per the CCA + Liquidity Launcher
+design.
+
+---
+
+## Sources
+
+1. **Uniswap – Continuous Clearing Auctions: Bootstrapping Liquidity on
+Uniswap v4 (official blog)**
+https://blog.uniswap.org/continuous-clearing-auctions
+
+2. **Uniswap – Continuous Clearing Auctions Product Page**
+https://cca.uniswap.org/en/
+
+3. **Uniswap – Continuous Clearing Auction Smart-Contract Repository
+(GitHub)**
+https://github.com/Uniswap/continuous-clearing-auction
+
+4. **Aztec Network – Auction Terms and Conditions**
+https://aztec.network/auction-terms-conditions
+
+5. **Markets.com – Continuous Clearing Auction: New Asset Price Discovery
+With Uniswap and Aztec**
+https://www.markets.com/news/continuous-clearing-auction-uniswap-aztec-2195-en
+
+6. **The Defiant – Aztec Network Launches First Token Sale Using Uniswap’s
+Continuous Clearing Auction**
+https://thedefiant.io/news/defi/aztec-network-launches-first-token-sale-using-uniswaps-continuous-clearing-auction
+
+7. **Algebra (Medium) – Continuous Clearing Auctions: A New Standard for
+Fair Token Launches by Uniswap & Aztec**
+https://medium.com/@crypto_algebra/continuous-clearing-auctions-a-new-standard-for-fair-token-launches-by-uniswap-aztec-739ba1767fd7
+
+8. **Uniswap CCA Aztec Contract Instance (Etherscan)**
+https://etherscan.io/address/0x608c4e792C65f5527B3f70715deA44d3b302F4Ee
+
+9. **Panews – A Detailed Look at the Unique Features of Uniswap’s New CCA**
+https://www.panewslab.com/en/articles/50611532-a7d8-4f14-ad67-b460319bc720
+
+10. **Dennison Bertram – X Thread Explaining the Aztec CCA Sale**
+https://x.com/dennisonbertram/status/1995911827171991948?s=46
+
+---
+*Post created via email from emin@nuri.com*
+
+---
+## Continuous Clearing Auctions (CCA): Simple + Technical Walkthrough
+
+
+
+# Continuous Clearing Auctions (CCA): Simple + Technical Walkthrough
+
+Below is a simplified, thread-style explanation (similar structure to the
+screenshots), followed by a more technical appendix with math and a small
+simulation.
+
+---
+
+## 1. Token Sales Are Generally Messy
+
+Traditional token launches often look like this:
+
+- A fixed launch time.
+- Everyone tries to buy at once.
+- Bots and fast traders usually win.
+- The final “price” is unclear and volatile for the first hours or days.
+
+This leads to:
+
+- Over-paying by retail participants.
+- Concentrated allocations in a few hands.
+- Difficult price discovery and messy early trading.
+
+---
+
+## 2. The Old Token Launch Playbook
+
+Common mechanisms and their issues:
+
+1. **Fixed price sale**
+- Project sets a price.
+- If price is too low, it sells out instantly to bots and arbitrageurs.
+- If too high, sale drags and looks unsuccessful.
+
+2. **Dutch auction (price goes down over time)**
+- Professional traders wait to buy as low as possible.
+- Late sniping decides the outcome.
+- Retail participants face a timing game they are not equipped for.
+
+3. **One-shot uniform-price auction**
+- Everyone submits bids once.
+- The market clears at a single price.
+- But it happens only at one moment in time, and liquidity must be set up
+separately after.
+
+4. **Direct AMM launch (e.g., immediate Uniswap pool)**
+- Pool starts with thin liquidity.
+- Early trades move the price a lot.
+- MEV and mempool competition influence who gets good fills.
+
+---
+
+## 3. CCA Flips the Script (Simple View)
+
+A **Continuous Clearing Auction (CCA)** changes the process:
+
+- The sale is split into many **blocks** (time intervals).
+- You **submit one bid** with:
+- Max price you are willing to pay.
+- Amount of tokens you want.
+- The protocol automatically **spreads your bid across the whole sale**.
+- At each block, it computes a **fair market price** based on all active
+bids.
+- Everyone who gets filled in that block pays **the same price**.
+
+You:
+- Do not have to click fast.
+- Do not have to watch the price every second.
+- Just specify your maximum willingness to pay and size.
+
+---
+
+## 4. Here’s the Core Mechanism
+
+For each block:
+
+1. The protocol has a fixed amount of tokens for that block.
+2. It looks at all active bids and sorts them by **max price**.
+3. It finds the **lowest price** at which total demand ≥ block supply.
+4. That price is the **clearing price** for the block.
+5. All bids with `P_max` at or above that clearing price are eligible.
+6. If there is more demand than supply at that price, eligible bids are
+**scaled pro-rata**.
+7. Everyone who is filled pays that same clearing price.
+
+This repeats on every block until the sale ends.
+
+---
+
+## 5. “What If I Bid Too High?”
+
+The protocol enforces a **max price guarantee**:
+
+- You choose `P_max` (the most you are willing to pay per token).
+- If the block’s clearing price `P_clear` is **above** your `P_max`:
+- Your bid is **not** executed in that block.
+- Your bid slices remain available for later blocks or can be withdrawn as
+the sale rules allow.
+
+Result:
+- You never pay more than `P_max`.
+- If the market clears lower than your `P_max`, you simply get filled at
+the **lower** clearing price.
+
+---
+
+## 6. The “Early Bird” Effect
+
+In CCA:
+
+- Bidding early means your order is spread over **more blocks**.
+- That gives you more opportunities to be filled in blocks where the
+clearing price is relatively low.
+- If you wait until the last block:
+- Your order only participates in the final blocks.
+- You mostly see the **later, potentially more expensive** clearing prices.
+
+So, unlike “fastest finger first,” the mechanism encourages:
+
+- Early participation.
+- Longer exposure to the full price discovery process.
+
+---
+
+## 7. When the Auction Ends
+
+At the end of the sale:
+
+1. The protocol has:
+- A full record of all clearing prices and filled quantities per block.
+- Total raised assets.
+- Remaining unsold tokens (if any).
+
+2. According to the configured rules:
+- A portion of the raised assets and remaining tokens can be
+**automatically deposited** into a **Uniswap v4 pool**.
+- This seeds initial liquidity at a price consistent with the auction
+outcome.
+
+This avoids a separate “now we figure out liquidity” phase and gives:
+
+- A clear history of price discovery.
+- Immediate secondary trading with pre-funded liquidity.
+
+---
+
+## 8. Why This Matters (Conceptually)
+
+CCA aims to:
+
+- Separate **price discovery** from low-level mempool / latency games.
+- Provide a **uniform price per block**, not per individual transaction.
+- Make it harder for:
+- Bots to front-run retail participants.
+- Whales to dominate purely via speed.
+- Provide a direct bridge from **token sale** → **liquidity bootstrapping**
+on Uniswap v4.
+
+It is still an auction:
+- There is competition.
+- Prices can go high or low.
+- But the process is better structured and more transparent.
+
+---
+
+## 9. Technical Appendix: Simple Example With Math
+
+To make the mechanism concrete, consider a **single-block** example (one
+clearing event) first. A multi-block CCA just repeats this per block with
+bid slices.
+
+### 9.1 Assumptions
+
+- Tokens available in this block: `S = 1,000`.
+- 10 participants submit bids with:
+- Maximum price `P_max`.
+- Desired quantity `Q`.
+
+### 9.2 Bids
+
+| Participant | Max Price `P_max` | Quantity `Q` |
+|------------|-------------------|--------------|
+| A | 1.80 | 150 |
+| B | 2.20 | 200 |
+| C | 1.00 | 50 |
+| D | 2.50 | 400 |
+| E | 0.90 | 80 |
+| F | 1.60 | 120 |
+| G | 3.00 | 500 |
+| H | 2.00 | 200 |
+| I | 1.20 | 100 |
+| J | 0.75 | 40 |
+
+### 9.3 Build the Order Book
+
+Sort by `P_max` descending and accumulate demand:
+
+| Rank | Participant | `P_max` | `Q` | Cumulative Demand |
+|------|-------------|---------|-----|-------------------|
+| 1 | G | 3.00 | 500 | 500 |
+| 2 | D | 2.50 | 400 | 900 |
+| 3 | B | 2.20 | 200 | 1,100 |
+| 4 | H | 2.00 | 200 | 1,300 |
+| 5 | A | 1.80 | 150 | 1,450 |
+| ... | others | ≤ 1.60 | ... | ... |
+
+We first exceed the supply `S = 1,000` when including participant B.
+Therefore the **clearing price** is:
+
+\[
+P_{\text{clear}} = 2.20
+\]
+
+Eligible bidders are those with `P_max ≥ 2.20`:
+
+- G: wants 500
+- D: wants 400
+- B: wants 200
+
+Total eligible demand:
+
+\[
+D_{\text{eligible}} = 500 + 400 + 200 = 1{,}100
+\]
+
+We must allocate only 1,000 tokens.
+Scale all eligible bidders **pro-rata** by factor:
+
+\[
+\alpha = \frac{S}{D_{\text{eligible}}} = \frac{1{,}000}{1{,}100} \approx
+0.909
+\]
+
+### 9.4 Final Allocations
+
+| Participant | Demand `Q` | Allocation `Q × α` | Price Paid |
+|------------|------------|--------------------|------------|
+| G | 500 | 454.5 | 2.20 |
+| D | 400 | 363.6 | 2.20 |
+| B | 200 | 181.8 | 2.20 |
+
+All other participants receive zero in this block:
+
+- Their `P_max` is strictly below the clearing price.
+- They pay nothing and keep their capital.
+
+No one pays above their max, and everyone filled pays the **same** price.
+
+In a real CCA:
+
+- The auction is split into many blocks.
+- Each original bid is sliced across blocks.
+- The per-block logic above is applied repeatedly.
+- Over time, bidders experience a **volume-weighted average** of the
+clearing prices in the blocks where they are filled.
+
+---
+
+## 10. Short TL;DR
+
+- You say how much you want and the most you’ll pay per token.
+- The protocol spreads your bid across the sale.
+- Each block computes a single fair price from all bids.
+- If that price is at or below your max, you can be filled; if above, you
+are skipped.
+- Everyone filled in a block pays the same price.
+- At the end, funds and tokens can automatically seed a Uniswap v4 pool.
+
+---
+
+## Sources
+
+1. **Uniswap – Continuous Clearing Auctions: Bootstrapping Liquidity on
+Uniswap v4 (official blog)**
+https://blog.uniswap.org/continuous-clearing-auctions
+
+2. **Uniswap – Continuous Clearing Auctions Product Page**
+https://cca.uniswap.org/en/
+
+3. **Uniswap – Continuous Clearing Auction Smart-Contract Repository
+(GitHub)**
+https://github.com/Uniswap/continuous-clearing-auction
+
+4. **Aztec Network – Auction Terms and Conditions**
+https://aztec.network/auction-terms-conditions
+
+5. **Markets.com – Continuous Clearing Auction: New Asset Price Discovery
+With Uniswap and Aztec**
+https://www.markets.com/news/continuous-clearing-auction-uniswap-aztec-2195-en
+
+6. **The Defiant – Aztec Network Launches First Token Sale Using Uniswap’s
+Continuous Clearing Auction**
+https://thedefiant.io/news/defi/aztec-network-launches-first-token-sale-using-uniswaps-continuous-clearing-auction
+
+7. **Algebra (Medium) – Continuous Clearing Auctions: A New Standard for
+Fair Token Launches by Uniswap & Aztec**
+https://medium.com/@crypto_algebra/continuous-clearing-auctions-a-new-standard-for-fair-token-launches-by-uniswap-aztec-739ba1767fd7
+
+8. **Uniswap CCA Aztec Contract Instance (Etherscan)**
+https://etherscan.io/address/0x608c4e792C65f5527B3f70715deA44d3b302F4Ee
+
+9. **Panews – A Detailed Look at the Unique Features of Uniswap’s New CCA**
+https://www.panewslab.com/en/articles/50611532-a7d8-4f14-ad67-b460319bc720
+
+10. **Dennison Bertram – X Thread Explaining the Aztec CCA Sale**
+https://x.com/dennisonbertram/status/1995911827171991948?s=46
+
+---
+*Post created via email from emin@nuri.com*
+
+---
+## Balaclava and Rug
+
+
+
+I was asked to edit an image. I took the original photo of the girl in the
+balaclava and rug. First, I changed the orange knit balaclava to a deep
+gold color. Then, I added large, prominent golden Bitcoin logos to the
+yellow jacket and made the existing logos on the rug bigger and more
+noticeable. The final image shows all these changes.
+
+![IMG_6858](/media/balaclava-and-rug/IMG_6858.jpeg)
+
+---
+*Post created via email from emin@nuri.com*
 
 ---
 ## Building an AI-Optimized Blog with Hugo: A Complete DevOps Journey

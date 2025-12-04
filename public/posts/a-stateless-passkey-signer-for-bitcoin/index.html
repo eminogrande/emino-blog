@@ -1,0 +1,600 @@
+<!doctype html><html lang=en dir=auto><head><meta charset=utf-8><meta http-equiv=X-UA-Compatible content="IE=edge"><meta name=viewport content="width=device-width,initial-scale=1,shrink-to-fit=no"><meta name=robots content="index, follow"><title>A Stateless Passkey Signer for Bitcoin | Emino.App's, Art's & Articles by Emin Mahrt</title><meta name=keywords content="email-post"><meta name=description content="Stateless Bitcoin Wallet With Passkeys and a Minimal Signer
+I’m working on a Bitcoin wallet that is fully stateless.
+By stateless I mean: the Bitcoin private key is never stored anywhere. Not
+on the phone, not on a server, not in a database. It is derived
+deterministically from a passkey PRF (WebAuthn / FIDO2) whenever it’s
+needed, used inside a very small signing environment, and then thrown away
+again.
+In this post I want to describe the architecture I’m building, how I’m
+thinking about “no blind signing”, and where I still see open security
+questions. I’d love feedback, especially from people who build wallets,
+HSMs, or work with WebAuthn and Bitcoin PSBTs."><meta name=author content="Emin Henri Mahrt"><link rel=canonical href=https://emino.app/posts/a-stateless-passkey-signer-for-bitcoin/><link crossorigin=anonymous href=/assets/css/stylesheet.8fe10233a706bc87f2e08b3cf97b8bd4c0a80f10675a143675d59212121037c0.css integrity="sha256-j+ECM6cGvIfy4Is8+XuL1MCoDxBnWhQ2ddWSEhIQN8A=" rel="preload stylesheet" as=style><link rel=icon href=https://emino.app/favicon.ico><link rel=icon type=image/png sizes=16x16 href=https://emino.app/favicon-16x16.png><link rel=icon type=image/png sizes=32x32 href=https://emino.app/favicon-32x32.png><link rel=apple-touch-icon href=https://emino.app/apple-touch-icon.png><link rel=mask-icon href=https://emino.app/safari-pinned-tab.svg><meta name=theme-color content="#2e2e33"><meta name=msapplication-TileColor content="#2e2e33"><link rel=alternate hreflang=en href=https://emino.app/posts/a-stateless-passkey-signer-for-bitcoin/><noscript><style>#theme-toggle,.top-link{display:none}</style><style>@media(prefers-color-scheme:dark){:root{--theme:rgb(29, 30, 32);--entry:rgb(46, 46, 51);--primary:rgb(218, 218, 219);--secondary:rgb(155, 156, 157);--tertiary:rgb(65, 66, 68);--content:rgb(196, 196, 197);--code-block-bg:rgb(46, 46, 51);--code-bg:rgb(55, 56, 62);--border:rgb(51, 51, 51)}.list{background:var(--theme)}.list:not(.dark)::-webkit-scrollbar-track{background:0 0}.list:not(.dark)::-webkit-scrollbar-thumb{border-color:var(--theme)}}</style></noscript><meta property="og:url" content="https://emino.app/posts/a-stateless-passkey-signer-for-bitcoin/"><meta property="og:site_name" content="Emino.App's, Art's & Articles by Emin Mahrt"><meta property="og:title" content="A Stateless Passkey Signer for Bitcoin"><meta property="og:description" content="Stateless Bitcoin Wallet With Passkeys and a Minimal Signer
+I’m working on a Bitcoin wallet that is fully stateless.
+By stateless I mean: the Bitcoin private key is never stored anywhere. Not on the phone, not on a server, not in a database. It is derived deterministically from a passkey PRF (WebAuthn / FIDO2) whenever it’s needed, used inside a very small signing environment, and then thrown away again.
+In this post I want to describe the architecture I’m building, how I’m thinking about “no blind signing”, and where I still see open security questions. I’d love feedback, especially from people who build wallets, HSMs, or work with WebAuthn and Bitcoin PSBTs."><meta property="og:locale" content="en-us"><meta property="og:type" content="article"><meta property="article:section" content="posts"><meta property="article:published_time" content="2025-12-04T07:35:01+00:00"><meta property="article:modified_time" content="2025-12-04T07:35:01+00:00"><meta property="article:tag" content="Email-Post"><meta name=twitter:card content="summary"><meta name=twitter:title content="A Stateless Passkey Signer for Bitcoin"><meta name=twitter:description content="Stateless Bitcoin Wallet With Passkeys and a Minimal Signer
+I’m working on a Bitcoin wallet that is fully stateless.
+By stateless I mean: the Bitcoin private key is never stored anywhere. Not
+on the phone, not on a server, not in a database. It is derived
+deterministically from a passkey PRF (WebAuthn / FIDO2) whenever it’s
+needed, used inside a very small signing environment, and then thrown away
+again.
+In this post I want to describe the architecture I’m building, how I’m
+thinking about “no blind signing”, and where I still see open security
+questions. I’d love feedback, especially from people who build wallets,
+HSMs, or work with WebAuthn and Bitcoin PSBTs."><script type=application/ld+json>{"@context":"https://schema.org","@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Posts","item":"https://emino.app/posts/"},{"@type":"ListItem","position":2,"name":"A Stateless Passkey Signer for Bitcoin","item":"https://emino.app/posts/a-stateless-passkey-signer-for-bitcoin/"}]}</script><script type=application/ld+json>{"@context":"https://schema.org","@type":"BlogPosting","headline":"A Stateless Passkey Signer for Bitcoin","name":"A Stateless Passkey Signer for Bitcoin","description":"Stateless Bitcoin Wallet With Passkeys and a Minimal Signer\nI’m working on a Bitcoin wallet that is fully stateless.\nBy stateless I mean: the Bitcoin private key is never stored anywhere. Not on the phone, not on a server, not in a database. It is derived deterministically from a passkey PRF (WebAuthn / FIDO2) whenever it’s needed, used inside a very small signing environment, and then thrown away again.\nIn this post I want to describe the architecture I’m building, how I’m thinking about “no blind signing”, and where I still see open security questions. I’d love feedback, especially from people who build wallets, HSMs, or work with WebAuthn and Bitcoin PSBTs.\n","keywords":["email-post"],"articleBody":"Stateless Bitcoin Wallet With Passkeys and a Minimal Signer\nI’m working on a Bitcoin wallet that is fully stateless.\nBy stateless I mean: the Bitcoin private key is never stored anywhere. Not on the phone, not on a server, not in a database. It is derived deterministically from a passkey PRF (WebAuthn / FIDO2) whenever it’s needed, used inside a very small signing environment, and then thrown away again.\nIn this post I want to describe the architecture I’m building, how I’m thinking about “no blind signing”, and where I still see open security questions. I’d love feedback, especially from people who build wallets, HSMs, or work with WebAuthn and Bitcoin PSBTs.\nUsing Passkeys as the Root of a Wallet\nThe basic idea:\nEach user has a passkey (WebAuthn / FIDO2 credential) with the PRF extension enabled. I call the output of that extension the passkey PRF. That PRF output is a high-entropy secret that never leaves the authenticator in raw form; it’s exposed only through the PRF interface. I deterministically derive a Bitcoin private key from that PRF output. The PRF is effectively my seed.\nSo every time the user approves a WebAuthn request (Face ID, fingerprint, PIN, whatever the device uses), the signer can re-derive the same Bitcoin key without ever having to store it.\nThis effectively turns a regular passkey into the seed phrase of a single-sig Bitcoin wallet, but:\nthere is no mnemonic, nothing written down, and no file to back up.\nThe security of the wallet becomes the security of the passkey (plus how I handle the signing environment, of course).\nInspirations: FileKey, Bitwarden, and 1Password\nThis idea didn’t come out of nowhere. It’s inspired by a few projects that already use passkeys as high-entropy secrets:\nFileKey.app https://filekey.app/[image: Attachment.png] – Stateless file encryption and decryption. It uses the passkey PRF as input, derives keys on demand, and never stores them permanently. Bitwarden https://bitwarden.com/[image: Attachment.png] and 1Password https://1password.com/[image: Attachment.png] – Both support unlocking your password manager with passkeys. The passkey PRF (or equivalent credential secret) is used to unlock and protect your vault, including in web environments.\nWhat I’m trying to do is bring this same pattern to Bitcoin: use passkeys as the root secret for a stateless signing setup.\nTech Stack: Expo / React Native, Everywhere\nI’m building the app with Expo React Native. The reason is simple: I want the stateless signer to run in as many environments as possible:\nAndroid iOS Web / browser\nThe “wallet” part of the app is just a front end:\nIt prepares transactions. It displays balances and history. It never holds a private key.\nAll the actual signing happens in a separate, tightly controlled environment.\nTwo Environments: Preparer vs. Signer\nA key design decision is to separate:\nWhere transactions are prepared, and 2.\nWhere transactions are signed.\nTransaction preparation This is the regular wallet interface:\nIt lets you pick UTXOs, set outputs, choose fees, and review everything. It creates a PSBT (Partially Signed Bitcoin Transaction – BIP-174, BIP-370) instead of a raw transaction. That PSBT is then passed to the signer.\nThis can live on the phone, in the browser, or any environment. It’s stateless and doesn’t need the private key.\nMinimalistic signing website Signing happens on a separate website (or web app) whose only job is to:\nTake a PSBT, Derive the Bitcoin key from the passkey PRF, Sign the PSBT, and Return the signed transaction / PSBT (for example as text and as a QR code).\nThe important properties of this signer:\nIt is extremely minimalistic. It can be self-hosted. It’s designed to be easy to audit (tiny codebase, very few dependencies).\nFrom there:\nThe signed transaction can be sent back to the wallet, or Any wallet can scan the QR code and broadcast it, or The user can copy the hex and broadcast it via their node / another service.\nThe idea is: the signer is a small, highly controlled enclave. The app on the phone is “just UI”.\nHow I Try to Avoid Blind Signing\nOne of my goals is that this system does not turn into a blind-signing nightmare.\nWhat I can guarantee in the signer\nI can design the signer so that it:\nOnly signs structured Bitcoin PSBTs (BIP-174 / BIP-370), never arbitrary bytes. Parses and validates the PSBT and refuses to sign anything it doesn’t fully understand. Always shows the decoded transaction to the user, including:\nInputs - Outputs - Fees - Timelocks - Scripts / conditions (e.g., CSV) …and it requires explicit user confirmation on that screen.\nIf I do that, there is no “blind-signing API”. There’s simply no way to silently sign random data; everything must be a valid PSBT that the signer can decode and display.\nWhat I cannot cryptographically guarantee\nEven with all that, there are still things this architecture cannot magically solve:\nI still rely on the signer UI being honest.\nIf the signer website is compromised, serving malicious JavaScript, or hit by a supply-chain attack, it could lie about what it shows. I still rely on the user actually reading what they are about to sign.\nIf they just click “approve” without looking, no architecture can fix that. I still rely on the PSBT decoder and display logic being correct.\nBugs in the parser could hide weird scripts or fields and create misleading displays. So I can eliminate a blind-signing API, but I can’t cryptographically force the UI to be honest or the user to pay attention. That’s just reality.\nOptional Co-Signing Server + CSV Exit\nOn top of the single-sig stateless setup, I’ve also experimented with adding a co-signing server and a CSV escape hatch.\nRough idea:\nUse a 2-of-2 script:\nOne key is derived from the user’s passkey PRF (stateless, as described above). - The second key is on a co-signing server. Add a CSV (CheckSequenceVerify) condition:\nAfter, say, 10,000 blocks (~3 months), the coins can be spent with only the user’s key. What this buys you:\nIf a single key leaks, it doesn’t automatically mean the wallet can be drained instantly. If the co-signing server disappears, gets shut down, or you just don’t trust it anymore, you still have an exit:\nWait out the CSV period, then spend with your single key. The user doesn’t know or control the second key, but they also don’t need it forever. The CSV exit guarantees that in the worst case, after a delay, the funds are fully under their control again.\nThis is not perfect security, but it’s a nice trade-off:\nExtra friction for an attacker, No catastrophic loss if the co-signer goes away.\nPutting It All Together\nSo the full picture looks like this:\nKey derivation\nPasskey PRF → deterministic Bitcoin private key → never stored. Wallet front end (Expo / React Native)\nRuns on Android, iOS, and web. - Prepares PSBTs, shows balances, etc. - Completely stateless: no private keys, only public data + PSBTs. Minimal signer\nSmall web app (self-hostable). - Uses WebAuthn passkey to derive the key and sign PSBTs. - Only signs structured PSBTs, always shows humans a decoded view, no arbitrary-data signing. Optional 2-of-2 + CSV\nCo-signing server adds another hurdle for attackers. - CSV exit (~10,000 blocks) ensures you can always eventually move funds with just your passkey-derived key. Open Questions and Call for Feedback\nI’m pretty happy with the high-level concept, but I’m sure there are blind spots and attacks I haven’t thought about yet.\nThings I’m especially interested in feedback on:\nSubtle issues around the passkey PRF and derivation (WebAuthn details, browser quirks, platform differences). Attack vectors in moving PSBTs between the “preparer” and the “signer” (QR codes, deep links, copy-paste, etc.). Better ways to design the co-signer + CSV setup (e.g. script templates, edge cases). Threat models I’m underestimating (phishing, UI spoofing, compromised devices, etc.).\nIf you see mistakes, risks, or better patterns, please challenge this architecture.\nThe goal is not just to build something clever, but something that actually holds up in the real world.\nShort answer:\nYes, what you’re describing is absolutely feasible in principle, and it can be built to avoid classic “blind signing”… but there are a bunch of subtle pitfalls in:\nhow you use the passkey PRF, how you move the PSBT between “preparer” and “signer”, and how you design co-signing + CSV exit scripts.\nI’ll walk through the architecture and the main traps, then finish with a big list of security questions you can use as a design checklist.\nLet me restate your architecture in more formal terms Just to align:\nKey material\nEach user has a passkey (WebAuthn / FIDO2 credential) with the PRF extension enabled. - When the signer runs, it asks the authenticator for a 32‑byte PRF output bound to that credential. - You treat this PRF output as a seed (or IKM) to deterministically derive a Bitcoin private key / root. Statelessness\nThe wallet UI (Expo app / browser / whatever) never stores private keys. - The signer (a minimal website, self‑hostable, maybe also packaged as a PWA) derives the private key on the fly from the passkey PRF, signs, then discards it from memory.\nFlow\nEnvironment A (wallet front‑end) builds a PSBT (or unsigned tx) using UTXOs, outputs, fees, etc. - That PSBT is encoded as QR (or other channel) and passed to Environment B (the signer website). - Signer website: - Decodes PSBT. - Displays transaction details in a minimal, auditable UI. - Uses passkey PRF → Bitcoin key → signs. - Returns the signature / signed PSBT as QR or message. - Broadcasting happens elsewhere (wallet, other node, or third party). Optional co‑signer\nOutputs are encumbered with a script like: IF 2-of-2 (user key + co-signer key) ELSE CSV(10,000 blocks) + single user key ENDIF, using OP_CHECKSEQUENCEVERIFY. - So normally you need user key + co-sign server. If co-sign server disappears, user alone can spend after ~10k blocks (~70 days). That’s how I read you. If that matches, everything below applies directly.\nIs this concept feasible? Yes.\nAll of these pieces exist today:\nPRF-capable passkeys that return a 32‑byte secret on demand. Real systems using passkey PRF for encryption and stateless key derivation (Bitwarden for vault encryption, FileKey for file encryption, and others). Stateless signing frontends that just take PSBTs, sign in-memory, and output the result.\nYou are basically doing: “FileKey, but instead of encrypting files, it signs Bitcoin PSBTs.” That’s very reasonable.\nMain feasibility caveats:\nPlatform support: PRF is still rolling out. It works in many Chromium-based browsers, not always on Safari / all authenticators yet, and mobile support can be spotty. Expo RN: you’ll need bridges to native WebAuthn/FIDO2 APIs (with PRF) on Android/iOS. That’s more engineering, not a fundamental blocker.\nFrom a cryptographic / Bitcoin perspective: yes, you can do exactly what you’re proposing.\nDoes this eliminate blind signing? What you can guarantee\nYou can design the signer so that:\nIt only signs structured Bitcoin PSBTs (BIP‑174/370), not arbitrary bytes. It parses the PSBT and refuses to sign anything it doesn’t fully understand. It always shows the decoded transaction (inputs, outputs, fee, timelocks, scripts) and requires explicit user confirmation.\nIf you do that, you have no blind-signing API. There is simply no way to “silently” sign arbitrary stuff—everything must be a valid PSBT the signer can decode \u0026 display.\nWhat you cannot cryptographically guarantee\nYou still rely on:\nThe signer UI being honest (no UI corruption / XSS / supply-chain attack), The user actually reading what they sign, The PSBT decoder being correct (no parser bugs that hide weird scripts / fields).\nSo you can say:\n“This wallet does not support blind signing as a feature: it only signs PSBTs whose semantics are fully parsed and shown to the user.”\n…but you cannot guarantee that “no user ever signs something they don’t truly understand”. That’s ultimately a UX and education problem, not a cryptographic one.\nHow to safely use the passkey PRF for Bitcoin keys Very important detail: the WebAuthn PRF output should be treated as Input Keying Material (IKM), then fed into a proper KDF (HKDF) to derive purpose-bound keys. This is explicitly recommended by people implementing PRF for encryption.\nSuggested derivation scheme\nPRF output (IKM)\nDuring authentication with your RP ID (e.g. wallet.yourdomain.com), request PRF with a salt like \"bitcoin-wallet-root\". You get:\nprf_ikm (32 bytes, per-credential, secret). 2.\nRun HKDF on it\nmaster_key_material = HKDF( ikm = prf_ikm, salt = “btc-mainnet” or “btc-testnet” etc, info = “stateless-btc-wallet v1”, L = 64 bytes )\nSplit into:\nroot_priv_key = master_key_material[0:32] root_chain_code = master_key_material[32:64]\nNow you have something that looks like a BIP32 root (privkey + chain code). 3.\nApply standard HD derivation (BIP32/BIP84/etc)\nUse your standard derivation path, e.g. m/84'/0'/0'/0/i for native segwit, or a custom descriptor. This gives you:\nDomain separation between:\nBitcoin vs other uses, - Mainnet vs testnet, - Potential future versions. A surface that is very similar to normal HD wallets—so you can reuse a lot of wallet logic and tooling.\nPrivacy \u0026 multi-address requirement\nPlease, don’t make it a single static private key:\nFor privacy and basic good practice, you really need many addresses. The stateless signer can recompute the same xprv/xpub from PRF each time, then derive keys on demand. The watching-only side (your backend or the client) can hold just the xpub/descriptor, which is harmless if leaked.\nQuestions you should answer here (see also the big list later):\nDo you want multiple accounts from the same PRF (e.g. “savings”, “spending”)? If yes, how do you encode that into HKDF inputs? How do you encode network (mainnet/testnet) so users never cross-fund?\nThe split: “preparer” vs “signer” and the no‑blind‑signing goal PSBT path and attack surface\nThreat: The PSBT is built by the “preparer” wallet UI, which could be compromised.\nMitigations on the signer:\nStrict PSBT policy\nOnly support a small set of script templates: - Simple P2WPKH / P2TR, - Your exact 2-of-2-with-CSV template, - Maybe a known change-output descriptor. - Reject everything else: - Unknown script types, - Exotic sighash flags, - Non-standard annexes, proprietary fields, etc. 2. Full-field display\nFor each output: - Destination address (and decode script type), - Amount in BTC + fiat equivalent (if you can fetch rates), - Whether it is recognized as “change back to your wallet” (via descriptor matching). - Global: - Total input sum, total output sum, fee amount, fee rate (sat/vB). - Locktime, any sequences that imply RBF or CSV constraints. - For your CSV structure: - Clearly state “These coins are locked under a 2-of-2 script with fallback to single-key spend after ~X days”. 3. Sane defaults and warnings\nWarnings for: - Fees above some threshold, - Sending all funds out of the wallet, - Scripts that change the security model (e.g. sending to non‑CSV addresses when wallet usually uses CSV). If you keep the signer’s codebase very small and auditable, and you never add an API to “sign arbitrary bytes”, you’ve done almost everything you reasonably can against blind signing.\nChannel between preparer and signer (QR, etc.)\nQR / UR2 works fine but remember PSBTs can get large → use animated UR or similar scheme. The signer should verify:\nNetwork matches (mainnet vs testnet), - Inputs belong to the expected descriptor (if possible), - There are no weird unknown fields. If someone compromises the preparer, they can still build a malicious PSBT—but they can’t make you blind-sign it; the signer will show what you’re actually doing.\nCo-signing server + CSV exit You’re basically building a timelocked 2-of-2 scheme:\nOP_IF 2 2 CHECKMULTISIG OP_ELSE \u003c10000\u003e CHECKSEQUENCEVERIFY DROP CHECKSIG OP_ENDIF\nRoughly that.\nWhat this buys you\nIf user key leaks but co-signer is safe:\nAttacker can’t spend immediately—needs co-signer cooperation. - Or can only spend via the CSV path after 10000-block confirmations of the funding UTXOs. If co-signer key leaks but user key is safe:\nAttacker still can’t do anything; they need the user’s PRF-derived key. If co-signer disappears:\nUser waits ~10k blocks and then spends alone via CSV. So yes: one key exposure does not immediately drain the wallet, assuming the scripts are correct and you never create UTXOs with weaker scripts.\nThings to be careful about\nScript uniformity\nYour wallet must always use the same protective script for all UTXOs in that wallet. - No “oops this one address was plain P2WPKH”; that’s how funds get drained if a key leaks. Timelock length\n10,000 blocks ≈ 10,000 / 144 ≈ 69.4 days. - That’s a long time to be stuck if the co-signer disappears and you want funds now. - Consider whether 7–30 days would be a better UX/security tradeoff. Co-signer policy\nCo-signer can enforce spending policies: - Check the PSBT for suspicious destinations / amounts, - Enforce per-day limits, whitelists, etc. - But if your signer is already safe and non-blind, the co-signer mainly mitigates key compromise, not UI compromise. Implementation complexity\nYou’re now relying on: - Correct script assembly for P2WSH / P2TR scripts, - Correct handling of nSequence and CSV semantics, - Wallet logic that never accidentally uses the wrong branch. You absolutely can make this work, but test the hell out of CSV and script-path choice.\nPlatform / implementation thoughts (Expo, web, self-hosting)\nSign­er as a static site\nMake it a single-page app with: - No backend, - Built artifact pinned by a content hash. - Users can: - Host it themselves (e.g. GitHub Pages / static hosting), - Or even download a single index.html and run fully offline. - Reproducible builds\nPublish the source + instructions so people can build it and verify hashes. - This is key for “minimal, auditable signer” credibility. RP ID strategy for passkeys\nUse one canonical RP ID (e.g. signer.yourdomain.com) for: - Web signer, - Native apps (via associated domains). - This way, the same passkey works across web + mobile and the PRF output is consistent. PRF availability\nBe prepared to: - Detect when PRF isn’t supported and fail closed (no fallback to weak crypto), - Or have a separate non‑passkey-based wallet mode. Security questions to challenge your design You asked for a lot of questions, so here’s a structured list you can work through. You don’t need to answer them to me; they’re for your design docs and threat model.\nA. Passkey / PRF usage\nDomain separation\nExactly what goes into: - PRF salt(s)? - HKDF salt and info? - How do you separate: - mainnet vs testnet vs regtest, - app v1 vs v2, - Bitcoin vs any future chain you might support? 2. Key rotation\nIf the passkey is compromised / revoked: - How does the user migrate to a new PRF-derived root? - Do you have a built-in “rotate wallet” flow that sweeps funds from old script to new script? 3. Passkey lifecycle\nWhat happens if: - User loses all devices with that passkey? - Cloud-synced passkeys leak (e.g., Apple/Google compromise scenario)? - Is “co-signer + CSV” your only mitigation? PRF availability \u0026 fallback\nIf PRF is not supported in a browser / platform, do you: - Fail hard (“this wallet requires PRF”)? - Or silently degrade? (I’d strongly suggest fail hard.) B. Transaction preparation (wallet UI)\nDescriptor correctness\nWhere do descriptors live? - On server? In client local storage? - How do you ensure they always match what the signer actually derives from the PRF? UTXO discovery\nHow do you learn which UTXOs belong to the wallet? - Own node? - Public APIs? - Threat: malicious backend “hides” UTXOs so user thinks they have less than they do. Change detection\nHow do you mark an output as “change” so the signer can show “this stays in your wallet”? - Do you enforce that change always returns to the same script type (e.g. CSV-protected script)? C. Signer website / app\nPSBT strictness\nWhich PSBT versions and fields are allowed? - Do you reject: - Unknown key types? - Partial signatures? - Non-standard script types? 2. Display completeness\nAre you showing: - All outputs, including those with tiny amounts (dust)? - All scripts (including weird taproot paths)? - Locktime and nSequence for each input? 3. No “sign arbitrary bytes” feature\nCan any API path produce a signature without going through the PSBT decode + display flow? Supply chain integrity\nHow do you prevent: - Malicious updates getting pushed to users? - XSS / dependency hijack from injecting code that hides outputs? D. Co-signing server\nKey storage\nIs the co-signer key in HSM? - Can you rotate it without breaking the CSV unlock path? Policy engine\nDoes the server: - Parse and enforce policies on PSBTs (whitelist, limits), or - Just blindly sign whatever is sent? 3. Availability / DoS\nWhat happens if the co-signer is unavailable for hours/days? - Is there a clear UX showing “you now have to wait N blocks to use CSV path”? E. Recovery, UX, and “oh shit” scenarios\nUser education\nHow do you explain: - Statlessness, - CSV delay exits, - Need to rotate passkeys if device is compromised? 2. Incident response\nIf you detect your signer site or co-signer infra was compromised: - How do you notify users? - Is there a “mass move everything to a new descriptor” plan? 3. Monitoring\nAre you watching the chain for: - Spending through CSV path (which might signal server downtime), - Suspicious spends that don’t match the expected origin (e.g., user denies making them)? Bottom line\nYes, the concept is feasible. Yes, you can design the signer so there’s effectively no blind-signing feature—only parsed, displayed PSBTs are ever signed. No, you can’t mathematically guarantee users will always fully understand what they sign—but your separation of “preparer” and “minimal signer” is a strong, clean architecture to minimize that risk. The co-signing + CSV setup is a solid way to ensure a single key leak doesn’t immediately nuke the wallet, provided:\nEvery UTXO uses the correct script template, - You’ve tuned CSV delays to a reasonable time window. If you like, next step we can zoom into one slice (e.g., exact HKDF / derivation scheme, or the CSV script \u0026 descriptors) and I can help you nail down something you’d be comfortable publishing as a spec.\nPost created via email from emin@nuri.com\n","wordCount":"3690","inLanguage":"en","datePublished":"2025-12-04T07:35:01Z","dateModified":"2025-12-04T07:35:01Z","author":{"@type":"Person","name":"Emin Henri Mahrt"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://emino.app/posts/a-stateless-passkey-signer-for-bitcoin/"},"publisher":{"@type":"Organization","name":"Emino.App's, Art's \u0026 Articles by Emin Mahrt","logo":{"@type":"ImageObject","url":"https://emino.app/favicon.ico"}}}</script></head><body id=top><script>localStorage.getItem("pref-theme")==="dark"?document.body.classList.add("dark"):localStorage.getItem("pref-theme")==="light"?document.body.classList.remove("dark"):window.matchMedia("(prefers-color-scheme: dark)").matches&&document.body.classList.add("dark")</script><header class=header><nav class=nav><div class=logo><a href=https://emino.app/ accesskey=h title="Emino.App's, Art's & Articles by Emin Mahrt (Alt + H)">Emino.App's, Art's & Articles by Emin Mahrt</a><div class=logo-switches><button id=theme-toggle accesskey=t title="(Alt + T)" aria-label="Toggle theme">
+<svg id="moon" width="24" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+<svg id="sun" width="24" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></button></div></div><ul id=menu><li><a href=https://emino.app/posts/ title=Posts><span>Posts</span></a></li><li><a href=https://emino.app/tags/ title=Tags><span>Tags</span></a></li><li><a href=https://emino.app/archives/ title=Archives><span>Archives</span></a></li></ul></nav></header><main class=main><article class=post-single><header class=post-header><div class=breadcrumbs><a href=https://emino.app/>Home</a>&nbsp;»&nbsp;<a href=https://emino.app/posts/>Posts</a></div><h1 class="post-title entry-hint-parent">A Stateless Passkey Signer for Bitcoin</h1><div class=post-meta><span title='2025-12-04 07:35:01 +0000 UTC'>December 4, 2025</span>&nbsp;·&nbsp;18 min&nbsp;·&nbsp;Emin Henri Mahrt</div></header><div class=toc><details><summary accesskey=c title="(Alt + C)"><span class=details>Table of Contents</span></summary><div class=inner><ul><li><a href=#i-call-the-output-of-that-extension-the-passkey-prf aria-label="I call the output of that extension the passkey PRF.">I call the output of that extension the passkey PRF.</a></li><li><a href=#there-is-no-mnemonic aria-label="there is no mnemonic,">there is no mnemonic,</a></li><li><a href=#nothing-written-down aria-label="nothing written down,">nothing written down,</a></li><li><a href=#android aria-label=Android>Android</a></li><li><a href=#ios aria-label=iOS>iOS</a></li><li><a href=#it-prepares-transactions aria-label="It prepares transactions.">It prepares transactions.</a></li><li><a href=#it-displays-balances-and-history aria-label="It displays balances and history.">It displays balances and history.</a></li><li><a href=#it-lets-you-pick-utxos-set-outputs-choose-fees-and-review-everything aria-label="It lets you pick UTXOs, set outputs, choose fees, and review everything.">It lets you pick UTXOs, set outputs, choose fees, and review everything.</a></li><li><a href=#take-a-psbt aria-label="Take a PSBT,">Take a PSBT,</a></li><li><a href=#derive-the-bitcoin-key-from-the-passkey-prf aria-label="Derive the Bitcoin key from the passkey PRF,">Derive the Bitcoin key from the passkey PRF,</a></li><li><a href=#sign-the-psbt-and aria-label="Sign the PSBT, and">Sign the PSBT, and</a></li><li><a href=#it-is-extremely-minimalistic aria-label="It is extremely minimalistic.">It is extremely minimalistic.</a></li><li><a href=#it-can-be-self-hosted aria-label="It can be self-hosted.">It can be self-hosted.</a></li><li><a href=#the-signed-transaction-can-be-sent-back-to-the-wallet-or aria-label="The signed transaction can be sent back to the wallet, or">The signed transaction can be sent back to the wallet, or</a></li><li><a href=#any-wallet-can-scan-the-qr-code-and-broadcast-it-or aria-label="Any wallet can scan the QR code and broadcast it, or">Any wallet can scan the QR code and broadcast it, or</a></li><li><a href=#extra-friction-for-an-attacker aria-label="Extra friction for an attacker,">Extra friction for an attacker,</a></li><li><a href=#how-you-use-the-passkey-prf aria-label="how you use the passkey PRF,">how you use the passkey PRF,</a></li><li><a href=#how-you-move-the-psbt-between-preparer-and-signer-and aria-label="how you move the PSBT between “preparer” and “signer”, and">how you move the PSBT between “preparer” and “signer”, and</a></li><li><a href=#prf-capable-passkeys-that-return-a-32byte-secret-on-demand aria-label="PRF-capable passkeys that return a 32‑byte secret on demand.">PRF-capable passkeys that return a 32‑byte secret on demand.</a></li><li><a href=#the-user-actually-reading-what-they-sign aria-label="The user actually reading what they sign,">The user actually reading what they sign,</a></li><li><a href=#for-privacy-and-basic-good-practice-you-really-need-many-addresses aria-label="For privacy and basic good practice, you really need many addresses.">For privacy and basic good practice, you really need many addresses.</a></li><li><a href=#yes-the-concept-is-feasible aria-label="Yes, the concept is feasible.">Yes, the concept is feasible.</a></li></ul></div></details></div><div class=post-content><p>Stateless Bitcoin Wallet With Passkeys and a Minimal Signer</p><p>I’m working on a Bitcoin wallet that is fully stateless.</p><p>By stateless I mean: the Bitcoin private key is never stored anywhere. Not
+on the phone, not on a server, not in a database. It is derived
+deterministically from a passkey PRF (WebAuthn / FIDO2) whenever it’s
+needed, used inside a very small signing environment, and then thrown away
+again.</p><p>In this post I want to describe the architecture I’m building, how I’m
+thinking about “no blind signing”, and where I still see open security
+questions. I’d love feedback, especially from people who build wallets,
+HSMs, or work with WebAuthn and Bitcoin PSBTs.</p><hr><p>Using Passkeys as the Root of a Wallet</p><p>The basic idea:</p><ul><li></li></ul><h2 id=extension-enabled>Each user has a passkey (WebAuthn / FIDO2 credential) with the PRF
+extension enabled.</h2><h2 id=i-call-the-output-of-that-extension-the-passkey-prf>I call the output of that extension the passkey PRF.<a hidden class=anchor aria-hidden=true href=#i-call-the-output-of-that-extension-the-passkey-prf>#</a></h2><h2 id=authenticator-in-raw-form-its-exposed-only-through-the-prf-interface>That PRF output is a high-entropy secret that never leaves the
+authenticator in raw form; it’s exposed only through the PRF interface.</h2><p>I deterministically derive a Bitcoin private key from that PRF output.
+The PRF is effectively my seed.</p><p>So every time the user approves a WebAuthn request (Face ID, fingerprint,
+PIN, whatever the device uses), the signer can re-derive the same Bitcoin
+key without ever having to store it.</p><p>This effectively turns a regular passkey into the seed phrase of a
+single-sig Bitcoin wallet, but:</p><ul><li></li></ul><h2 id=there-is-no-mnemonic>there is no mnemonic,<a hidden class=anchor aria-hidden=true href=#there-is-no-mnemonic>#</a></h2><h2 id=nothing-written-down>nothing written down,<a hidden class=anchor aria-hidden=true href=#nothing-written-down>#</a></h2><p>and no file to back up.</p><p>The security of the wallet becomes the security of the passkey (plus how I
+handle the signing environment, of course).</p><hr><p>Inspirations: FileKey, Bitwarden, and 1Password</p><p>This idea didn’t come out of nowhere. It’s inspired by a few projects that
+already use passkeys as high-entropy secrets:</p><ul><li></li></ul><h2 id=keys-on-demand-and-never-stores-them-permanently>FileKey.app <a href=https://filekey.app/>https://filekey.app/</a>[image: Attachment.png] – Stateless
+file encryption and decryption. It uses the passkey PRF as input, derives
+keys on demand, and never stores them permanently.</h2><p>Bitwarden <a href=https://bitwarden.com/>https://bitwarden.com/</a>[image: Attachment.png] and 1Password
+<a href=https://1password.com/>https://1password.com/</a>[image: Attachment.png] – Both support unlocking
+your password manager with passkeys. The passkey PRF (or equivalent
+credential secret) is used to unlock and protect your vault, including in
+web environments.</p><p>What I’m trying to do is bring this same pattern to Bitcoin: use passkeys
+as the root secret for a stateless signing setup.</p><hr><p>Tech Stack: Expo / React Native, Everywhere</p><p>I’m building the app with Expo React Native. The reason is simple: I want
+the stateless signer to run in as many environments as possible:</p><ul><li></li></ul><h2 id=android>Android<a hidden class=anchor aria-hidden=true href=#android>#</a></h2><h2 id=ios>iOS<a hidden class=anchor aria-hidden=true href=#ios>#</a></h2><p>Web / browser</p><p>The “wallet” part of the app is just a front end:</p><ul><li></li></ul><h2 id=it-prepares-transactions>It prepares transactions.<a hidden class=anchor aria-hidden=true href=#it-prepares-transactions>#</a></h2><h2 id=it-displays-balances-and-history>It displays balances and history.<a hidden class=anchor aria-hidden=true href=#it-displays-balances-and-history>#</a></h2><p>It never holds a private key.</p><p>All the actual signing happens in a separate, tightly controlled
+environment.</p><hr><p>Two Environments: Preparer vs. Signer</p><p>A key design decision is to separate:</p><ol><li></li></ol><p>Where transactions are prepared, and
+2.</p><p>Where transactions are signed.</p><ol><li>Transaction preparation</li></ol><p>This is the regular wallet interface:</p><ul><li></li></ul><h2 id=it-lets-you-pick-utxos-set-outputs-choose-fees-and-review-everything>It lets you pick UTXOs, set outputs, choose fees, and review everything.<a hidden class=anchor aria-hidden=true href=#it-lets-you-pick-utxos-set-outputs-choose-fees-and-review-everything>#</a></h2><h2 id=bip-370-instead-of-a-raw-transaction>It creates a PSBT (Partially Signed Bitcoin Transaction – BIP-174,
+BIP-370) instead of a raw transaction.</h2><p>That PSBT is then passed to the signer.</p><p>This can live on the phone, in the browser, or any environment. It’s
+stateless and doesn’t need the private key.</p><ol start=2><li>Minimalistic signing website</li></ol><p>Signing happens on a separate website (or web app) whose only job is to:</p><ul><li></li></ul><h2 id=take-a-psbt>Take a PSBT,<a hidden class=anchor aria-hidden=true href=#take-a-psbt>#</a></h2><h2 id=derive-the-bitcoin-key-from-the-passkey-prf>Derive the Bitcoin key from the passkey PRF,<a hidden class=anchor aria-hidden=true href=#derive-the-bitcoin-key-from-the-passkey-prf>#</a></h2><h2 id=sign-the-psbt-and>Sign the PSBT, and<a hidden class=anchor aria-hidden=true href=#sign-the-psbt-and>#</a></h2><p>Return the signed transaction / PSBT (for example as text and as a QR
+code).</p><p>The important properties of this signer:</p><ul><li></li></ul><h2 id=it-is-extremely-minimalistic>It is extremely minimalistic.<a hidden class=anchor aria-hidden=true href=#it-is-extremely-minimalistic>#</a></h2><h2 id=it-can-be-self-hosted>It can be self-hosted.<a hidden class=anchor aria-hidden=true href=#it-can-be-self-hosted>#</a></h2><p>It’s designed to be easy to audit (tiny codebase, very few dependencies).</p><p>From there:</p><ul><li></li></ul><h2 id=the-signed-transaction-can-be-sent-back-to-the-wallet-or>The signed transaction can be sent back to the wallet, or<a hidden class=anchor aria-hidden=true href=#the-signed-transaction-can-be-sent-back-to-the-wallet-or>#</a></h2><h2 id=any-wallet-can-scan-the-qr-code-and-broadcast-it-or>Any wallet can scan the QR code and broadcast it, or<a hidden class=anchor aria-hidden=true href=#any-wallet-can-scan-the-qr-code-and-broadcast-it-or>#</a></h2><p>The user can copy the hex and broadcast it via their node / another
+service.</p><p>The idea is: the signer is a small, highly controlled enclave. The app on
+the phone is “just UI”.</p><hr><p>How I Try to Avoid Blind Signing</p><p>One of my goals is that this system does not turn into a blind-signing
+nightmare.</p><p>What I can guarantee in the signer</p><p>I can design the signer so that it:</p><ul><li></li></ul><h2 id=bytes>Only signs structured Bitcoin PSBTs (BIP-174 / BIP-370), never arbitrary
+bytes.</h2><h2 id=fully-understand>Parses and validates the PSBT and refuses to sign anything it doesn’t
+fully understand.</h2><p>Always shows the decoded transaction to the user, including:</p><ul><li></li></ul><pre><code>  Inputs
+  -
+
+  Outputs
+  -
+
+  Fees
+  -
+
+  Timelocks
+  -
+
+  Scripts / conditions (e.g., CSV)
+</code></pre><p>…and it requires explicit user confirmation on that screen.</p><p>If I do that, there is no “blind-signing API”. There’s simply no way to
+silently sign random data; everything must be a valid PSBT that the signer
+can decode and display.</p><p>What I cannot cryptographically guarantee</p><p>Even with all that, there are still things this architecture cannot
+magically solve:</p><ul><li></li></ul><p>I still rely on the signer UI being honest.</p><ul><li></li></ul><pre><code>  If the signer website is compromised, serving malicious JavaScript,
+  or hit by a supply-chain attack, it could lie about what it shows.
+</code></pre><ul><li></li></ul><p>I still rely on the user actually reading what they are about to sign.</p><ul><li></li></ul><pre><code>  If they just click “approve” without looking, no architecture can fix
+  that.
+</code></pre><ul><li></li></ul><p>I still rely on the PSBT decoder and display logic being correct.</p><ul><li></li></ul><pre><code>  Bugs in the parser could hide weird scripts or fields and create
+  misleading displays.
+</code></pre><p>So I can eliminate a blind-signing API, but I can’t cryptographically force
+the UI to be honest or the user to pay attention. That’s just reality.</p><hr><p>Optional Co-Signing Server + CSV Exit</p><p>On top of the single-sig stateless setup, I’ve also experimented with
+adding a co-signing server and a CSV escape hatch.</p><p>Rough idea:</p><ul><li></li></ul><p>Use a 2-of-2 script:</p><ul><li></li></ul><pre><code>  One key is derived from the user’s passkey PRF (stateless, as
+  described above).
+  -
+
+  The second key is on a co-signing server.
+</code></pre><ul><li></li></ul><p>Add a CSV (CheckSequenceVerify) condition:</p><ul><li></li></ul><pre><code>  After, say, 10,000 blocks (~3 months), the coins can be spent with
+  only the user’s key.
+</code></pre><p>What this buys you:</p><ul><li></li></ul><h2 id=drained-instantly>If a single key leaks, it doesn’t automatically mean the wallet can be
+drained instantly.</h2><p>If the co-signing server disappears, gets shut down, or you just don’t
+trust it anymore, you still have an exit:</p><ul><li></li></ul><pre><code>  Wait out the CSV period, then spend with your single key.
+</code></pre><p>The user doesn’t know or control the second key, but they also don’t need
+it forever. The CSV exit guarantees that in the worst case, after a delay,
+the funds are fully under their control again.</p><p>This is not perfect security, but it’s a nice trade-off:</p><ul><li></li></ul><h2 id=extra-friction-for-an-attacker>Extra friction for an attacker,<a hidden class=anchor aria-hidden=true href=#extra-friction-for-an-attacker>#</a></h2><p>No catastrophic loss if the co-signer goes away.</p><hr><p>Putting It All Together</p><p>So the full picture looks like this:</p><ul><li></li></ul><p>Key derivation</p><ul><li></li></ul><pre><code>  Passkey PRF → deterministic Bitcoin private key → never stored.
+</code></pre><ul><li></li></ul><p>Wallet front end (Expo / React Native)</p><ul><li></li></ul><pre><code>  Runs on Android, iOS, and web.
+  -
+
+  Prepares PSBTs, shows balances, etc.
+  -
+
+  Completely stateless: no private keys, only public data + PSBTs.
+</code></pre><ul><li></li></ul><p>Minimal signer</p><ul><li></li></ul><pre><code>  Small web app (self-hostable).
+  -
+
+  Uses WebAuthn passkey to derive the key and sign PSBTs.
+  -
+
+  Only signs structured PSBTs, always shows humans a decoded view, no
+  arbitrary-data signing.
+</code></pre><ul><li></li></ul><p>Optional 2-of-2 + CSV</p><ul><li></li></ul><pre><code>  Co-signing server adds another hurdle for attackers.
+  -
+
+  CSV exit (~10,000 blocks) ensures you can always eventually move
+  funds with just your passkey-derived key.
+</code></pre><hr><p>Open Questions and Call for Feedback</p><p>I’m pretty happy with the high-level concept, but I’m sure there are blind
+spots and attacks I haven’t thought about yet.</p><p>Things I’m especially interested in feedback on:</p><ul><li></li></ul><h2 id=browser-quirks-platform-differences>Subtle issues around the passkey PRF and derivation (WebAuthn details,
+browser quirks, platform differences).</h2><h2 id=qr-codes-deep-links-copy-paste-etc>Attack vectors in moving PSBTs between the “preparer” and the “signer”
+(QR codes, deep links, copy-paste, etc.).</h2><h2 id=edge-cases>Better ways to design the co-signer + CSV setup (e.g. script templates,
+edge cases).</h2><p>Threat models I’m underestimating (phishing, UI spoofing, compromised
+devices, etc.).</p><p>If you see mistakes, risks, or better patterns, please challenge this
+architecture.</p><p>The goal is not just to build something clever, but something that actually
+holds up in the real world.</p><p>Short answer:</p><p>Yes, what you’re describing is absolutely feasible in principle, and it can
+be built to avoid classic “blind signing”… but there are a bunch of subtle
+pitfalls in:</p><ul><li></li></ul><h2 id=how-you-use-the-passkey-prf>how you use the passkey PRF,<a hidden class=anchor aria-hidden=true href=#how-you-use-the-passkey-prf>#</a></h2><h2 id=how-you-move-the-psbt-between-preparer-and-signer-and>how you move the PSBT between “preparer” and “signer”, and<a hidden class=anchor aria-hidden=true href=#how-you-move-the-psbt-between-preparer-and-signer-and>#</a></h2><p>how you design co-signing + CSV exit scripts.</p><p>I’ll walk through the architecture and the main traps, then finish with a
+big list of security questions you can use as a design checklist.</p><hr><ol><li>Let me restate your architecture in more formal terms</li></ol><p>Just to align:</p><ol><li></li></ol><p>Key material</p><ul><li></li></ul><pre><code>  Each user has a passkey (WebAuthn / FIDO2 credential) with the PRF
+  extension enabled.
+  -
+
+  When the signer runs, it asks the authenticator for a 32‑byte PRF
+  output bound to that credential.
+  -
+
+  You treat this PRF output as a seed (or IKM) to deterministically
+  derive a Bitcoin private key / root.
+</code></pre><ol start=2><li></li></ol><p>Statelessness</p><ul><li></li></ul><pre><code>  The wallet UI (Expo app / browser / whatever) never stores private
+  keys.
+  -
+
+  The signer (a minimal website, self‑hostable, maybe also packaged as
+  a PWA) derives the private key on the fly from the passkey PRF,
+</code></pre><p>signs, then
+discards it from memory.</p><ol start=3><li></li></ol><p>Flow</p><ul><li></li></ul><pre><code>  Environment A (wallet front‑end) builds a PSBT (or unsigned tx) using
+  UTXOs, outputs, fees, etc.
+  -
+
+  That PSBT is encoded as QR (or other channel) and passed to
+  Environment B (the signer website).
+  -
+
+  Signer website:
+
+  -
+
+     Decodes PSBT.
+     -
+
+     Displays transaction details in a minimal, auditable UI.
+     -
+
+     Uses passkey PRF → Bitcoin key → signs.
+     -
+
+     Returns the signature / signed PSBT as QR or message.
+
+  -
+
+  Broadcasting happens elsewhere (wallet, other node, or third party).
+</code></pre><ol start=4><li></li></ol><p>Optional co‑signer</p><ul><li></li></ul><pre><code>  Outputs are encumbered with a script like:
+
+  IF 2-of-2 (user key + co-signer key) ELSE CSV(10,000 blocks) + single
+  user key ENDIF, using OP_CHECKSEQUENCEVERIFY.
+  -
+
+  So normally you need user key + co-sign server. If co-sign server
+  disappears, user alone can spend after ~10k blocks (~70 days).
+</code></pre><p>That’s how I read you. If that matches, everything below applies directly.</p><hr><ol start=2><li>Is this concept feasible?</li></ol><p>Yes.</p><p>All of these pieces exist today:</p><ul><li></li></ul><h2 id=prf-capable-passkeys-that-return-a-32byte-secret-on-demand>PRF-capable passkeys that return a 32‑byte secret on demand.<a hidden class=anchor aria-hidden=true href=#prf-capable-passkeys-that-return-a-32byte-secret-on-demand>#</a></h2><h2 id=and-others>Real systems using passkey PRF for encryption and stateless key
+derivation (Bitwarden for vault encryption, FileKey for file encryption,
+and others).</h2><p>Stateless signing frontends that just take PSBTs, sign in-memory, and
+output the result.</p><p>You are basically doing: “FileKey, but instead of encrypting files, it
+signs Bitcoin PSBTs.” That’s very reasonable.</p><p>Main feasibility caveats:</p><ul><li></li></ul><h2 id=mobile-support-can-be-spotty>Platform support: PRF is still rolling out. It works in many
+Chromium-based browsers, not always on Safari / all authenticators yet, and
+mobile support can be spotty.</h2><p>Expo RN: you’ll need bridges to native WebAuthn/FIDO2 APIs (with PRF) on
+Android/iOS. That’s more engineering, not a fundamental blocker.</p><p>From a cryptographic / Bitcoin perspective: yes, you can do exactly what
+you’re proposing.</p><hr><ol start=3><li>Does this eliminate blind signing?</li></ol><p>What you can guarantee</p><p>You can design the signer so that:</p><ul><li></li></ul><h2 id=bytes-1>It only signs structured Bitcoin PSBTs (BIP‑174/370), not arbitrary
+bytes.</h2><h2 id=understand>It parses the PSBT and refuses to sign anything it doesn’t fully
+understand.</h2><p>It always shows the decoded transaction (inputs, outputs, fee,
+timelocks, scripts) and requires explicit user confirmation.</p><p>If you do that, you have no blind-signing API. There is simply no way to
+“silently” sign arbitrary stuff—everything must be a valid PSBT the signer
+can decode & display.</p><p>What you cannot cryptographically guarantee</p><p>You still rely on:</p><ul><li></li></ul><h2 id=attack>The signer UI being honest (no UI corruption / XSS / supply-chain
+attack),</h2><h2 id=the-user-actually-reading-what-they-sign>The user actually reading what they sign,<a hidden class=anchor aria-hidden=true href=#the-user-actually-reading-what-they-sign>#</a></h2><p>The PSBT decoder being correct (no parser bugs that hide weird scripts /
+fields).</p><p>So you can say:</p><p>“This wallet does not support blind signing as a feature: it only signs
+PSBTs whose semantics are fully parsed and shown to the user.”</p><p>…but you cannot guarantee that “no user ever signs something they don’t
+truly understand”. That’s ultimately a UX and education problem, not a
+cryptographic one.</p><hr><ol start=4><li>How to safely use the passkey PRF for Bitcoin keys</li></ol><p>Very important detail: the WebAuthn PRF output should be treated as Input
+Keying Material (IKM), then fed into a proper KDF (HKDF) to derive
+purpose-bound keys. This is explicitly recommended by people implementing
+PRF for encryption.</p><p>Suggested derivation scheme</p><ol><li></li></ol><p>PRF output (IKM)</p><ul><li></li></ul><pre><code>  During authentication with your RP ID (e.g. wallet.yourdomain.com),
+  request PRF with a salt like &quot;bitcoin-wallet-root&quot;.
+</code></pre><p>You get:</p><p>prf_ikm (32 bytes, per-credential, secret).
+2.</p><p>Run HKDF on it</p><p>master_key_material = HKDF(
+ikm = prf_ikm,
+salt = &ldquo;btc-mainnet&rdquo; or &ldquo;btc-testnet&rdquo; etc,
+info = &ldquo;stateless-btc-wallet v1&rdquo;,
+L = 64 bytes
+)</p><ol start=2><li></li></ol><p>Split into:</p><p>root_priv_key = master_key_material[0:32]
+root_chain_code = master_key_material[32:64]</p><ol start=2><li></li></ol><p>Now you have something that looks like a BIP32 root (privkey + chain
+code).
+3.</p><p>Apply standard HD derivation (BIP32/BIP84/etc)</p><ul><li></li></ul><pre><code>  Use your standard derivation path, e.g. m/84'/0'/0'/0/i for native
+  segwit, or a custom descriptor.
+</code></pre><p>This gives you:</p><ul><li></li></ul><p>Domain separation between:</p><ul><li></li></ul><pre><code>  Bitcoin vs other uses,
+  -
+
+  Mainnet vs testnet,
+  -
+
+  Potential future versions.
+</code></pre><ul><li></li></ul><p>A surface that is very similar to normal HD wallets—so you can reuse a
+lot of wallet logic and tooling.</p><p>Privacy & multi-address requirement</p><p>Please, don’t make it a single static private key:</p><ul><li></li></ul><h2 id=for-privacy-and-basic-good-practice-you-really-need-many-addresses>For privacy and basic good practice, you really need many addresses.<a hidden class=anchor aria-hidden=true href=#for-privacy-and-basic-good-practice-you-really-need-many-addresses>#</a></h2><h2 id=time-then-derive-keys-on-demand>The stateless signer can recompute the same xprv/xpub from PRF each
+time, then derive keys on demand.</h2><p>The watching-only side (your backend or the client) can hold just the
+xpub/descriptor, which is harmless if leaked.</p><p>Questions you should answer here (see also the big list later):</p><ul><li></li></ul><h2 id=spending-if-yes-how-do-you-encode-that-into-hkdf-inputs>Do you want multiple accounts from the same PRF (e.g. “savings”,
+“spending”)? If yes, how do you encode that into HKDF inputs?</h2><p>How do you encode network (mainnet/testnet) so users never cross-fund?</p><hr><ol start=5><li>The split: “preparer” vs “signer” and the no‑blind‑signing goal</li></ol><p>PSBT path and attack surface</p><p>Threat: The PSBT is built by the “preparer” wallet UI, which could be
+compromised.</p><p>Mitigations on the signer:</p><ol><li></li></ol><p>Strict PSBT policy</p><ul><li></li></ul><pre><code>  Only support a small set of script templates:
+
+  -
+
+     Simple P2WPKH / P2TR,
+     -
+
+     Your exact 2-of-2-with-CSV template,
+     -
+
+     Maybe a known change-output descriptor.
+
+  -
+
+  Reject everything else:
+
+  -
+
+     Unknown script types,
+     -
+
+     Exotic sighash flags,
+     -
+
+     Non-standard annexes, proprietary fields, etc.
+
+  2.
+</code></pre><p>Full-field display</p><ul><li></li></ul><pre><code>  For each output:
+
+  -
+
+     Destination address (and decode script type),
+     -
+
+     Amount in BTC + fiat equivalent (if you can fetch rates),
+     -
+
+     Whether it is recognized as “change back to your wallet” (via
+     descriptor matching).
+
+  -
+
+  Global:
+
+  -
+
+     Total input sum, total output sum, fee amount, fee rate (sat/vB).
+     -
+
+     Locktime, any sequences that imply RBF or CSV constraints.
+
+  -
+
+  For your CSV structure:
+
+  -
+
+     Clearly state “These coins are locked under a 2-of-2 script with
+     fallback to single-key spend after ~X days”.
+
+  3.
+</code></pre><p>Sane defaults and warnings</p><ul><li></li></ul><pre><code>  Warnings for:
+
+  -
+
+     Fees above some threshold,
+     -
+
+     Sending all funds out of the wallet,
+     -
+
+     Scripts that change the security model (e.g. sending to non‑CSV
+     addresses when wallet usually uses CSV).
+</code></pre><p>If you keep the signer’s codebase very small and auditable, and you never
+add an API to “sign arbitrary bytes”, you’ve done almost everything you
+reasonably can against blind signing.</p><p>Channel between preparer and signer (QR, etc.)</p><ul><li></li></ul><h2 id=or-similar-scheme>QR / UR2 works fine but remember PSBTs can get large → use animated UR
+or similar scheme.</h2><p>The signer should verify:</p><ul><li></li></ul><pre><code>  Network matches (mainnet vs testnet),
+  -
+
+  Inputs belong to the expected descriptor (if possible),
+  -
+
+  There are no weird unknown fields.
+</code></pre><p>If someone compromises the preparer, they can still build a malicious
+PSBT—but they can’t make you blind-sign it; the signer will show what
+you’re actually doing.</p><hr><ol start=6><li>Co-signing server + CSV exit</li></ol><p>You’re basically building a timelocked 2-of-2 scheme:</p><p>OP_IF
+2 &lt;user_pub> &lt;server_pub> 2 CHECKMULTISIG
+OP_ELSE
+&lt;10000> CHECKSEQUENCEVERIFY DROP
+&lt;user_pub> CHECKSIG
+OP_ENDIF</p><p>Roughly that.</p><p>What this buys you</p><ul><li></li></ul><p>If user key leaks but co-signer is safe:</p><ul><li></li></ul><pre><code>  Attacker can’t spend immediately—needs co-signer cooperation.
+  -
+
+  Or can only spend via the CSV path after 10000-block confirmations of
+  the funding UTXOs.
+</code></pre><ul><li></li></ul><p>If co-signer key leaks but user key is safe:</p><ul><li></li></ul><pre><code>  Attacker still can’t do anything; they need the user’s PRF-derived
+  key.
+</code></pre><ul><li></li></ul><p>If co-signer disappears:</p><ul><li></li></ul><pre><code>  User waits ~10k blocks and then spends alone via CSV.
+</code></pre><p>So yes: one key exposure does not immediately drain the wallet, assuming
+the scripts are correct and you never create UTXOs with weaker scripts.</p><p>Things to be careful about</p><ol><li></li></ol><p>Script uniformity</p><ul><li></li></ul><pre><code>  Your wallet must always use the same protective script for all UTXOs
+  in that wallet.
+  -
+
+  No “oops this one address was plain P2WPKH”; that’s how funds get
+  drained if a key leaks.
+</code></pre><ol start=2><li></li></ol><p>Timelock length</p><ul><li></li></ul><pre><code>  10,000 blocks ≈ 10,000 / 144 ≈ 69.4 days.
+  -
+
+  That’s a long time to be stuck if the co-signer disappears and you
+  want funds now.
+  -
+
+  Consider whether 7–30 days would be a better UX/security tradeoff.
+</code></pre><ol start=3><li></li></ol><p>Co-signer policy</p><ul><li></li></ul><pre><code>  Co-signer can enforce spending policies:
+
+  -
+
+     Check the PSBT for suspicious destinations / amounts,
+     -
+
+     Enforce per-day limits, whitelists, etc.
+
+  -
+
+  But if your signer is already safe and non-blind, the co-signer
+  mainly mitigates key compromise, not UI compromise.
+</code></pre><ol start=4><li></li></ol><p>Implementation complexity</p><ul><li></li></ul><pre><code>  You’re now relying on:
+
+  -
+
+     Correct script assembly for P2WSH / P2TR scripts,
+     -
+
+     Correct handling of nSequence and CSV semantics,
+     -
+
+     Wallet logic that never accidentally uses the wrong branch.
+</code></pre><p>You absolutely can make this work, but test the hell out of CSV and
+script-path choice.</p><hr><ol start=7><li><p>Platform / implementation thoughts (Expo, web, self-hosting)</p><ul><li></li></ul></li></ol><p>Sign­er as a static site</p><ul><li></li></ul><pre><code>  Make it a single-page app with:
+
+  -
+
+     No backend,
+     -
+
+     Built artifact pinned by a content hash.
+
+  -
+
+  Users can:
+
+  -
+
+     Host it themselves (e.g. GitHub Pages / static hosting),
+     -
+
+     Or even download a single index.html and run fully offline.
+
+  -
+</code></pre><p>Reproducible builds</p><ul><li></li></ul><pre><code>  Publish the source + instructions so people can build it and verify
+  hashes.
+  -
+
+  This is key for “minimal, auditable signer” credibility.
+</code></pre><ul><li></li></ul><p>RP ID strategy for passkeys</p><ul><li></li></ul><pre><code>  Use one canonical RP ID (e.g. signer.yourdomain.com) for:
+
+  -
+
+     Web signer,
+     -
+
+     Native apps (via associated domains).
+
+  -
+
+  This way, the same passkey works across web + mobile and the PRF
+  output is consistent.
+</code></pre><ul><li></li></ul><p>PRF availability</p><ul><li></li></ul><pre><code>  Be prepared to:
+
+  -
+
+     Detect when PRF isn’t supported and fail closed (no fallback to
+     weak crypto),
+     -
+
+     Or have a separate non‑passkey-based wallet mode.
+</code></pre><hr><ol start=8><li>Security questions to challenge your design</li></ol><p>You asked for a lot of questions, so here’s a structured list you can work
+through. You don’t need to answer them to me; they’re for your design docs
+and threat model.</p><p>A. Passkey / PRF usage</p><ol><li></li></ol><p>Domain separation</p><ul><li></li></ul><pre><code>  Exactly what goes into:
+
+  -
+
+     PRF salt(s)?
+     -
+
+     HKDF salt and info?
+
+  -
+
+  How do you separate:
+
+  -
+
+     mainnet vs testnet vs regtest,
+     -
+
+     app v1 vs v2,
+     -
+
+     Bitcoin vs any future chain you might support?
+
+  2.
+</code></pre><p>Key rotation</p><ul><li></li></ul><pre><code>  If the passkey is compromised / revoked:
+
+  -
+
+     How does the user migrate to a new PRF-derived root?
+     -
+
+     Do you have a built-in “rotate wallet” flow that sweeps funds from
+     old script to new script?
+
+  3.
+</code></pre><p>Passkey lifecycle</p><ul><li></li></ul><pre><code>  What happens if:
+
+  -
+
+     User loses all devices with that passkey?
+     -
+
+     Cloud-synced passkeys leak (e.g., Apple/Google compromise
+     scenario)?
+
+  -
+
+  Is “co-signer + CSV” your only mitigation?
+</code></pre><ol start=4><li></li></ol><p>PRF availability & fallback</p><ul><li></li></ul><pre><code>  If PRF is not supported in a browser / platform, do you:
+
+  -
+
+     Fail hard (“this wallet requires PRF”)?
+     -
+
+     Or silently degrade? (I’d strongly suggest fail hard.)
+</code></pre><hr><p>B. Transaction preparation (wallet UI)</p><ol><li></li></ol><p>Descriptor correctness</p><ul><li></li></ul><pre><code>  Where do descriptors live?
+
+  -
+
+     On server? In client local storage?
+
+  -
+
+  How do you ensure they always match what the signer actually derives
+  from the PRF?
+</code></pre><ol start=2><li></li></ol><p>UTXO discovery</p><ul><li></li></ul><pre><code>  How do you learn which UTXOs belong to the wallet?
+
+  -
+
+     Own node?
+     -
+
+     Public APIs?
+
+  -
+
+  Threat: malicious backend “hides” UTXOs so user thinks they have less
+  than they do.
+</code></pre><ol start=3><li></li></ol><p>Change detection</p><ul><li></li></ul><pre><code>  How do you mark an output as “change” so the signer can show “this
+  stays in your wallet”?
+  -
+
+  Do you enforce that change always returns to the same script type
+  (e.g. CSV-protected script)?
+</code></pre><hr><p>C. Signer website / app</p><ol><li></li></ol><p>PSBT strictness</p><ul><li></li></ul><pre><code>  Which PSBT versions and fields are allowed?
+  -
+
+  Do you reject:
+
+  -
+
+     Unknown key types?
+     -
+
+     Partial signatures?
+     -
+
+     Non-standard script types?
+
+  2.
+</code></pre><p>Display completeness</p><ul><li></li></ul><pre><code>  Are you showing:
+
+  -
+
+     All outputs, including those with tiny amounts (dust)?
+     -
+
+     All scripts (including weird taproot paths)?
+     -
+
+     Locktime and nSequence for each input?
+
+  3.
+</code></pre><p>No “sign arbitrary bytes” feature</p><ul><li></li></ul><pre><code>  Can any API path produce a signature without going through the PSBT
+  decode + display flow?
+</code></pre><ol start=4><li></li></ol><p>Supply chain integrity</p><ul><li></li></ul><pre><code>  How do you prevent:
+
+  -
+
+     Malicious updates getting pushed to users?
+     -
+
+     XSS / dependency hijack from injecting code that hides outputs?
+</code></pre><hr><p>D. Co-signing server</p><ol><li></li></ol><p>Key storage</p><ul><li></li></ul><pre><code>  Is the co-signer key in HSM?
+  -
+
+  Can you rotate it without breaking the CSV unlock path?
+</code></pre><ol start=2><li></li></ol><p>Policy engine</p><ul><li></li></ul><pre><code>  Does the server:
+
+  -
+
+     Parse and enforce policies on PSBTs (whitelist, limits), or
+     -
+
+     Just blindly sign whatever is sent?
+
+  3.
+</code></pre><p>Availability / DoS</p><ul><li></li></ul><pre><code>  What happens if the co-signer is unavailable for hours/days?
+  -
+
+  Is there a clear UX showing “you now have to wait N blocks to use CSV
+  path”?
+</code></pre><hr><p>E. Recovery, UX, and “oh shit” scenarios</p><ol><li></li></ol><p>User education</p><ul><li></li></ul><pre><code>  How do you explain:
+
+  -
+
+     Statlessness,
+     -
+
+     CSV delay exits,
+     -
+
+     Need to rotate passkeys if device is compromised?
+
+  2.
+</code></pre><p>Incident response</p><ul><li></li></ul><pre><code>  If you detect your signer site or co-signer infra was compromised:
+
+  -
+
+     How do you notify users?
+     -
+
+     Is there a “mass move everything to a new descriptor” plan?
+
+  3.
+</code></pre><p>Monitoring</p><ul><li></li></ul><pre><code>  Are you watching the chain for:
+
+  -
+
+     Spending through CSV path (which might signal server downtime),
+     -
+
+     Suspicious spends that don’t match the expected origin (e.g., user
+     denies making them)?
+</code></pre><hr><ol start=9><li><p>Bottom line</p><ul><li></li></ul></li></ol><h2 id=yes-the-concept-is-feasible>Yes, the concept is feasible.<a hidden class=anchor aria-hidden=true href=#yes-the-concept-is-feasible>#</a></h2><h2 id=featureonly-parsed-displayed-psbts-are-ever-signed>Yes, you can design the signer so there’s effectively no blind-signing
+feature—only parsed, displayed PSBTs are ever signed.</h2><h2 id=signer-is-a-strong-clean-architecture-to-minimize-that-risk>No, you can’t mathematically guarantee users will always fully
+understand what they sign—but your separation of “preparer” and “minimal
+signer” is a strong, clean architecture to minimize that risk.</h2><p>The co-signing + CSV setup is a solid way to ensure a single key leak
+doesn’t immediately nuke the wallet, provided:</p><ul><li></li></ul><pre><code>  Every UTXO uses the correct script template,
+  -
+
+  You’ve tuned CSV delays to a reasonable time window.
+</code></pre><p>If you like, next step we can zoom into one slice (e.g., exact HKDF /
+derivation scheme, or the CSV script & descriptors) and I can help you nail
+down something you’d be comfortable publishing as a spec.</p><p><img alt=IMG_6888 loading=lazy src=/media/a-stateless-passkey-signer-for-bitcoin/IMG_6888.png></p><p><img alt=IMG_6901 loading=lazy src=/media/a-stateless-passkey-signer-for-bitcoin/IMG_6901.png></p><p><img alt=IMG_6889 loading=lazy src=/media/a-stateless-passkey-signer-for-bitcoin/IMG_6889.png></p><hr><p><em>Post created via email from <a href=mailto:emin@nuri.com>emin@nuri.com</a></em></p></div><footer class=post-footer><ul class=post-tags><li><a href=https://emino.app/tags/email-post/>Email-Post</a></li></ul><nav class=paginav><a class=next href=https://emino.app/posts/claudes-document-of-the-soul/><span class=title>Next »</span><br><span>Claudes Document of the Soul</span></a></nav><ul class=share-buttons><li><a target=_blank rel="noopener noreferrer" aria-label="share A Stateless Passkey Signer for Bitcoin on x" href="https://x.com/intent/tweet/?text=A%20Stateless%20Passkey%20Signer%20for%20Bitcoin&amp;url=https%3a%2f%2femino.app%2fposts%2fa-stateless-passkey-signer-for-bitcoin%2f&amp;hashtags=email-post"><svg viewBox="0 0 512 512" height="30" width="30" fill="currentColor"><path d="M512 62.554V449.446C512 483.97 483.97 512 449.446 512H62.554C28.03 512 0 483.97.0 449.446V62.554C0 28.03 28.029.0 62.554.0H449.446C483.971.0 512 28.03 512 62.554zM269.951 190.75 182.567 75.216H56L207.216 272.95 63.9 436.783h61.366L235.9 310.383l96.667 126.4H456L298.367 228.367l134-153.151H371.033zM127.633 110h36.468l219.38 290.065H349.5z"/></svg></a></li><li><a target=_blank rel="noopener noreferrer" aria-label="share A Stateless Passkey Signer for Bitcoin on linkedin" href="https://www.linkedin.com/shareArticle?mini=true&amp;url=https%3a%2f%2femino.app%2fposts%2fa-stateless-passkey-signer-for-bitcoin%2f&amp;title=A%20Stateless%20Passkey%20Signer%20for%20Bitcoin&amp;summary=A%20Stateless%20Passkey%20Signer%20for%20Bitcoin&amp;source=https%3a%2f%2femino.app%2fposts%2fa-stateless-passkey-signer-for-bitcoin%2f"><svg viewBox="0 0 512 512" height="30" width="30" fill="currentColor"><path d="M449.446.0C483.971.0 512 28.03 512 62.554v386.892C512 483.97 483.97 512 449.446 512H62.554c-34.524.0-62.554-28.03-62.554-62.554V62.554c0-34.524 28.029-62.554 62.554-62.554h386.892zM160.461 423.278V197.561h-75.04v225.717h75.04zm270.539.0V293.839c0-69.333-37.018-101.586-86.381-101.586-39.804.0-57.634 21.891-67.617 37.266v-31.958h-75.021c.995 21.181.0 225.717.0 225.717h75.02V297.222c0-6.748.486-13.492 2.474-18.315 5.414-13.475 17.767-27.434 38.494-27.434 27.135.0 38.007 20.707 38.007 51.037v120.768H431zM123.448 88.722C97.774 88.722 81 105.601 81 127.724c0 21.658 16.264 39.002 41.455 39.002h.484c26.165.0 42.452-17.344 42.452-39.002-.485-22.092-16.241-38.954-41.943-39.002z"/></svg></a></li><li><a target=_blank rel="noopener noreferrer" aria-label="share A Stateless Passkey Signer for Bitcoin on reddit" href="https://reddit.com/submit?url=https%3a%2f%2femino.app%2fposts%2fa-stateless-passkey-signer-for-bitcoin%2f&title=A%20Stateless%20Passkey%20Signer%20for%20Bitcoin"><svg viewBox="0 0 512 512" height="30" width="30" fill="currentColor"><path d="M449.446.0C483.971.0 512 28.03 512 62.554v386.892C512 483.97 483.97 512 449.446 512H62.554c-34.524.0-62.554-28.03-62.554-62.554V62.554c0-34.524 28.029-62.554 62.554-62.554h386.892zM446 265.638c0-22.964-18.616-41.58-41.58-41.58-11.211.0-21.361 4.457-28.841 11.666-28.424-20.508-67.586-33.757-111.204-35.278l18.941-89.121 61.884 13.157c.756 15.734 13.642 28.29 29.56 28.29 16.407.0 29.706-13.299 29.706-29.701.0-16.403-13.299-29.702-29.706-29.702-11.666.0-21.657 6.792-26.515 16.578l-69.105-14.69c-1.922-.418-3.939-.042-5.585 1.036-1.658 1.073-2.811 2.761-3.224 4.686l-21.152 99.438c-44.258 1.228-84.046 14.494-112.837 35.232-7.468-7.164-17.589-11.591-28.757-11.591-22.965.0-41.585 18.616-41.585 41.58.0 16.896 10.095 31.41 24.568 37.918-.639 4.135-.99 8.328-.99 12.576.0 63.977 74.469 115.836 166.33 115.836s166.334-51.859 166.334-115.836c0-4.218-.347-8.387-.977-12.493 14.564-6.47 24.735-21.034 24.735-38.001zM326.526 373.831c-20.27 20.241-59.115 21.816-70.534 21.816-11.428.0-50.277-1.575-70.522-21.82-3.007-3.008-3.007-7.882.0-10.889 3.003-2.999 7.882-3.003 10.885.0 12.777 12.781 40.11 17.317 59.637 17.317 19.522.0 46.86-4.536 59.657-17.321 3.016-2.999 7.886-2.995 10.885.008 3.008 3.011 3.003 7.882-.008 10.889zm-5.23-48.781c-16.373.0-29.701-13.324-29.701-29.698.0-16.381 13.328-29.714 29.701-29.714 16.378.0 29.706 13.333 29.706 29.714.0 16.374-13.328 29.698-29.706 29.698zM160.91 295.348c0-16.381 13.328-29.71 29.714-29.71 16.369.0 29.689 13.329 29.689 29.71.0 16.373-13.32 29.693-29.689 29.693-16.386.0-29.714-13.32-29.714-29.693z"/></svg></a></li><li><a target=_blank rel="noopener noreferrer" aria-label="share A Stateless Passkey Signer for Bitcoin on facebook" href="https://facebook.com/sharer/sharer.php?u=https%3a%2f%2femino.app%2fposts%2fa-stateless-passkey-signer-for-bitcoin%2f"><svg viewBox="0 0 512 512" height="30" width="30" fill="currentColor"><path d="M449.446.0C483.971.0 512 28.03 512 62.554v386.892C512 483.97 483.97 512 449.446 512H342.978V319.085h66.6l12.672-82.621h-79.272v-53.617c0-22.603 11.073-44.636 46.58-44.636H425.6v-70.34s-32.71-5.582-63.982-5.582c-65.288.0-107.96 39.569-107.96 111.204v62.971h-72.573v82.621h72.573V512h-191.104c-34.524.0-62.554-28.03-62.554-62.554V62.554c0-34.524 28.029-62.554 62.554-62.554h386.892z"/></svg></a></li><li><a target=_blank rel="noopener noreferrer" aria-label="share A Stateless Passkey Signer for Bitcoin on whatsapp" href="https://api.whatsapp.com/send?text=A%20Stateless%20Passkey%20Signer%20for%20Bitcoin%20-%20https%3a%2f%2femino.app%2fposts%2fa-stateless-passkey-signer-for-bitcoin%2f"><svg viewBox="0 0 512 512" height="30" width="30" fill="currentColor"><path d="M449.446.0C483.971.0 512 28.03 512 62.554v386.892C512 483.97 483.97 512 449.446 512H62.554c-34.524.0-62.554-28.03-62.554-62.554V62.554c0-34.524 28.029-62.554 62.554-62.554h386.892zm-58.673 127.703c-33.842-33.881-78.847-52.548-126.798-52.568-98.799.0-179.21 80.405-179.249 179.234-.013 31.593 8.241 62.428 23.927 89.612l-25.429 92.884 95.021-24.925c26.181 14.28 55.659 21.807 85.658 21.816h.074c98.789.0 179.206-80.413 179.247-179.243.018-47.895-18.61-92.93-52.451-126.81zM263.976 403.485h-.06c-26.734-.01-52.954-7.193-75.828-20.767l-5.441-3.229-56.386 14.792 15.05-54.977-3.542-5.637c-14.913-23.72-22.791-51.136-22.779-79.287.033-82.142 66.867-148.971 149.046-148.971 39.793.014 77.199 15.531 105.329 43.692 28.128 28.16 43.609 65.592 43.594 105.4-.034 82.149-66.866 148.983-148.983 148.984zm81.721-111.581c-4.479-2.242-26.499-13.075-30.604-14.571-4.105-1.495-7.091-2.241-10.077 2.241-2.986 4.483-11.569 14.572-14.182 17.562-2.612 2.988-5.225 3.364-9.703 1.12-4.479-2.241-18.91-6.97-36.017-22.23C231.8 264.15 222.81 249.484 220.198 245s-.279-6.908 1.963-9.14c2.016-2.007 4.48-5.232 6.719-7.847 2.24-2.615 2.986-4.484 4.479-7.472 1.493-2.99.747-5.604-.374-7.846-1.119-2.241-10.077-24.288-13.809-33.256-3.635-8.733-7.327-7.55-10.077-7.688-2.609-.13-5.598-.158-8.583-.158-2.986.0-7.839 1.121-11.944 5.604-4.105 4.484-15.675 15.32-15.675 37.364.0 22.046 16.048 43.342 18.287 46.332 2.24 2.99 31.582 48.227 76.511 67.627 10.685 4.615 19.028 7.371 25.533 9.434 10.728 3.41 20.492 2.929 28.209 1.775 8.605-1.285 26.499-10.833 30.231-21.295 3.732-10.464 3.732-19.431 2.612-21.298-1.119-1.869-4.105-2.99-8.583-5.232z"/></svg></a></li><li><a target=_blank rel="noopener noreferrer" aria-label="share A Stateless Passkey Signer for Bitcoin on telegram" href="https://telegram.me/share/url?text=A%20Stateless%20Passkey%20Signer%20for%20Bitcoin&amp;url=https%3a%2f%2femino.app%2fposts%2fa-stateless-passkey-signer-for-bitcoin%2f"><svg viewBox="2 2 28 28" height="30" width="30" fill="currentColor"><path d="M26.49 29.86H5.5a3.37 3.37.0 01-2.47-1 3.35 3.35.0 01-1-2.47V5.48A3.36 3.36.0 013 3 3.37 3.37.0 015.5 2h21A3.38 3.38.0 0129 3a3.36 3.36.0 011 2.46V26.37a3.35 3.35.0 01-1 2.47 3.38 3.38.0 01-2.51 1.02zm-5.38-6.71a.79.79.0 00.85-.66L24.73 9.24a.55.55.0 00-.18-.46.62.62.0 00-.41-.17q-.08.0-16.53 6.11a.59.59.0 00-.41.59.57.57.0 00.43.52l4 1.24 1.61 4.83a.62.62.0 00.63.43.56.56.0 00.4-.17L16.54 20l4.09 3A.9.9.0 0021.11 23.15zM13.8 20.71l-1.21-4q8.72-5.55 8.78-5.55c.15.0.23.0.23.16a.18.18.0 010 .06s-2.51 2.3-7.52 6.8z"/></svg></a></li><li><a target=_blank rel="noopener noreferrer" aria-label="share A Stateless Passkey Signer for Bitcoin on ycombinator" href="https://news.ycombinator.com/submitlink?t=A%20Stateless%20Passkey%20Signer%20for%20Bitcoin&u=https%3a%2f%2femino.app%2fposts%2fa-stateless-passkey-signer-for-bitcoin%2f"><svg width="30" height="30" viewBox="0 0 512 512" fill="currentColor"><path d="M449.446.0C483.971.0 512 28.03 512 62.554V449.446C512 483.97 483.97 512 449.446 512H62.554C28.03 512 0 483.97.0 449.446V62.554C0 28.03 28.029.0 62.554.0H449.446zM183.8767 87.9921h-62.034L230.6673 292.4508V424.0079h50.6655V292.4508L390.1575 87.9921H328.1233L256 238.2489z"/></svg></a></li></ul></footer></article></main><footer class=footer><span>&copy; 2025 <a href=https://emino.app/>Emino.App's, Art's & Articles by Emin Mahrt</a></span> ·
+<span>Powered by
+<a href=https://gohugo.io/ rel="noopener noreferrer" target=_blank>Hugo</a> &
+<a href=https://github.com/adityatelange/hugo-PaperMod/ rel=noopener target=_blank>PaperMod</a></span></footer><a href=#top aria-label="go to top" title="Go to Top (Alt + G)" class=top-link id=top-link accesskey=g><svg viewBox="0 0 12 6" fill="currentColor"><path d="M12 6H0l6-6z"/></svg>
+</a><script>let menu=document.getElementById("menu");menu&&(menu.scrollLeft=localStorage.getItem("menu-scroll-position"),menu.onscroll=function(){localStorage.setItem("menu-scroll-position",menu.scrollLeft)}),document.querySelectorAll('a[href^="#"]').forEach(e=>{e.addEventListener("click",function(e){e.preventDefault();var t=this.getAttribute("href").substr(1);window.matchMedia("(prefers-reduced-motion: reduce)").matches?document.querySelector(`[id='${decodeURIComponent(t)}']`).scrollIntoView():document.querySelector(`[id='${decodeURIComponent(t)}']`).scrollIntoView({behavior:"smooth"}),t==="top"?history.replaceState(null,null," "):history.pushState(null,null,`#${t}`)})})</script><script>var mybutton=document.getElementById("top-link");window.onscroll=function(){document.body.scrollTop>800||document.documentElement.scrollTop>800?(mybutton.style.visibility="visible",mybutton.style.opacity="1"):(mybutton.style.visibility="hidden",mybutton.style.opacity="0")}</script><script>document.getElementById("theme-toggle").addEventListener("click",()=>{document.body.className.includes("dark")?(document.body.classList.remove("dark"),localStorage.setItem("pref-theme","light")):(document.body.classList.add("dark"),localStorage.setItem("pref-theme","dark"))})</script><script>document.querySelectorAll("pre > code").forEach(e=>{const n=e.parentNode.parentNode,t=document.createElement("button");t.classList.add("copy-code"),t.innerHTML="copy";function s(){t.innerHTML="copied!",setTimeout(()=>{t.innerHTML="copy"},2e3)}t.addEventListener("click",t=>{if("clipboard"in navigator){navigator.clipboard.writeText(e.textContent),s();return}const n=document.createRange();n.selectNodeContents(e);const o=window.getSelection();o.removeAllRanges(),o.addRange(n);try{document.execCommand("copy"),s()}catch{}o.removeRange(n)}),n.classList.contains("highlight")?n.appendChild(t):n.parentNode.firstChild==n||(e.parentNode.parentNode.parentNode.parentNode.parentNode.nodeName=="TABLE"?e.parentNode.parentNode.parentNode.parentNode.parentNode.appendChild(t):e.parentNode.appendChild(t))})</script></body></html>

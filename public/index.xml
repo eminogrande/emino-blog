@@ -6,8 +6,25 @@
     <description>Recent content on Emino.App&#39;s, Art&#39;s &amp; Articles by Emin Mahrt</description>
     <generator>Hugo -- 0.148.2</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 03 Dec 2025 10:25:01 +0000</lastBuildDate>
+    <lastBuildDate>Thu, 04 Dec 2025 07:35:01 +0000</lastBuildDate>
     <atom:link href="https://emino.app/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>A Stateless Passkey Signer for Bitcoin</title>
+      <link>https://emino.app/posts/a-stateless-passkey-signer-for-bitcoin/</link>
+      <pubDate>Thu, 04 Dec 2025 07:35:01 +0000</pubDate>
+      <guid>https://emino.app/posts/a-stateless-passkey-signer-for-bitcoin/</guid>
+      <description>&lt;p&gt;Stateless Bitcoin Wallet With Passkeys and a Minimal Signer&lt;/p&gt;
+&lt;p&gt;I’m working on a Bitcoin wallet that is fully stateless.&lt;/p&gt;
+&lt;p&gt;By stateless I mean: the Bitcoin private key is never stored anywhere. Not
+on the phone, not on a server, not in a database. It is derived
+deterministically from a passkey PRF (WebAuthn / FIDO2) whenever it’s
+needed, used inside a very small signing environment, and then thrown away
+again.&lt;/p&gt;
+&lt;p&gt;In this post I want to describe the architecture I’m building, how I’m
+thinking about “no blind signing”, and where I still see open security
+questions. I’d love feedback, especially from people who build wallets,
+HSMs, or work with WebAuthn and Bitcoin PSBTs.&lt;/p&gt;</description>
+    </item>
     <item>
       <title>Claudes Document of the Soul</title>
       <link>https://emino.app/posts/claudes-document-of-the-soul/</link>

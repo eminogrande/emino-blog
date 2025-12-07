@@ -1,5 +1,5 @@
 # Emino Blog - Complete Content for LLMs
-Generated: Sat Dec  6 03:00:01 AM UTC 2025
+Generated: Sun Dec  7 03:00:02 AM UTC 2025
 
 ## All Blog Posts
 
@@ -4870,6 +4870,1085 @@ consideration.
 ---
 
 ![image](/media/why-nuri-chose-a-stateless-passkey-architecture-first-and-ho/image.png)
+
+---
+*Post created via email from emin@nuri.com*
+
+---
+## Bridges between Philosophy and Physics
+
+
+
+The Question:
+
+Explain my girlfriend in easy the bridges between philosophy and physics
+especially also astrophysics or physics also in general and and and famous
+philosophers and famous astrophysicians and make some examples maybe with
+um some early greeks or even with einstein like just like to make this more
+clear where philosophy and physics hit like across each other or even with
+stephen hawking also
+
+The Answer:
+
+Think of it like this:
+
+
+Philosophy = “big why & what is real?”
+
+Physics/astrophysics = “how exactly does it work in numbers and
+experiments?”
+
+
+They are not enemies. They’re like two people talking about the same
+universe in different styles.
+
+
+Below is a way you could explain it to your girlfriend, with names and
+examples you can drop in.
+
+------------------------------
+
+1. What each one does (in simple words)
+
+
+Philosophy asks:
+
+
+   -
+
+   What is time, really?
+   -
+
+   What is space?
+   -
+
+   What is cause and effect?
+   -
+
+   Is the universe infinite?
+   -
+
+   Why is there something instead of nothing?
+
+
+It uses thinking, arguments, and logic, not experiments.
+
+
+Physics/astrophysics asks:
+
+
+   -
+
+   How fast does time pass near a black hole?
+   -
+
+   What is the exact shape of space?
+   -
+
+   What is the universe made of (atoms, particles, dark matter, etc.)?
+   -
+
+   How did the universe begin and how will it end?
+
+
+It uses math, experiments, telescopes and tests ideas against data.
+
+
+Bridge:
+
+Philosophy often creates the questions and concepts.
+
+Physics then turns them into testable theories.
+
+------------------------------
+
+2. The Greeks: where it all started
+
+
+“What is the universe made of?”
+
+
+   -
+
+   Thales (ancient Greek): thought everything was made of water.
+   -
+
+   Democritus: guessed that everything is made of tiny invisible pieces
+   called atoms.
+
+   -
+
+      No microscopes, no experiments – just philosophical thinking.
+
+
+
+Today physics says: atoms, particles, quantum fields.
+
+Democritus wasn’t “right” in detail, but the idea of tiny building blocks
+was a huge philosophical step that physics later made precise.
+
+
+“What is motion? Can things really move?”
+
+
+   -
+
+   Zeno of Elea made paradoxes:
+
+   -
+
+      To walk across a room, you must first go halfway, then half of the
+      remaining distance, and so on forever.
+      -
+
+      So, how do you ever arrive?
+
+   -
+
+   This is a philosophical problem about infinity and motion.
+
+
+Bridge to physics:
+
+Centuries later, physics and math (calculus) showed how infinite sums can
+still give a finite distance and time, solving the paradox in a
+mathematical way.
+
+------------------------------
+
+3. Aristotle to Newton: from philosophy to “natural philosophy”
+
+
+For a long time, physics was called “natural philosophy”.
+
+
+   -
+
+   Aristotle thought the Earth is the center, and the heavens move in
+   perfect circles.
+
+   This was a philosophical picture of a “perfect” universe.
+
+
+Then came:
+
+
+   -
+
+   Galileo – used experiments (balls rolling down ramps) to study motion.
+   -
+
+   Isaac Newton – wrote “Mathematical Principles of Natural Philosophy”.
+
+   -
+
+      He gave the laws of motion and gravity.
+      -
+
+      Space and time, in his view, were like a fixed stage on which
+      everything happens, always the same everywhere.
+
+
+
+Philosophical questions raised by Newton:
+
+
+   -
+
+   Is time flowing the same for everyone, everywhere?
+   -
+
+   Are the laws of nature “out there” or just human descriptions?
+   -
+
+   If the laws of physics determine everything, what about free will?
+
+
+These are philosophical questions about physics.
+
+------------------------------
+
+4. Einstein: when philosophy and physics hug each other
+
+
+Albert Einstein is a great example of the bridge.
+
+
+He didn’t just crunch numbers; he did thought experiments:
+
+
+   -
+
+   Imagine riding on a beam of light.
+   -
+
+   Imagine being in an elevator in space (weightless) vs in a gravitational
+   field.
+
+
+These are philosophical-style stories used to test ideas.
+
+
+Space and time
+
+
+Before Einstein:
+
+
+   -
+
+   Space = one thing
+   -
+
+   Time = another thing
+   -
+
+   Both absolute, same for everyone (Newton’s view).
+
+
+Einstein’s relativity:
+
+
+   -
+
+   Space and time are not separate; they form spacetime.
+   -
+
+   Time runs differently depending on your speed and gravity.
+   -
+
+   There is no single “universal now” for the whole universe.
+
+
+This is a massive philosophical change in our picture of reality.
+
+
+Einstein was influenced by philosophical thinkers like Ernst Mach and read
+philosophers such as Hume and Kant. He cared a lot about:
+
+
+   -
+
+   What is “real”?
+   -
+
+   What does it mean to “measure” something?
+
+
+Einstein vs quantum physics
+
+
+Quantum physics says: on very small scales, outcomes are probabilistic
+(involving chance).
+
+
+Einstein hated this idea:
+
+
+   -
+
+   He said, “God does not play dice with the universe.”
+   -
+
+   Niels Bohr (another physicist) basically answered: Stop telling God what
+   to do.
+
+
+This is a philosophical fight:
+
+
+   -
+
+   Is the universe fundamentally random?
+   -
+
+   Or are we just missing hidden rules?
+
+
+So even inside physics, they were arguing about what reality is like.
+
+------------------------------
+
+5. Astrophysics & cosmology: the biggest philosophical questions
+
+
+Astrophysics looks at stars, galaxies, black holes, the whole universe.
+
+Cosmology asks questions that are deeply philosophical:
+
+
+   -
+
+   Did the universe have a beginning?
+   -
+
+   Is the universe finite or infinite?
+   -
+
+   Will it end? How?
+   -
+
+   Why do the laws of physics allow life to exist?
+
+
+Stephen Hawking
+
+
+Stephen Hawking worked on black holes and the Big Bang.
+
+He asked questions like:
+
+
+   -
+
+   What happened at the beginning of the universe?
+   -
+
+   What happens inside a black hole?
+   -
+
+   Do we need a “creator” once we have a full theory?
+
+
+Black holes and information
+
+Hawking discovered that black holes are not perfectly “black”; they can
+emit radiation (Hawking radiation) and can slowly evaporate.
+
+
+Philosophical problem:
+
+
+   -
+
+   If something falls into a black hole and the black hole evaporates,
+
+   Is the information destroyed?
+   -
+
+   Quantum theory says: information should never be truly destroyed.
+   -
+
+   So which is right?
+
+
+This is a physics problem and also a philosophical puzzle about the nature
+of information and reality.
+
+
+Beginning of the universe
+
+Hawking & Hartle proposed a model where the universe could be finite but
+without a sharp beginning, like the surface of a sphere has no edge.
+
+
+That touches the philosophical question:
+
+
+   -
+
+   “What was before the Big Bang?”
+
+   – Maybe that’s the wrong question, if time itself begins there.
+
+------------------------------
+
+6. Famous philosophers linked to physics
+
+
+You can mention a few names to show the overlap:
+
+
+   -
+
+   Plato – believed in perfect mathematical forms; inspired the idea that
+   the universe is deeply mathematical.
+   -
+
+   Aristotle – early theories of motion, elements, cosmos.
+   -
+
+   René Descartes – tried to explain the world as matter in motion, very
+   “mechanical universe”.
+   -
+
+   David Hume – questioned what “cause and effect” really mean. Influenced
+   later philosophers and scientists.
+   -
+
+   Immanuel Kant – argued that space and time are part of how our mind
+   structures experience, not things we simply “see out there”.
+   -
+
+   Karl Popper – said a good scientific theory must be falsifiable (you can
+   test it and possibly prove it wrong). Huge influence on how physicists
+   think about theories, including cosmology.
+
+
+And physicists who thought very philosophically:
+
+
+   -
+
+   Newton – laws of motion and gravity, but also huge philosophical debates
+   about space and time.
+   -
+
+   Einstein – relativity, quantum debates, always worrying about what is
+   real.
+   -
+
+   Niels Bohr & Werner Heisenberg – developed quantum mechanics and spent
+   tons of time on its philosophical meaning.
+   -
+
+   Stephen Hawking – cosmology, black holes, and the meaning of “beginning”
+   and “laws of nature”.
+
+------------------------------
+
+7. How you might explain it to her in one short speech
+
+
+You could say something like:
+
+
+“Philosophy and physics are like two ways of talking about the same
+universe.
+
+Philosophers ask the big, general questions: What is time? What is space?
+Why does anything exist at all?
+
+Physicists take some of those questions and turn them into testable
+theories with math and experiments.
+
+
+The ancient Greeks like Democritus guessed there are tiny atoms – that was
+philosophy.
+
+Modern physics and chemistry later showed atoms are real and studied them
+in detail.
+
+Einstein used very philosophical thought experiments about space and time
+and ended up with relativity, which tells us time runs differently near a
+black hole.
+
+Stephen Hawking took philosophical questions about the beginning of the
+universe and black holes and turned them into concrete predictions, like
+Hawking radiation.
+
+
+So philosophy and physics meet whenever we ask: What is the universe really
+like, deep down? Philosophy helps us form the ideas; physics helps us test
+which ideas actually match reality.”
+
+
+If you want, I can help you turn this into a super short 1-minute
+explanation or a cute analogy you can tell her.
+
+---
+*Post created via email from emin@nuri.com*
+
+---
+## Building a Cross‑Chain BTC ↔ EURe Market Maker with NEAR Intents & 1‑Click
+
+
+
+Over the last days we wired up a complete BTC ↔ EURe swap stack:
+
+  - A mobile‑first swap UI at emino.app/intent/.
+  - An advanced tester & history view at emino.app/intent/intend/.
+  - A live solver monitor at emino.app/solver/.
+  - A real AMM solver that provides liquidity between BTC (on Bitcoin
+mainnet) and EURe (on Gnosis) via
+    NEAR Intents + Defuse 1‑Click.
+
+  This post documents how it all fits together, how swaps flow through
+the system, where the 0.3% “margin”
+  comes from, and how a solver operator can deposit, monitor, and
+eventually withdraw profits.
+
+  ———
+
+  ## 1. High‑Level Overview
+
+  At a high level we have four pieces:
+
+  1. User UI (emino.app)
+      - /intent/ – simple mobile‑first page to start a BTC ↔ EURe swap.
+      - /intent/intend/ – advanced JSON tester + history of swaps
+started through this server.
+  2. UI Server (port 4100)
+      - Express server that:
+          - Serves the static HTML/JS for /intent/ and /intent/intend/.
+          - Exposes a small API:
+              - POST /api/intend/btc-to-eure
+              - POST /api/intend/eure-to-btc
+              - GET /api/intend/history
+              - GET /api/intend/status/:depositAddress
+          - Talks to the Defuse 1‑Click API
+(https://1click.chaindefuser.com) for quotes and status.
+  3. NEAR Intents + Solver Relay
+      - NEAR Intents contract (intents.near) holds token reserves and
+tracks intents.
+      - Solver Relay (wss://solver-relay-v2.chaindefuser.com/ws)
+forwards quote requests from 1‑Click to
+        solvers and receives their responses.
+  4. Our AMM Solver
+      - Runs the official near-intents-amm-solver code with:
+          - AMM_TOKEN1_ID =
+nep141:gnosis-0x420ca0f9b9b604ce0fd9c18ef134c705e5fa3430.omft.near
+(EURe on
+            Gnosis).
+          - AMM_TOKEN2_ID = nep141:btc.omft.near (BTC on NEAR).
+      - Maintains a constant‑product AMM over the EURe/BTC reserves on
+the Intents contract.
+      - Listens to quote requests via WebSocket, calculates prices
+with a margin, signs NEP‑413 quotes,
+        and updates its view of reserves after intents execute.
+
+  The UI and the solver are decoupled. The UI talks only to 1‑Click;
+the solver talks only to the solver
+  relay + NEAR. The relay + 1‑Click route quotes and intents between them.
+
+  ———
+
+  ## 2. The User Experience: /intent/ and /intent/intend/
+
+  ### /intent/: Mobile‑First Swap UI
+
+  This is meant to be the “one‑screen” test UI:
+
+  - Two tabs:
+      - BTC → EURe
+      - EURe → BTC
+  - Fields:
+
+    For BTC → EURe:
+      - Amount you send (satoshis) – BTC in sats.
+      - EURe receiver (Gnosis EVM) – EVM address on Gnosis.
+      - BTC refund address – Bitcoin bech32 address.
+
+    For EURe → BTC:
+      - Amount you send (EURe) – EURe amount, decimal.
+      - BTC receiver address – BTC address to receive the swap.
+      - EURe refund (Gnosis EVM) – EVM address for EURe refund.
+  - We prefill it with your own addresses:
+
+    DEFAULT_EURE_EVM = 0x196C28928b1386D8Dcd32ab223bECcce6f731264
+    DEFAULT_BTC_ADDR = 1LBiZCtkByR3BuH7K3RJA15fmri84NW6CT
+  - When you click “Get deposit & start swap”:
+      - The UI calls either:
+          - POST /api/intend/btc-to-eure
+          - POST /api/intend/eure-to-btc
+      - The server calls 1‑Click /v0/quote with swapType: EXACT_INPUT.
+      - On success, you get:
+          - amountInFormatted (nice units).
+          - amountOutFormatted (approx receive).
+          - A depositAddress on BTC or Gnosis.
+          - A deadline.
+      - The UI shows:
+          - A summary (“You send / You receive”).
+          - The deposit address.
+          - A QR code for wallet apps.
+          - A “status pill” that polls execution via GET
+/api/intend/status/:depositAddress.
+
+  ### /intent/intend/: Advanced Tester
+
+  This page is for debugging and power users:
+
+  - Quick test buttons:
+      - “Test: 10,000 sats → EURe”
+      - “Test: 10 EURe → BTC”
+  - A custom form similar to /intent/ but with simple text inputs.
+  - On every quote attempt:
+      - Shows a success box with the same info as /intent/.
+      - Or shows the raw error from 1‑Click, including:
+
+        {
+          "message": "...",
+          "status": 400,
+          "bodyMessage": "Failed to get quote",
+          "correlationId": "...",
+          "requestBody": { ...full JSON sent to /v0/quote... }
+        }
+  - At the bottom, a “Recent swaps (this server)” section:
+      - Backed by GET /api/intend/history.
+      - Based purely on swaps initiated via this UI/server.
+      - Shows direction, timestamp, amount in/out, and deposit address.
+
+  ———
+
+  ## 3. The UI Server: Intents & History
+
+  The server (server/index.ts) runs on port 4100 and does three things:
+
+  1. Quote + Intend endpoints (EXACT_INPUT)
+      - POST /api/intend/btc-to-eure:
+          - Validates amountInSats, recipientEvm, refundBtc.
+          - Calls quoteExactInputBtcToEure which uses 1‑Click’s getQuote with:
+              - originAsset = nep141:btc.omft.near
+              - destinationAsset = EURe
+              - amount = satsIn
+              - refundTo = refundBtc (BTC).
+              - recipient = recipientEvm (Gnosis).
+          - Returns deposit address + amounts.
+      - POST /api/intend/eure-to-btc:
+          - Validates amountInEure, recipientBtc, refundEvm.
+          - Converts EURe decimal → 18‑decimals (toUnits).
+          - Calls getQuote with origin/destination reversed.
+
+     For each successful intend quote, it appends an IntentLogItem to
+an in‑memory intentLog:
+
+     type IntentLogItem = {
+       direction: 'btc-to-eure' | 'eure-to-btc';
+       depositAddress: string;
+       createdAt: string;
+       amountIn: string;
+       amountInFormatted: string;
+       amountOut: string;
+       amountOutFormatted: string;
+       test?: boolean;
+       recipient?: string;
+       refund?: string;
+     };
+  2. History APIs
+      - GET /api/intend/history:
+          - Returns intentLog sorted newest‑first.
+      - GET /api/intend/history/:depositAddress:
+          - Returns:
+              - The log entry for that deposit (if any), and
+              - The execution status from 1‑Click getExecutionStatus.
+  3. Status proxy
+      - GET /api/intend/status/:depositAddress:
+          - Straight proxy to 1‑Click getExecutionStatus, used by
+/intent/ to update the status pill.
+
+  ———
+
+  ## 4. The AMM Solver: How We Provide Liquidity
+
+  The solver is the official NEAR Intents AMM implementation,
+configured for EURe ↔ BTC:
+
+  - Tokens:
+
+    AMM_TOKEN1_ID =
+nep141:gnosis-0x420ca0f9b9b604ce0fd9c18ef134c705e5fa3430.omft.near
+(EURe)
+    AMM_TOKEN2_ID = nep141:btc.omft.near
+              (BTC)
+  - Environment highlights:
+
+    NEAR_ACCOUNT_ID = nuri-solver.near
+    NEAR_PRIVATE_KEY = ed25519:...
+    RELAY_WS_URL = wss://solver-relay-v2.chaindefuser.com/ws
+    ONE_CLICK_API_ONLY = true
+    MARGIN_PERCENT = 0.3
+  - Behavior:
+      - On startup:
+          - Connects to NEAR using near-api-js.
+          - Loads reserves of EURe & BTC from the Intents contract.
+          - Computes a deterministic nonce from reserves.
+      - Via WebSocket:
+          - Subscribes to:
+              - QUOTE events (incoming quote requests).
+              - QUOTE_STATUS events (executed intents).
+          - Filters quotes only for the EURe/BTC pair.
+      - For each quote request:
+          - Checks it’s from a trusted partner (partner_id = 1click or
+router-solver).
+          - Computes the AMM price with margin.
+          - Builds a NEP‑413 signed payload and sends a quote_response
+back to the relay.
+
+  The AMM math is constant‑product (x · y = k) with margin:
+
+  - For EXACT_INPUT (user specifies amount in):
+
+    amountInWithFee = amountIn * (1 – margin)
+    out = (amountInWithFee * reserveOut) / (reserveIn + amountInWithFee)
+  - For EXACT_OUTPUT (if used):
+
+    in = reserveIn * out / ((reserveOut – out) * (1 – margin))
+
+  The margin is set by MARGIN_PERCENT (0.3 by default).
+
+  ———
+
+  ## 5. How a BTC → EURe Swap Flows End‑to‑End
+
+  Take a BTC → EURe swap from the /intent/ UI:
+
+  1. User requests a quote
+      - UI sends POST /api/intend/btc-to-eure with:
+          - amountInSats
+          - recipientEvm
+          - refundBtc
+      - UI server calls 1‑Click /v0/quote with swapType: EXACT_INPUT.
+  2. 1‑Click asks solvers
+      - 1‑Click forwards a quote request to the solver relay.
+      - Relay broadcasts to all solvers that support the btc.omft.near
+→ EURe pair.
+  3. Our solver answers
+      - Our solver sees a QUOTE event for nep141:btc.omft.near → EURe.
+      - It:
+          - Logs the request into recent_quotes.
+          - Computes an EURe output with margin = 0.3%.
+          - Signs a NEP‑413 quote.
+          - Sends quote_response back to the relay.
+  4. 1‑Click picks a quote
+      - Once it has a quote, 1‑Click returns to our UI server:
+          - The depositAddress (usually a BTC address).
+          - amountIn, amountOut, formatted fields.
+      - The UI server saves this in intentLog.
+  5. User pays
+      - The user sends BTC to the deposit address.
+      - 1‑Click’s internal machinery:
+          - Observes the BTC payment.
+          - Creates a NEAR intent targeting intents.near.
+          - Communicates with the relay and our solver quote to
+execute the swap.
+          - Sends EURe on Gnosis to recipientEvm.
+  6. Status updates
+      - UI polls GET /api/intend/status/:depositAddress every 5 seconds.
+      - Solver receives QUOTE_STATUS events for intents that involve
+its quote and:
+          - Updates its reserves snapshot.
+          - Logs them into recent_intents.
+  7. Monitoring
+      - On emino.app/solver/ the dashboard shows:
+          - Reserves (our liquidity on intents.near).
+          - Recent quotes and intents that went through the relay.
+          - “Recent Swaps (via emino.app UI)” pulled from /api/intend/history.
+
+  ———
+
+  ## 6. How the 0.3% Margin Generates Revenue
+
+  MARGIN_PERCENT = 0.3 means the solver takes 0.3% spread on each
+swap, implemented inside the AMM.
+
+  - For BTC → EURe:
+      - The solver effectively takes 0.3% of the BTC input as “fee”
+and only uses 99.7% of it to compute
+        how much EURe to send.
+      - That extra 0.3% stays inside the BTC reserve.
+  - For EURe → BTC:
+      - The fee is taken from the EURe input; 0.3% of EURe stays in
+the EURe reserve.
+
+  Over many swaps:
+
+  - Both EURe and BTC reserves grow relative to what a fee‑less AMM would have.
+  - That growth equals the cumulative margin – your solver revenue –
+minus any losses from adverse price
+    movements.
+  - You can think of it as being the market maker: you earn the spread
+(0.3%) but carry the risk if BTC/
+    EURe price moves.
+
+  ———
+
+  ## 7. In Which Currency Do We Earn?
+
+  On each individual swap, the margin is paid in the asset the user sends:
+
+  - BTC → EURe:
+      - Margin is in BTC; your BTC reserve goes up slightly more than
+it would without fees.
+  - EURe → BTC:
+      - Margin is in EURe; your EURe reserve goes up.
+
+  Over time:
+
+  - You accumulate extra BTC when users send BTC and extra EURe when
+users send EURe.
+  - Your profit lives inside the reserves on the Intents contract.
+
+  The solver dashboard’s “Reserves (on intents contract)” card shows
+those reserves in human units (EURe
+  and BTC) so you can see at a glance how much liquidity – and
+implicitly profit – is sitting in the pool.
+
+  ———
+
+  ## 8. Depositing and Withdrawing Liquidity
+
+  The AMM solver expects you to fund reserves in NEAR Intents before running:
+
+  1. Preparation
+      - Make sure your solver account (e.g. nuri-solver.near) has:
+          - EURe tokens (on NEAR, the wrapped EURe).
+          - BTC tokens (btc.omft.near) on NEAR.
+      - Add the solver’s public key to intents.near (so it can sign quotes).
+  2. Depositing tokens to Intents
+
+     Using NEAR CLI (simplified outline):
+      - Deposit EURe to intents.near on behalf of nuri-solver.near.
+      - Deposit BTC to intents.near similarly.
+
+     The exact commands depend on the NEP‑141 FT contracts you use
+(ft_transfer_call / storage_deposit),
+     and are described in NEAR Intents’ and the AMM solver’s README.
+Conceptually, you’re moving tokens
+     from your solver account into a reserve position on the Intents contract.
+  3. Running the solver
+
+     Once reserves are in place:
+
+     AMM_TOKEN1_ID=...EURe...
+     AMM_TOKEN2_ID=nep141:btc.omft.near
+     NEAR_ACCOUNT_ID=nuri-solver.near
+     NEAR_PRIVATE_KEY=ed25519:...
+     RELAY_WS_URL=wss://solver-relay-v2.chaindefuser.com/ws
+     APP_PORT=4010
+     MARGIN_PERCENT=0.3
+     ONE_CLICK_API_ONLY=true
+
+     npm start
+
+     When the solver starts:
+      - emino.app/solver/ shows:
+          - Health = READY
+          - Reserves = non‑zero EURe & BTC.
+          - Total supply, recent quotes/intents.
+  4. Withdrawing / Taking Profit
+
+     To realize profits, you can:
+      - Reduce your reserve position on intents.near:
+          - Withdraw part of the EURe/BTC reserves back to nuri-solver.near.
+      - Bridge assets out:
+          - Withdraw BTC from the NEAR BTC token into on‑chain BTC.
+          - Withdraw EURe back to Gnosis, if desired.
+
+     Again, the exact commands depend on the FT bridges and Intents
+tooling, but the principle is: the
+     “extra” BTC/EURe that has accumulated in the reserves (vs. your
+initial deposit) is your PnL.
+
+  ———
+
+  ## 9. Monitoring: emino.app/solver/
+
+  The solver dashboard is designed to answer three questions:
+
+  1. Is our solver healthy and connected?
+      - Health card:
+          - ready: true/false
+          - Solver account (ours): nuri-solver.near
+      - Websocket card:
+          - Connection to relay (CONNECTED / DISCONNECTED).
+          - Last relay event timestamp.
+  2. What liquidity do we have and what’s happening on NEAR?
+      - Reserves:
+          - EURe & BTC reserves in human units.
+          - “Our liquidity on intents.near for this solver”.
+      - Total supply:
+          - Global EURe/BTC supply on NEAR Intents (all solvers).
+  3. What activity is flowing through us vs. the network?
+      - Recent Quotes (ours):
+          - Only quotes calculated and signed by this solver.
+      - Recent Swaps (via emino.app UI):
+          - History from GET /api/intend/history.
+          - Exactly what you see on /intent/intend/.
+      - Recent Intents (network):
+          - All intents observed via the relay.
+          - Rows with asset/amount filled are intents that match our own quotes.
+      - Recent Intents (details):
+          - Same intents but with full hashes and timestamps for deep debugging.
+
+  Together, this gives you:
+
+  - “How busy is our solver?”
+  - “Are quotes being accepted and executed?”
+  - “Are users actually swapping via our UI?”
+  - “How much liquidity do we still have?”
+
+  ———
+
+  ## 10. Where to Go Next
+
+  Now that everything is wired and functioning end‑to‑end, we can
+iterate in a few directions:
+
+  - Better pricing policies
+      - Adjust MARGIN_PERCENT by pair, size, or volatility.
+      - Use external price feeds to keep the AMM centered around a fair price.
+  - More pairs
+      - Add additional tokens to the same solver or run multiple solvers.
+  - Richer UI
+      - Let users pick different swap sizes and see slippage and
+effective price.
+      - Add “expert mode” with raw request/response JSON embedded.
+
+  For now, we already have:
+
+  - A fully working BTC ↔ EURe cross‑chain swap via NEAR Intents & 1‑Click.
+  - A custom AMM solver earning 0.3% margin on each swap.
+  - Monitoring, history, and a clean separation between “our” data and
+the broader NEAR Intents network.
+
+  Feel free to share this post with anyone who wants to understand how
+the system works under the hood or
+  is curious how a solver can actually make money providing liquidity.
+
+---
+*Post created via email from emin@nuri.com*
+
+---
+## Governing Governance: Why Human Consensus is Harder Than Code
+
+
+
+I’ve been following the blockchain space for quite some time—mostly by
+coincidence because I live in Berlin. We saw a massive amount of
+activity there, starting with the early days of Bitcoin, followed by
+the Ethereum Foundation, and countless meetups. That environment is
+how I ended up deep in the blockchain world.
+
+While we spend a lot of time engineering protocols, there is a topic
+that raises more questions than answers, yet is absolutely critical to
+discuss: Governance.
+
+# What Actually is Governance?
+
+At its core, governance is simply the method of finding consensus
+between humans.
+
+We do this all the time. If we were organizing a dinner or a
+conference, we would discuss the food or the seating arrangements. In
+small groups, this is intuitive. But as groups get larger, consensus
+becomes exponentially more difficult. Even in massive governance
+systems, it often ends up being just a small handful of people
+actually making the decisions at the end of the day.
+
+# When we imagine "classic" governance (like national elections), we
+have specific technical requirements:
+
+Secrecy: I want my vote to be private.
+
+Verifiability: I want to ensure my vote was counted.
+
+Eligibility: We need to ensure no one is creating fake votes out of thin air.
+
+But ultimately, we are just trying to figure out what everybody
+thinks. And that is where the trouble begins.
+
+# The "Brexit" Problem
+
+Sometimes, strict voting systems give us results like Brexit: 51.9% to 48.1%.
+
+What does a result like that actually tell you? To me, it doesn't
+represent a "will of the people." It tells me that we have no clue
+whether we should stay or leave. It tells me the community is divided.
+Yet, we take a result like that, accept it, and promote it as the
+absolute decision.
+
+I haven’t solved governance, and I don't think anyone has yet. But I
+believe one thing is clear: Voting should be the last resort.
+
+A single person has a clear will. A group often just has a choice
+between A and B. Perhaps voting should only happen after we have
+exhausted all collaborative approaches—after we have sat together,
+discussed, and spent energy trying to find a solution. We shouldn't
+jump straight to a binary vote.
+
+# Benevolent Dictators and The Open Source World
+
+In the traditional open-source world, we have the concept of the BDFL
+(Benevolent Dictator For Life). You see this in Linux, WordPress, and
+Python.
+
+Recently, Guido van Rossum, the inventor of Python, stepped back from
+his role because he couldn't deal with the community discussions
+anymore. He simply got tired of the conflict.
+
+In open source, you can always "fork" the project (copy it and go your
+own way), but many people don't want to fork. It splits the network
+effect. Now that we are building decentralized systems, we have to
+ask: Who actually participates?
+
+The Infrastructure: The nodes and miners securing the network.
+
+The Users: The people building applications on top.
+
+Autonomous Entities: Smart contracts that might have "rights" or
+interests in the protocol.
+
+# The Flaws in "Skin in the Game"
+
+We have come up with different ways to weigh votes in blockchain, such
+as Proof of Stake (wealth = power) or Proof of Work (computational
+power = power).
+
+A major question we face is: Do we place more power in the hands of
+the many, or the few? The assumption is often that having "skin in the
+game" (a high financial stake) makes you act honestly and for the
+well-being of the network. But is that true?
+
+Even if you assume honesty, interests are rarely aligned.
+
+Miners want high fees.
+
+Users want zero fees.
+
+Who is right?
+
+Then there is the issue of Expertise vs. The Crowd. What if you have a
+group of technical experts who know the mathematical truth, but the
+user base disagrees? We see similar problems in politics and on
+platforms like Reddit or "Crypto Twitter," where propaganda and
+influence campaigns drag people in certain directions.
+
+Often, voting becomes a rivalry rather than a search for the best
+solution. Furthermore, many voters don't even understand what is being
+voted upon.
+
+# The Path Forward: Signaling and Delegation
+
+So, how do we solve this? I believe the answer lies in Liquid
+Democracy and better communication.
+
+1. Signaling over Binding: We shouldn't always use binding votes
+immediately. We need "Signaling"—an easy way for the community to
+express an opinion on a proposal without it immediately executing
+code. This gauges sentiment before a hard decision is made.
+
+2. Delegated Voting: If you own shares or tokens, you have a voice.
+But you might not have the technical expertise (or the time) to study
+every protocol update.
+
+You should be able to delegate your vote to an expert, a developer, or
+a community leader you trust.
+
+Critically, you should be able to withdraw that delegation instantly
+if you disagree with their choices.
+
+This also solves a security problem. You shouldn't have to use your
+"cold storage" (secure savings) to vote. You should be able to sign a
+message that delegates your voting power to a different key, allowing
+you to participate without putting your assets at risk.
+
+# Conclusion: It’s a Human Problem
+
+We spend years implementing technology, writing code, and building
+mathematical proofs. But governance is not a technical problem.
+Governance is a human problem.
+
+If we don't focus on the "visual layer"—the interfaces, the forums,
+the education—decentralized projects will fail.
+
+Proposals need to be written clearly. We need discussion platforms
+where people can ask questions and get real answers, not just
+propaganda. For an open-source project to govern itself, transparency
+is key. It’s not just about publishing code; it’s about explaining the
+process, the roadmap, and the "why" behind the decisions.
+
+We haven't solved it yet, but we need to stop treating governance as a
+software update and start treating it as a human collaboration.
 
 ---
 *Post created via email from emin@nuri.com*

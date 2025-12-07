@@ -6,8 +6,280 @@
     <description>Recent content in Posts on Emino.App&#39;s, Art&#39;s &amp; Articles by Emin Mahrt</description>
     <generator>Hugo -- 0.148.2</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 06 Dec 2025 18:50:02 +0000</lastBuildDate>
+    <lastBuildDate>Sun, 07 Dec 2025 17:25:01 +0000</lastBuildDate>
     <atom:link href="https://emino.app/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>The Invisible Giants: 21 Developers Who Built Your Internet</title>
+      <link>https://emino.app/posts/the-invisible-giants-21-developers-who-built-your-internet/</link>
+      <pubDate>Sun, 07 Dec 2025 17:25:01 +0000</pubDate>
+      <guid>https://emino.app/posts/the-invisible-giants-21-developers-who-built-your-internet/</guid>
+      <description>&lt;p&gt;We often praise the founders of Facebook or Google, but the modern
+internet is actually built on a foundation of open-source code
+maintained by a small group of volunteers. These are the &amp;ldquo;Invisible
+Giants.&amp;rdquo; You likely use their code every single day without realizing
+it.&lt;/p&gt;
+&lt;p&gt;Here is the story of the top 21, starting with the master of the file system.&lt;/p&gt;
+&lt;h3 id=&#34;1-the-watchman-paul-millr&#34;&gt;1. The Watchman: Paul Millr&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Handle:&lt;/strong&gt; &lt;a href=&#34;https://github.com/paulmillr&#34;&gt;&lt;code&gt;@paulmillr&lt;/code&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;The Crown Jewel:&lt;/strong&gt; &lt;strong&gt;&lt;a href=&#34;https://github.com/paulmillr/chokidar&#34;&gt;&lt;code&gt;chokidar&lt;/code&gt;&lt;/a&gt;&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;The Numbers:&lt;/strong&gt; Used in over &lt;strong&gt;30 million&lt;/strong&gt; repositories; hundreds
+of millions of downloads.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;The Story:&lt;/strong&gt; In the early days of Node.js, the simple act of
+&amp;ldquo;watching&amp;rdquo; a file for changes (so your app could reload automatically)
+was broken. It was buggy, crashed on Macs, and ignored errors on
+Windows. Paul didn&amp;rsquo;t just accept this; he built &lt;strong&gt;Chokidar&lt;/strong&gt;.
+&lt;strong&gt;Why it’s special:&lt;/strong&gt; It solved the most painful part of the
+developer experience: waiting. Every time you hit &lt;code&gt;Ctrl+S&lt;/code&gt; in VS Code,
+or your React app instantly updates in the browser, that is Paul’s
+code running in the background, efficiently watching the world for
+you.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+&lt;h3 id=&#34;2-the-king-of-productivity-sindre-sorhus&#34;&gt;2. The King of Productivity: Sindre Sorhus&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Handle:&lt;/strong&gt; &lt;a href=&#34;https://github.com/sindresorhus&#34;&gt;&lt;code&gt;@sindresorhus&lt;/code&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;The Crown Jewel:&lt;/strong&gt; &lt;strong&gt;&lt;a href=&#34;https://github.com/chalk/chalk&#34;&gt;&lt;code&gt;chalk&lt;/code&gt;&lt;/a&gt;&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;The Numbers:&lt;/strong&gt; 1.9 Billion+ downloads.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;The Story:&lt;/strong&gt; Sindre is a legend who believes in the &amp;ldquo;Unix
+Philosophy&amp;rdquo;: small modules that do one thing well. His most famous
+creation, &lt;strong&gt;Chalk&lt;/strong&gt;, brought color to the terminal.
+&lt;strong&gt;Why it’s special:&lt;/strong&gt; Before Sindre, the terminal was a bleak,
+black-and-white wall of text. He made errors red, warnings yellow, and
+success green. He literally colored the developer&amp;rsquo;s world, reducing
+eye strain and confusion for millions.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;3-the-master-of-micro-utils-jon-schlinkert&#34;&gt;3. The Master of Micro-Utils: Jon Schlinkert&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Handle:&lt;/strong&gt; &lt;a href=&#34;https://github.com/jonschlinkert&#34;&gt;&lt;code&gt;@jonschlinkert&lt;/code&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;The Crown Jewel:&lt;/strong&gt;
+&lt;strong&gt;&lt;a href=&#34;https://github.com/micromatch/micromatch&#34;&gt;&lt;code&gt;micromatch&lt;/code&gt;&lt;/a&gt;&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;The Numbers:&lt;/strong&gt; 1.3 Billion+ downloads.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;The Story:&lt;/strong&gt; Jon is the master of &amp;ldquo;matching.&amp;rdquo; If you have ever
+typed &lt;code&gt;*.js&lt;/code&gt; to find all JavaScript files, or &lt;code&gt;src/**/*.css&lt;/code&gt; to find
+styles, you are using Jon&amp;rsquo;s logic.
+&lt;strong&gt;Why it’s special:&lt;/strong&gt; His code is the invisible sorting machine
+inside Webpack, Babel, and ESLint. He ensures that when you ask for a
+file, the computer actually finds the right one.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;4-the-partner-in-code-brian-woodward&#34;&gt;4. The Partner in Code: Brian Woodward&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Handle:&lt;/strong&gt; &lt;a href=&#34;https://github.com/doowb&#34;&gt;&lt;code&gt;@doowb&lt;/code&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;The Crown Jewel:&lt;/strong&gt;
+&lt;strong&gt;&lt;a href=&#34;https://github.com/helpers/handlebars-helpers&#34;&gt;&lt;code&gt;handlebars-helpers&lt;/code&gt;&lt;/a&gt;&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;The Numbers:&lt;/strong&gt; 860 Million+ downloads.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;The Story:&lt;/strong&gt; Often working in tandem with Jon Schlinkert, Brian
+builds the glue that holds static sites together.
+&lt;strong&gt;Why it’s special:&lt;/strong&gt; He provides the &amp;ldquo;helpers&amp;rdquo; that allow
+templating engines to function—formatting dates, looping through data,
+and automating repetitive HTML tasks. He is the reason your blog
+generator works.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;5-the-modernizer-daniel-tschinder&#34;&gt;5. The Modernizer: Daniel Tschinder&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Handle:&lt;/strong&gt; &lt;a href=&#34;https://github.com/danez&#34;&gt;&lt;code&gt;@danez&lt;/code&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;The Crown Jewel:&lt;/strong&gt; &lt;strong&gt;&lt;a href=&#34;https://babeljs.io&#34;&gt;&lt;code&gt;babel-plugin-transform...&lt;/code&gt;&lt;/a&gt;&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;The Numbers:&lt;/strong&gt; 774 Million+ downloads.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;The Story:&lt;/strong&gt; Daniel is a core pillar of the &lt;strong&gt;Babel&lt;/strong&gt; team. Babel
+is the &amp;ldquo;time machine&amp;rdquo; of the web; it lets you write futuristic code
+today and converts it into code that older browsers can understand.
+&lt;strong&gt;Why it’s special:&lt;/strong&gt; Without Daniel, we would still be writing
+archaic JavaScript (ES5). He allows the entire industry to move
+forward without leaving users on older computers behind.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;6-the-babel-keeper-henry-zhu&#34;&gt;6. The Babel Keeper: Henry Zhu&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Handle:&lt;/strong&gt; &lt;a href=&#34;https://github.com/hzoo&#34;&gt;&lt;code&gt;@hzoo&lt;/code&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;The Crown Jewel:&lt;/strong&gt; &lt;strong&gt;&lt;a href=&#34;https://github.com/babel/babel&#34;&gt;&lt;code&gt;babel-core&lt;/code&gt;&lt;/a&gt;&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;The Numbers:&lt;/strong&gt; 743 Million+ downloads.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;The Story:&lt;/strong&gt; Henry is the face of open-source sustainability. As
+the lead maintainer of Babel, he manages the compiler that powers
+React, Vue, and Next.js.
+&lt;strong&gt;Why it’s special:&lt;/strong&gt; He holds the keys to the kingdom. If Babel
+breaks, the modern web breaks. His &amp;ldquo;package&amp;rdquo; is actually the peace of
+mind that your code will run anywhere, on any device.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;7-the-architect-logan-smyth&#34;&gt;7. The Architect: Logan Smyth&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Handle:&lt;/strong&gt; &lt;a href=&#34;https://github.com/loganfsmyth&#34;&gt;&lt;code&gt;@loganfsmyth&lt;/code&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;The Crown Jewel:&lt;/strong&gt;
+&lt;strong&gt;&lt;a href=&#34;https://github.com/babel/babel-loader&#34;&gt;&lt;code&gt;babel-loader&lt;/code&gt;&lt;/a&gt;&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;The Numbers:&lt;/strong&gt; 739 Million+ downloads.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;The Story:&lt;/strong&gt; Logan builds the bridges. He specializes in how Babel
+talks to other tools, specifically Webpack.
+&lt;strong&gt;Why it’s special:&lt;/strong&gt; He created the translation layer that
+connects your build system to the compiler. He makes sure the complex
+&amp;ldquo;pipeline&amp;rdquo; of modern web development flows smoothly without clogging.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;8-the-father-of-npm-isaac-z-schlueter&#34;&gt;8. The Father of NPM: Isaac Z. Schlueter&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Handle:&lt;/strong&gt; &lt;a href=&#34;https://github.com/isaacs&#34;&gt;&lt;code&gt;@isaacs&lt;/code&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;The Crown Jewel:&lt;/strong&gt;
+&lt;strong&gt;&lt;a href=&#34;https://github.com/isaacs/node-glob&#34;&gt;&lt;code&gt;glob&lt;/code&gt;&lt;/a&gt;&lt;/strong&gt; (and created &lt;code&gt;npm&lt;/code&gt;)&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;The Numbers:&lt;/strong&gt; 736 Million+ downloads.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;The Story:&lt;/strong&gt; Isaac is royalty. He created &lt;strong&gt;npm&lt;/strong&gt; itself. However,
+his most downloaded package is &lt;strong&gt;glob&lt;/strong&gt;, which teaches Node.js how to
+find files on a hard drive using patterns.
+&lt;strong&gt;Why it’s special:&lt;/strong&gt; He didn&amp;rsquo;t just write a package; he built the
+playground everyone else on this list is playing in. Every time you
+run &lt;code&gt;npm install&lt;/code&gt;, you are using his invention.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;9-the-ast-surgeon-brian-ng&#34;&gt;9. The AST Surgeon: Brian Ng&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Handle:&lt;/strong&gt; &lt;a href=&#34;https://github.com/existentialism&#34;&gt;&lt;code&gt;@existentialism&lt;/code&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;The Crown Jewel:&lt;/strong&gt; &lt;strong&gt;&lt;a href=&#34;https://github.com/babel/babel&#34;&gt;&lt;code&gt;babel-types&lt;/code&gt;&lt;/a&gt;&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;The Numbers:&lt;/strong&gt; 685 Million+ downloads.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;The Story:&lt;/strong&gt; Brian’s work allows software to &amp;ldquo;understand&amp;rdquo; other
+software. He maintains the tools that dissect code into Abstract
+Syntax Trees (ASTs).
+&lt;strong&gt;Why it’s special:&lt;/strong&gt; His tools don&amp;rsquo;t just read code; they
+surgically alter it. This is what allows tools to automatically fix
+your bugs or format your messy code.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;10-the-server-savior-doug-wilson&#34;&gt;10. The Server Savior: Doug Wilson&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Handle:&lt;/strong&gt; &lt;a href=&#34;https://github.com/dougwilson&#34;&gt;&lt;code&gt;@dougwilson&lt;/code&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;The Crown Jewel:&lt;/strong&gt; &lt;strong&gt;&lt;a href=&#34;https://github.com/expressjs/express&#34;&gt;&lt;code&gt;express&lt;/code&gt;&lt;/a&gt;&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;The Numbers:&lt;/strong&gt; 668 Million+ downloads.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;The Story:&lt;/strong&gt; If you have ever visited a website powered by
+Node.js, it was likely running on Express. Doug has been the tireless
+maintainer of the standard web framework for Node.
+&lt;strong&gt;Why it’s special:&lt;/strong&gt; He keeps the internet running. From small
+blogs to massive APIs, his code handles the request and sends the
+response.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;11-the-creator-sebastian-mckenzie&#34;&gt;11. The Creator: Sebastian McKenzie&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Handle:&lt;/strong&gt; &lt;a href=&#34;https://github.com/sebmck&#34;&gt;&lt;code&gt;@sebmck&lt;/code&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;The Crown Jewel:&lt;/strong&gt; &lt;strong&gt;&lt;a href=&#34;https://github.com/yarnpkg/yarn&#34;&gt;&lt;code&gt;yarn&lt;/code&gt;&lt;/a&gt;&lt;/strong&gt;
+(and created Babel)&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;The Numbers:&lt;/strong&gt; 632 Million+ downloads.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;The Story:&lt;/strong&gt; Sebastian is a prodigy. He created Babel (originally
+&lt;code&gt;6to5&lt;/code&gt;) as a teenager and then created &lt;strong&gt;Yarn&lt;/strong&gt;, a faster alternative
+to npm.
+&lt;strong&gt;Why it’s special:&lt;/strong&gt; He single-handedly dragged JavaScript from
+the dark ages of 2009 into the modern era. He defined the workflow of
+the 2010s.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;12-the-evangelist-james-kyle&#34;&gt;12. The Evangelist: James Kyle&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Handle:&lt;/strong&gt; &lt;a href=&#34;https://github.com/thejameskyle&#34;&gt;&lt;code&gt;@thejameskyle&lt;/code&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;The Crown Jewel:&lt;/strong&gt; &lt;strong&gt;&lt;a href=&#34;https://flow.org/&#34;&gt;&lt;code&gt;flow&lt;/code&gt;&lt;/a&gt;&lt;/strong&gt; / Babel Plugins&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;The Numbers:&lt;/strong&gt; 625 Million+ downloads.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;The Story:&lt;/strong&gt; James was the bridge between complex compilers and
+regular humans. He wrote the manuals, the guides, and the plugins that
+made tools like Babel and Flow accessible.
+&lt;strong&gt;Why it’s special:&lt;/strong&gt; He turned &amp;ldquo;impossible&amp;rdquo; technology into
+&amp;ldquo;easy-to-use&amp;rdquo; tools.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;13-the-unicode-guardian-mathias-bynens&#34;&gt;13. The Unicode Guardian: Mathias Bynens&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Handle:&lt;/strong&gt; &lt;a href=&#34;https://github.com/mathias&#34;&gt;&lt;code&gt;@mathias&lt;/code&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;The Crown Jewel:&lt;/strong&gt; &lt;strong&gt;&lt;a href=&#34;https://github.com/mathias/he&#34;&gt;&lt;code&gt;he&lt;/code&gt;&lt;/a&gt;&lt;/strong&gt; (HTML Entities)&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;The Numbers:&lt;/strong&gt; 481 Million+ downloads.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;The Story:&lt;/strong&gt; Computers are bad at text, especially emojis and
+weird symbols. Mathias is the world expert on how JavaScript handles
+characters.
+&lt;strong&gt;Why it’s special:&lt;/strong&gt; If you have ever used an emoji 🚀 in a
+password or a username and the site didn&amp;rsquo;t crash, thank Mathias. He
+ensures the web speaks every human language correctly.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;14-the-godfather-tj-holowaychuk&#34;&gt;14. The Godfather: TJ Holowaychuk&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Handle:&lt;/strong&gt; &lt;a href=&#34;https://github.com/tjholowaychuk&#34;&gt;&lt;code&gt;@tjholowaychuk&lt;/code&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;The Crown Jewel:&lt;/strong&gt;
+&lt;strong&gt;&lt;a href=&#34;https://github.com/tj/commander.js&#34;&gt;&lt;code&gt;commander&lt;/code&gt;&lt;/a&gt;&lt;/strong&gt; / &lt;code&gt;mocha&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;The Numbers:&lt;/strong&gt; 364 Million+ downloads.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;The Story:&lt;/strong&gt; The most prolific programmer in Node history. He
+wrote the original versions of Express, Mocha, and Commander.
+&lt;strong&gt;Why it’s special:&lt;/strong&gt; He defined the &amp;ldquo;style&amp;rdquo; of Node.js. If you
+write code that looks clean and elegant, you are likely mimicking TJ’s
+style.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;15-the-philosopher-james-halliday&#34;&gt;15. The Philosopher: James Halliday&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Handle:&lt;/strong&gt; &lt;a href=&#34;https://github.com/substack&#34;&gt;&lt;code&gt;@substack&lt;/code&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;The Crown Jewel:&lt;/strong&gt;
+&lt;strong&gt;&lt;a href=&#34;https://github.com/substack/minimist&#34;&gt;&lt;code&gt;minimist&lt;/code&gt;&lt;/a&gt;&lt;/strong&gt; / &lt;code&gt;browserify&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;The Numbers:&lt;/strong&gt; 417 Million+ downloads.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;The Story:&lt;/strong&gt; &amp;ldquo;Substack&amp;rdquo; invented the idea that you could write
+Node.js code and run it in the browser. He created &lt;strong&gt;Browserify&lt;/strong&gt;.
+&lt;strong&gt;Why it’s special:&lt;/strong&gt; He started the revolution of &amp;ldquo;bundling&amp;rdquo; that
+leads directly to the modern tools we use today.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;16-the-performance-obsessive-john-david-dalton&#34;&gt;16. The Performance Obsessive: John-David Dalton&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Handle:&lt;/strong&gt; &lt;a href=&#34;https://github.com/jdalton&#34;&gt;&lt;code&gt;@jdalton&lt;/code&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;The Crown Jewel:&lt;/strong&gt; &lt;strong&gt;&lt;a href=&#34;https://github.com/lodash/lodash&#34;&gt;&lt;code&gt;lodash&lt;/code&gt;&lt;/a&gt;&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;The Numbers:&lt;/strong&gt; 375 Million+ downloads.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;The Story:&lt;/strong&gt; JD Dalton realized the standard JavaScript library
+was too slow and incomplete. He built &lt;strong&gt;Lodash&lt;/strong&gt;, a utility belt that
+became the most depended-upon library in history.
+&lt;strong&gt;Why it’s special:&lt;/strong&gt; He was obsessed with speed. His functions
+were often faster than the browser&amp;rsquo;s built-in ones.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;17-the-command-line-commander-ben-coe&#34;&gt;17. The Command Line Commander: Ben Coe&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Handle:&lt;/strong&gt; &lt;a href=&#34;https://github.com/bcoe&#34;&gt;&lt;code&gt;@bcoe&lt;/code&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;The Crown Jewel:&lt;/strong&gt; &lt;strong&gt;&lt;a href=&#34;https://github.com/yargs/yargs&#34;&gt;&lt;code&gt;yargs&lt;/code&gt;&lt;/a&gt;&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;The Numbers:&lt;/strong&gt; 310 Million+ downloads.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;The Story:&lt;/strong&gt; Ben makes the command line friendly. He maintains
+&lt;strong&gt;Yargs&lt;/strong&gt;, the tool that parses command line arguments.
+&lt;strong&gt;Why it’s special:&lt;/strong&gt; Every time you type a command like &lt;code&gt;--help&lt;/code&gt;
+or &lt;code&gt;--version&lt;/code&gt;, Ben’s code figures out what you mean and tells the
+program what to do.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;18-the-polyfill-king-jordan-harband&#34;&gt;18. The Polyfill King: Jordan Harband&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Handle:&lt;/strong&gt; &lt;a href=&#34;https://github.com/ljharb&#34;&gt;&lt;code&gt;@ljharb&lt;/code&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;The Crown Jewel:&lt;/strong&gt;
+&lt;strong&gt;&lt;a href=&#34;https://github.com/ljharb/object.assign&#34;&gt;&lt;code&gt;object.assign&lt;/code&gt;&lt;/a&gt;&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;The Numbers:&lt;/strong&gt; 279 Million+ downloads.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;The Story:&lt;/strong&gt; Jordan ensures backward compatibility. He maintains
+hundreds of &amp;ldquo;polyfills&amp;rdquo;—shims that teach old browsers new tricks.
+&lt;strong&gt;Why it’s special:&lt;/strong&gt; He fights for the users on old computers,
+ensuring the web remains accessible to everyone, not just those with
+the newest MacBooks.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;19-the-stream-master-dominic-tarr&#34;&gt;19. The Stream Master: Dominic Tarr&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Handle:&lt;/strong&gt; &lt;a href=&#34;https://github.com/dominictarr&#34;&gt;&lt;code&gt;@dominictarr&lt;/code&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;The Crown Jewel:&lt;/strong&gt; &lt;strong&gt;&lt;a href=&#34;https://github.com/dominictarr/through&#34;&gt;&lt;code&gt;through&lt;/code&gt;&lt;/a&gt;&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;The Numbers:&lt;/strong&gt; 279 Million+ downloads.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;The Story:&lt;/strong&gt; Dominic is a mad scientist of data streams. He wrote
+the tools that allow data to flow through applications like water
+through pipes.
+&lt;strong&gt;Why it’s special:&lt;/strong&gt; He championed the idea of &amp;ldquo;small modules&amp;rdquo;
+more than anyone else, creating a massive network of tiny, perfect
+tools.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;20-the-plumber-nathan-rajlich&#34;&gt;20. The Plumber: Nathan Rajlich&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Handle:&lt;/strong&gt; &lt;a href=&#34;https://github.com/TooTallNate&#34;&gt;&lt;code&gt;@tootallnate&lt;/code&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;The Crown Jewel:&lt;/strong&gt; &lt;strong&gt;&lt;a href=&#34;https://github.com/nodejs/node-gyp&#34;&gt;&lt;code&gt;node-gyp&lt;/code&gt;&lt;/a&gt;&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;The Numbers:&lt;/strong&gt; 224 Million+ downloads.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;The Story:&lt;/strong&gt; Nathan handles the heavy lifting. He maintains the
+tools that let Node.js talk to C++ and low-level system components.
+&lt;strong&gt;Why it’s special:&lt;/strong&gt; He bridges the gap between the &amp;ldquo;easy&amp;rdquo; world
+of JavaScript and the &amp;ldquo;hard&amp;rdquo; world of machine code.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h3 id=&#34;21-the-p2p-pioneer-feross-aboukhadijeh&#34;&gt;21. The P2P Pioneer: Feross Aboukhadijeh&lt;/h3&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Handle:&lt;/strong&gt; &lt;a href=&#34;https://github.com/feross&#34;&gt;&lt;code&gt;@feross&lt;/code&gt;&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;The Crown Jewel:&lt;/strong&gt;
+&lt;strong&gt;&lt;a href=&#34;https://github.com/standard/standard&#34;&gt;&lt;code&gt;standard&lt;/code&gt;&lt;/a&gt;&lt;/strong&gt; / &lt;code&gt;webtorrent&lt;/code&gt;&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;The Numbers:&lt;/strong&gt; 206 Million+ downloads.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;The Story:&lt;/strong&gt; Feross is a visionary who wants to make the web
+decentralized. He built &lt;strong&gt;WebTorrent&lt;/strong&gt; (BitTorrent in the browser) and
+&lt;strong&gt;Standard&lt;/strong&gt; (a linter that bans semicolons).
+&lt;strong&gt;Why it’s special:&lt;/strong&gt; He proves that JavaScript can do
+anything—even stream movies peer-to-peer directly in your browser
+without a plugin. He pushes the boundaries of what is possible in a
+web browser.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+&lt;p&gt;&lt;em&gt;Post created via email from &lt;a href=&#34;mailto:emin@nuri.com&#34;&gt;emin@nuri.com&lt;/a&gt;&lt;/em&gt;&lt;/p&gt;</description>
+    </item>
     <item>
       <title>Governing Governance: Why Human Consensus is Harder Than Code</title>
       <link>https://emino.app/posts/governing-governance-why-human-consensus-is-harder-than-code/</link>

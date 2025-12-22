@@ -6,8 +6,25 @@
     <description>Recent content in Posts on Emino.App&#39;s, Art&#39;s &amp; Articles by Emin Mahrt</description>
     <generator>Hugo -- 0.148.2</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 22 Dec 2025 13:00:01 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 22 Dec 2025 15:20:01 +0000</lastBuildDate>
     <atom:link href="https://emino.app/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>⚖️ Code is Law vs. The $9.4M Rescue: The Gnosis Chain Hard Fork</title>
+      <link>https://emino.app/posts/code-is-law-vs-the-9-4m-rescue-the-gnosis-chain-hard-fork/</link>
+      <pubDate>Mon, 22 Dec 2025 15:20:01 +0000</pubDate>
+      <guid>https://emino.app/posts/code-is-law-vs-the-9-4m-rescue-the-gnosis-chain-hard-fork/</guid>
+      <description>&lt;h2 id=&#34;tldr&#34;&gt;TL;DR&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;The Event:&lt;/strong&gt; In December 2025, Gnosis Chain executed a controversial
+hard fork to recover &lt;strong&gt;$9.4M&lt;/strong&gt; stolen in the Balancer protocol hack.
+&lt;strong&gt;The Conflict:&lt;/strong&gt; The decision pitted &amp;ldquo;Pragmatists&amp;rdquo; (who prioritize
+victim restitution and mass adoption) against &amp;ldquo;Purists&amp;rdquo; (who fear the
+loss of credible neutrality and censorship resistance).
+&lt;strong&gt;The Outcome:&lt;/strong&gt; The chain successfully seized the hacker&amp;rsquo;s funds, but
+the process bypassed the DAO vote, revealing that technical governance
+currently outweighs community governance in crises. A new
+&amp;ldquo;Intervention Framework&amp;rdquo; is being drafted to prevent arbitrary
+decisions in the future.&lt;/p&gt;</description>
+    </item>
     <item>
       <title>AI Feature Code Review of Nuri.com</title>
       <link>https://emino.app/posts/ai-feature-code-review-of-nuri-com/</link>

@@ -2,25 +2,28 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>https://emino.app/posts/code-is-law-vs-the-9-4m-rescue-the-gnosis-chain-hard-fork/</loc>
-    <lastmod>2025-12-22T15:20:01+00:00</lastmod>
-  </url><url>
     <loc>https://emino.app/categories/blog/</loc>
-    <lastmod>2025-12-22T15:20:01+00:00</lastmod>
+    <lastmod>2025-12-22T18:25:02+00:00</lastmod>
   </url><url>
     <loc>https://emino.app/categories/</loc>
-    <lastmod>2025-12-22T15:20:01+00:00</lastmod>
+    <lastmod>2025-12-22T18:25:02+00:00</lastmod>
   </url><url>
     <loc>https://emino.app/tags/email-post/</loc>
-    <lastmod>2025-12-22T15:20:01+00:00</lastmod>
+    <lastmod>2025-12-22T18:25:02+00:00</lastmod>
   </url><url>
     <loc>https://emino.app/</loc>
-    <lastmod>2025-12-22T15:20:01+00:00</lastmod>
+    <lastmod>2025-12-22T18:25:02+00:00</lastmod>
   </url><url>
     <loc>https://emino.app/posts/</loc>
-    <lastmod>2025-12-22T15:20:01+00:00</lastmod>
+    <lastmod>2025-12-22T18:25:02+00:00</lastmod>
   </url><url>
     <loc>https://emino.app/tags/</loc>
+    <lastmod>2025-12-22T18:25:02+00:00</lastmod>
+  </url><url>
+    <loc>https://emino.app/posts/the-aave-governance-crisis-a-technical-post-mortem-of-propos/</loc>
+    <lastmod>2025-12-22T18:25:02+00:00</lastmod>
+  </url><url>
+    <loc>https://emino.app/posts/code-is-law-vs-the-9-4m-rescue-the-gnosis-chain-hard-fork/</loc>
     <lastmod>2025-12-22T15:20:01+00:00</lastmod>
   </url><url>
     <loc>https://emino.app/posts/ai-feature-code-review-of-nuri-com/</loc>

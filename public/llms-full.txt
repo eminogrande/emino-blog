@@ -1,5 +1,5 @@
 # Emino Blog - Complete Content for LLMs
-Generated: Tue Jan  6 03:00:01 AM UTC 2026
+Generated: Wed Jan  7 03:00:01 AM UTC 2026
 
 ## All Blog Posts
 
@@ -10046,6 +10046,18 @@ Karpathy leaves us with a humbling reminder:
 simulation of an average human labeler."
 
 Build accordingly. Don't worship the tool; wield it.
+
+---
+*Post created via email from emin@nuri.com*
+
+---
+## Untitled Post
+
+
+
+<div><img></div>
+
+![IMG_7629](/media/untitled-post/IMG_7629.jpg)
 
 ---
 *Post created via email from emin@nuri.com*

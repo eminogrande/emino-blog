@@ -6,8 +6,28 @@
     <description>Recent content on Emino.App&#39;s, Art&#39;s &amp; Articles by Emin Mahrt</description>
     <generator>Hugo -- 0.148.2</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 15 Jan 2026 09:40:01 +0000</lastBuildDate>
+    <lastBuildDate>Thu, 15 Jan 2026 19:40:01 +0000</lastBuildDate>
     <atom:link href="https://emino.app/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>What We Built (Nostr DM in Nuri)</title>
+      <link>https://emino.app/posts/what-we-built-nostr-dm-in-nuri/</link>
+      <pubDate>Thu, 15 Jan 2026 19:40:01 +0000</pubDate>
+      <guid>https://emino.app/posts/what-we-built-nostr-dm-in-nuri/</guid>
+      <description>&lt;p&gt;What We Built (Nostr DM in Nuri)
+This is a lightweight, encrypted, relay-based 1:1 chat that lives
+inside your app and uses the user’s existing wallet key material to
+derive a Nostr identity. It’s wired into screens/BitcoinDebugModal.tsx
+and
+exposed through components/NostrChatModal.tsx, with the support
+contact hard‑coded to
+npub1r7y83c4w57jc8skud7e4m6x9qt9g7s6zel6mnvj64lh00lc7tynsdx89vj.&lt;/p&gt;
+&lt;p&gt;Identity &amp;amp; Key Management
+We derive a deterministic Nostr keypair from the device’s Bitcoin
+private key (fallback to Ethereum key, then random if neither exists).
+The Nostr private key is stored in secure storage and can be wiped on
+factory
+reset.&lt;/p&gt;</description>
+    </item>
     <item>
       <title>The Medium of Exchange Era: Key Takeaways from Lightning&#43;&#43; Berlin 2025</title>
       <link>https://emino.app/posts/the-medium-of-exchange-era-key-takeaways-from-lightning-berl/</link>

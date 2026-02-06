@@ -6,8 +6,29 @@
     <description>Recent content on Emino.App&#39;s, Art&#39;s &amp; Articles by Emin Mahrt</description>
     <generator>Hugo -- 0.148.2</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 01 Feb 2026 21:20:01 +0000</lastBuildDate>
+    <lastBuildDate>Fri, 06 Feb 2026 22:25:01 +0000</lastBuildDate>
     <atom:link href="https://emino.app/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>LIGHTNING NETWORK DEEP DIVE: ARCHITECTURE AND IMPLEMENTATION</title>
+      <link>https://emino.app/posts/lightning-network-deep-dive-architecture-and-implementation/</link>
+      <pubDate>Fri, 06 Feb 2026 22:25:01 +0000</pubDate>
+      <guid>https://emino.app/posts/lightning-network-deep-dive-architecture-and-implementation/</guid>
+      <description>&lt;p&gt;Speaker: Laolu &amp;ldquo;Roasbeef&amp;rdquo; Osuntokun&lt;/p&gt;
+&lt;p&gt;[00:00:26] Introduction
+The talk focuses on the technical underpinnings of the Lightning
+Network, specifically moving
+beyond high-level concepts to explain the actual commitment protocols,
+the architecture
+of the Lightning Network Daemon (LND), and future routing strategies like Flare.&lt;/p&gt;
+&lt;p&gt;[00:01:27] The Core: Bi-directional Payment Channels
+A channel is essentially a 2-of-2 multi-signature escrow on the
+Bitcoin blockchain. Two
+parties deposit funds into this &amp;ldquo;funding transaction.&amp;rdquo; Once this is
+confirmed, they
+can perform an unlimited number of off-chain transactions by updating
+the balance
+distribution of those funds without touching the main blockchain.&lt;/p&gt;</description>
+    </item>
     <item>
       <title>The Mystery of the Simons Cone: The Day Geometry Broke</title>
       <link>https://emino.app/posts/the-mystery-of-the-simons-cone-the-day-geometry-broke/</link>

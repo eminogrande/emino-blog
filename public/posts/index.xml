@@ -6,8 +6,101 @@
     <description>Recent content in Posts on Emino.App&#39;s, Art&#39;s &amp; Articles by Emin Mahrt</description>
     <generator>Hugo -- 0.148.2</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 06 Feb 2026 22:25:01 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 09 Feb 2026 10:40:01 +0000</lastBuildDate>
     <atom:link href="https://emino.app/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Comprehensive History of the ThreeFold Network and Tokens</title>
+      <link>https://emino.app/posts/comprehensive-history-of-the-threefold-network-and-tokens/</link>
+      <pubDate>Mon, 09 Feb 2026 10:40:01 +0000</pubDate>
+      <guid>https://emino.app/posts/comprehensive-history-of-the-threefold-network-and-tokens/</guid>
+      <description>&lt;p&gt;The ThreeFold Network is a decentralized peer-to-peer (P2P) internet
+infrastructure project. It provides a global grid of computing,
+storage, and network capacity owned by the community rather than
+centralized providers.&lt;/p&gt;
+&lt;h2 id=&#34;1-project-inception-and-vision-2016--2017&#34;&gt;1. Project Inception and Vision (2016 – 2017)&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Founding&lt;/strong&gt;: ThreeFold was established in 2016 by a team of
+internet veterans led by Kristof De Spiegeleer.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Core Philosophy&lt;/strong&gt;: The mission was to create a &amp;ldquo;People’s Internet&amp;rdquo;
+that is open-source, neutral, and highly secure.&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Technical Development&lt;/strong&gt;: The foundation for the network was the
+development of &lt;strong&gt;Zero-OS&lt;/strong&gt;, a lightweight operating system that
+removes the need for human intervention in server management
+(Self-Healing and Autonomous).&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&#34;2-infrastructure-evolution-the-grid-versions&#34;&gt;2. Infrastructure Evolution: The Grid Versions&lt;/h2&gt;
+&lt;p&gt;The network has evolved through several iterations to scale its
+capacity and transition toward a commercial marketplace.&lt;/p&gt;</description>
+    </item>
+    <item>
+      <title>Comprehensive Transaction Analysis: 34yCReBo...jtVM</title>
+      <link>https://emino.app/posts/comprehensive-transaction-analysis-34ycrebo-jtvm/</link>
+      <pubDate>Mon, 09 Feb 2026 10:40:01 +0000</pubDate>
+      <guid>https://emino.app/posts/comprehensive-transaction-analysis-34ycrebo-jtvm/</guid>
+      <description>&lt;h1 id=&#34;comprehensive-transaction-analysis-34ycrebojtvm&#34;&gt;Comprehensive Transaction Analysis: 34yCReBo&amp;hellip;jtVM&lt;/h1&gt;
+&lt;h2 id=&#34;1-transaction-identity&#34;&gt;1. TRANSACTION IDENTITY&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;Transaction Hash:&lt;/strong&gt; 34yCReBoTyb12hH33xVdydoNJE5s58Kb1VeWYwY7jtVM&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Blockchain:&lt;/strong&gt; NEAR Protocol (Mainnet)&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Status:&lt;/strong&gt; Success (Finalized)&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Signer (Sender):&lt;/strong&gt; v4v.near&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;Receiver Contract:&lt;/strong&gt; x.paras.near (The primary Paras marketplace contract)&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;2-financial--gas-breakdown&#34;&gt;2. FINANCIAL &amp;amp; GAS BREAKDOWN&lt;/h2&gt;
+&lt;table&gt;
+  &lt;thead&gt;
+      &lt;tr&gt;
+          &lt;th style=&#34;text-align: left&#34;&gt;Item&lt;/th&gt;
+          &lt;th style=&#34;text-align: left&#34;&gt;Value (NEAR)&lt;/th&gt;
+          &lt;th style=&#34;text-align: left&#34;&gt;Value (USD approx.)&lt;/th&gt;
+          &lt;th style=&#34;text-align: left&#34;&gt;Description&lt;/th&gt;
+      &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Gas Limit&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;300 TGas&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;N/A&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Maximum computational units allocated.&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Gas Used&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;15.42 TGas&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;~$0.00008&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;Actual computational effort used.&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Transaction Fee&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;0.001542 NEAR&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&amp;lt;$0.01&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;The cost paid to&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;validators to process the call.&lt;/td&gt;
+          &lt;td&gt;&lt;/td&gt;
+          &lt;td&gt;&lt;/td&gt;
+          &lt;td&gt;&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;&lt;strong&gt;Attached Deposit&lt;/strong&gt;&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;1 yoctoNEAR&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;~$0.0000&amp;hellip;01&lt;/td&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;A security&lt;/td&gt;
+      &lt;/tr&gt;
+      &lt;tr&gt;
+          &lt;td style=&#34;text-align: left&#34;&gt;requirement for asset transfers.&lt;/td&gt;
+          &lt;td&gt;&lt;/td&gt;
+          &lt;td&gt;&lt;/td&gt;
+          &lt;td&gt;&lt;/td&gt;
+      &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;3-technical-action-mt_transfer_call&#34;&gt;3. TECHNICAL ACTION: &lt;code&gt;mt_transfer_call&lt;/code&gt;&lt;/h2&gt;
+&lt;p&gt;The transaction executed a &amp;ldquo;Multi-Token Transfer and Call.&amp;rdquo; This is a
+high-level function that does two things simultaneously:&lt;/p&gt;</description>
+    </item>
     <item>
       <title>LIGHTNING NETWORK DEEP DIVE: ARCHITECTURE AND IMPLEMENTATION</title>
       <link>https://emino.app/posts/lightning-network-deep-dive-architecture-and-implementation/</link>

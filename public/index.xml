@@ -6,8 +6,28 @@
     <description>Recent content on Emino.App&#39;s, Art&#39;s &amp; Articles by Emin Mahrt</description>
     <generator>Hugo -- 0.148.2</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 09 Feb 2026 10:40:01 +0000</lastBuildDate>
+    <lastBuildDate>Tue, 10 Feb 2026 08:00:01 +0000</lastBuildDate>
     <atom:link href="https://emino.app/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Agentic Wallets &amp; Passkey PRF: The Nuri.com Security Architecture</title>
+      <link>https://emino.app/posts/agentic-wallets-passkey-prf-the-nuri-com-security-architectu/</link>
+      <pubDate>Tue, 10 Feb 2026 08:00:01 +0000</pubDate>
+      <guid>https://emino.app/posts/agentic-wallets-passkey-prf-the-nuri-com-security-architectu/</guid>
+      <description>&lt;h1 id=&#34;agentic-wallets--passkey-prf-the-nuricom-security-architecture&#34;&gt;Agentic Wallets &amp;amp; Passkey PRF: The Nuri.com Security Architecture&lt;/h1&gt;
+&lt;h2 id=&#34;executive-summary&#34;&gt;Executive Summary&lt;/h2&gt;
+&lt;p&gt;Traditional wallet security usually forces a trade-off between
+self-custody (seed phrases) and convenience (custodial). By leveraging
+the &lt;strong&gt;WebAuthn PRF (Pseudo-Random Function) extension&lt;/strong&gt;, we have
+implemented a third way at &lt;strong&gt;nuri.com&lt;/strong&gt;: A hardware-backed,
+deterministic, multi-sig wallet architecture designed specifically for
+the era of AI Agents.&lt;/p&gt;
+&lt;hr&gt;
+&lt;h2 id=&#34;1-the-prf-revolution-hardware-as-the-seed&#34;&gt;1. The PRF Revolution: Hardware as the Seed&lt;/h2&gt;
+&lt;p&gt;The core innovation lies in moving away from stored secrets. Instead
+of a master password or a stored JSON file, we use the Passkey PRF
+extension to derive entropy directly from the authenticator (e.g.,
+TouchID, FaceID, or YubiKey).&lt;/p&gt;</description>
+    </item>
     <item>
       <title>Comprehensive History of the ThreeFold Network and Tokens</title>
       <link>https://emino.app/posts/comprehensive-history-of-the-threefold-network-and-tokens/</link>

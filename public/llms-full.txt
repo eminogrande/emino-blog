@@ -1,5 +1,5 @@
 # Emino Blog - Complete Content for LLMs
-Generated: Mon Feb  9 03:00:01 AM UTC 2026
+Generated: Tue Feb 10 03:00:01 AM UTC 2026
 
 ## All Blog Posts
 
@@ -13774,6 +13774,170 @@ allows a node to find a path across the global network without needing to store
 gigabytes of map data.
 
 ![image](/media/lightning-network-deep-dive-architecture-and-implementation/image.png)
+
+---
+*Post created via email from emin@nuri.com*
+
+---
+## Comprehensive History of the ThreeFold Network and Tokens
+
+
+
+The ThreeFold Network is a decentralized peer-to-peer (P2P) internet
+infrastructure project. It provides a global grid of computing,
+storage, and network capacity owned by the community rather than
+centralized providers.
+
+## 1. Project Inception and Vision (2016 – 2017)
+* **Founding**: ThreeFold was established in 2016 by a team of
+internet veterans led by Kristof De Spiegeleer.
+* **Core Philosophy**: The mission was to create a "People’s Internet"
+that is open-source, neutral, and highly secure.
+* **Technical Development**: The foundation for the network was the
+development of **Zero-OS**, a lightweight operating system that
+removes the need for human intervention in server management
+(Self-Healing and Autonomous).
+
+## 2. Infrastructure Evolution: The Grid Versions
+The network has evolved through several iterations to scale its
+capacity and transition toward a commercial marketplace.
+
+* **Grid v1.0 & v2.0 (2018 – 2019)**: These early versions focused on
+testing the "Proof-of-Capacity" model, where users (Farmers) were
+rewarded for proving their hardware was connected to the grid.
+* **Grid v3.0 (2020 – 2025)**: This era saw the network expand to a
+global scale, utilizing the Stellar blockchain to manage capacity. At
+its peak, the grid reached over 80 million GB of capacity across
+thousands of nodes in more than 20 countries.
+* **Grid v4.0 (2026 – Future)**: Launched in early 2026, this version
+represents a shift to a "Utilization-based" economy. It introduces a
+marketplace where users rent "slices" of computing resources directly
+from Farmers, who set their own pricing.
+
+## 3. The History of ThreeFold Tokens (TFT, SPORE, AUR)
+ThreeFold employs a multi-asset ecosystem to balance rewards for
+infrastructure providers with predictable pricing for end-users.
+
+### The ThreeFold Token (TFT)
+* **Launch**: TFT was introduced as the primary utility token of the network.
+* **Minting Model**: Unlike most cryptocurrencies, TFT was never sold
+in an ICO. It is only "minted" when a Farmer adds active hardware to
+the grid.
+* **Blockchain Rails**: Originally built on the Stellar network, TFT
+later expanded via bridges to Binance Smart Chain (BSC) and the native
+TF Chain (Substrate).
+* **Token Cap**: The total supply is strictly capped at 4 billion tokens.
+
+### The New v4 Economy: SPORE and AUR
+As of February 2026, the network is transitioning to a more commercial
+economic model.
+
+* **SPORE**: The new primary utility and reward token for v4.
+    * It is used for paying for grid services and as the payout for Farmers.
+    * The network has provided a one-way bridge for users to convert
+their legacy TFT tokens into SPORE to join the v4 ecosystem.
+* **AUR**: A gold-backed stablecoin introduced to provide price
+stability for corporate and enterprise users.
+    * This allows users to pay for computing "slices" without being
+exposed to the volatility of traditional crypto markets.
+
+## 4. Key Milestones and Timeline
+* **2016**: Project founded; initial development of Zero-OS begins.
+* **2018**: Early Grid versions launch; first ThreeFold Tokens (TFT) are minted.
+* **2020**: Launch of Grid 3.0 on the Stellar blockchain.
+* **2021**: Major growth phase, surpassing 80 PB of storage capacity globally.
+* **2024**: The community votes to transition from a "Capacity-based"
+to a "Utilization-based" reward model.
+* **Feb 8, 2026**: Official termination of minting rewards on the v3
+grid; mandatory migration to the v4 marketplace begins.
+* **2026+**: Launch of the v4 Marketplace, AUR stablecoin, and options
+to convert rewards into BTC, ETH, and USDC.
+
+---
+**Reference Links:**
+- [ThreeFold Official Website](https://threefold.io)
+- [ThreeFold Knowledge Base (Wiki)](https://manual.threefold.io)
+- [ThreeFold Forum](https://forum.threefold.io)
+- [ThreeFold GitHub](https://github.com/threefoldtech)
+
+---
+*Post created via email from emin@nuri.com*
+
+---
+## Comprehensive Transaction Analysis: 34yCReBo...jtVM
+
+
+
+# Comprehensive Transaction Analysis: 34yCReBo...jtVM
+
+## 1. TRANSACTION IDENTITY
+- **Transaction Hash:** 34yCReBoTyb12hH33xVdydoNJE5s58Kb1VeWYwY7jtVM
+- **Blockchain:** NEAR Protocol (Mainnet)
+- **Status:** Success (Finalized)
+- **Signer (Sender):** v4v.near
+- **Receiver Contract:** x.paras.near (The primary Paras marketplace contract)
+
+---
+
+## 2. FINANCIAL & GAS BREAKDOWN
+| Item | Value (NEAR) | Value (USD approx.) | Description |
+| :--- | :--- | :--- | :--- |
+| **Gas Limit** | 300 TGas | N/A | Maximum computational units allocated. |
+| **Gas Used** | 15.42 TGas | ~$0.00008 | Actual computational effort used. |
+| **Transaction Fee** | 0.001542 NEAR | <$0.01 | The cost paid to
+validators to process the call. |
+| **Attached Deposit** | 1 yoctoNEAR | ~$0.0000...01 | A security
+requirement for asset transfers. |
+
+---
+
+## 3. TECHNICAL ACTION: `mt_transfer_call`
+The transaction executed a "Multi-Token Transfer and Call." This is a
+high-level function that does two things simultaneously:
+1.  **Transfer:** Moves ownership of a specific asset (defined by
+NEP-245) from the sender to the receiver.
+2.  **Call:** Tells the receiving contract to immediately perform a
+secondary action (e.g., listing the item for sale or staking it).
+
+---
+
+## 4. NEP-245 EXPLAINED (MULTI-TOKEN STANDARD)
+NEP-245 is the NEAR equivalent to Ethereum's **ERC-1155**. It is
+designed to be a "Swiss Army Knife" for digital assets.
+
+### Why it was used here:
+- **Efficiency:** Instead of having different standards for
+one-of-a-kind items (NFTs) and stackable items (Fungible tokens),
+NEP-245 handles both in one contract.
+- **Semi-Fungibility:** It allows for "Editions." For example, if an
+artist releases 100 identical copies of a digital card, NEP-245 tracks
+them as a single ID with a balance of 100, rather than 100 separate
+unique entries.
+- **Lower Costs:** Batch transfers are possible, allowing you to move
+50 different items in one transaction fee.
+
+---
+
+## 5. EVENT LOGS & INTERNAL OPERATIONS
+Inside this transaction, the following logic was triggered:
+- **Standard:** `nep245`
+- **Event:** `mt_transfer`
+- **Logic Flow:**
+  1. The contract verifies the sender (`v4v.near`) owns the `token_id`.
+  2. The contract checks if the 1 yoctoNEAR deposit is present (security check).
+  3. The balance of the `token_id` is subtracted from the sender and
+added to the receiver.
+  4. The `on_mt_transfer` callback is triggered on the receiver
+contract to confirm it has "accepted" the assets.
+
+---
+
+## 6. SUMMARY
+This transaction was an efficient, low-cost move of a digital asset on
+the Paras marketplace. You paid a negligible fee (~$0.00008) to move a
+token that supports the modern NEP-245 standard, ensuring the
+marketplace could instantly recognize and process the transfer for its
+next step (likely a trade or listing).
 
 ---
 *Post created via email from emin@nuri.com*

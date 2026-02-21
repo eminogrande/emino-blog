@@ -7,7 +7,6 @@ categories = ["blog"]
 slug = "a-passkey-derived-2-of-2-taproot-wallet-architecture-elimina"
 +++
 
-
 This post
 describes a wallet architecture that removes seed phrases entirely, avoids
 storing long-term private keys, and mitigates one of the largest practical

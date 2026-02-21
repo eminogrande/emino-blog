@@ -7,7 +7,6 @@ categories = ["blog"]
 slug = "a-stateless-passkey-signer-for-bitcoin"
 +++
 
-
 Stateless Bitcoin Wallet With Passkeys and a Minimal Signer
 
 

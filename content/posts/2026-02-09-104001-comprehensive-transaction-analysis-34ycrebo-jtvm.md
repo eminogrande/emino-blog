@@ -9,6 +9,7 @@ markup = "markdown"
 body_format = "markdown"
 +++
 
+![](/media/comprehensive-transaction-analysis-34ycrebo-jtvm/cover.jpg)
 
 # Comprehensive Transaction Analysis: 34yCReBo...jtVM
 

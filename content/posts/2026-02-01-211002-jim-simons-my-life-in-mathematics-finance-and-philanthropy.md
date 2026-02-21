@@ -9,7 +9,6 @@ markup = "markdown"
 body_format = "markdown"
 +++
 
-
 # Jim Simons: My Life in Mathematics, Finance, and Philanthropy
 **Summary of the talk at the National Museum of Mathematics (MoMath)**
 

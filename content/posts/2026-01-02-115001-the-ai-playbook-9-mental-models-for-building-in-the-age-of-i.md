@@ -9,6 +9,7 @@ markup = "markdown"
 body_format = "markdown"
 +++
 
+![](/media/the-ai-playbook-9-mental-models-for-building-in-the-age-of-i/cover.jpg)
 
 The AI Playbook: 9 Mental Models for Building in the Age of Intelligence
 https://www.youtube.com/watch?v=7xTGNNLPyMI

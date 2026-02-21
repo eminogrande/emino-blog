@@ -7,7 +7,6 @@ categories = ["blog"]
 slug = "why-nuri-chose-a-stateless-passkey-architecture-first-and-ho"
 +++
 
-
 [image: image.png]
 # Why Nuri Chose a Stateless Passkey Architecture First — And How Lightning
 May Still Fit Later

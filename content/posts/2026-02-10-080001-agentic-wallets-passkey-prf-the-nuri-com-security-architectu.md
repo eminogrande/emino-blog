@@ -9,7 +9,6 @@ markup = "markdown"
 body_format = "markdown"
 +++
 
-
 # Agentic Wallets & Passkey PRF: The Nuri.com Security Architecture
 
 ## Executive Summary

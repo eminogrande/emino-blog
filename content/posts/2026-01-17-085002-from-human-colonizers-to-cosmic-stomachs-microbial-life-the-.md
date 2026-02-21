@@ -5,23 +5,18 @@ draft = false
 tags = ["email-post"]
 categories = ["blog"]
 slug = "from-human-colonizers-to-cosmic-stomachs-microbial-life-the-"
-markup = "html"
-body_format = "html"
 +++
-
-
-<div>
-<div>
 
 <p></p>
 
 <h1>
-<div><img></div>
+<img>
 From Human “Colonizers” to Cosmic “Stomachs”: Microbial Life, the Spark Toward Humans, and Darwin-Like Selection in Quantum Physics</h1>
 
 <p></p>
 
-<p><br></p>
+<p>
+</p>
 
 <p></p>
 
@@ -29,7 +24,8 @@ From Human “Colonizers” to Cosmic “Stomachs”: Microbial Life, the Spark 
 
 <p></p>
 
-<p><br></p>
+<p>
+</p>
 
 <p>This article synthesizes a set of linked questions: (i) how many species live on or in humans and which “living beings” are closest to us as constant colonizers; (ii) whether anything sits alone atop Earth’s food chain; (iii) what kind of alien life we’re most likely to detect; (iv) whether meteorites such as Murchison could plausibly represent a pivotal “event” for life’s emergence; (v) what, specifically, could count as the “spark” that makes a human possible; and (vi) whether physics—especially quantum entanglement and decoherence—contains processes analogous to Darwinian evolution. The central unifying thread is information: in biology, information is copied and selected (Darwinian evolution); in physics, information can be preserved, dispersed, redundantly recorded, or filtered by stability, but not necessarily in a Darwinian way.</p>
 
@@ -43,7 +39,8 @@ From Human “Colonizers” to Cosmic “Stomachs”: Microbial Life, the Spark 
 
 <p></p>
 
-<p><br></p>
+<p>
+</p>
 
 <p>You asked for all identified species, ordered “most to least,” that live on or in humans constantly. The immediate scientific complication is definitional:</p>
 
@@ -71,7 +68,8 @@ From Human “Colonizers” to Cosmic “Stomachs”: Microbial Life, the Spark 
 
 <p></p>
 
-<p><br></p>
+<p>
+</p>
 
 <p>A practical compromise is to distinguish:</p>
 
@@ -91,7 +89,8 @@ From Human “Colonizers” to Cosmic “Stomachs”: Microbial Life, the Spark 
 
 <p></p>
 
-<p><br></p>
+<p>
+</p>
 
 <p></p>
 
@@ -99,11 +98,13 @@ From Human “Colonizers” to Cosmic “Stomachs”: Microbial Life, the Spark 
 
 <p></p>
 
-<p><br></p>
+<p>
+</p>
 
 <p>A widely cited NIH/HMP framing is that humans are hosts to roughly 10,000 bacterial species globally, while an individual hosts on the order of ~1,000 species at a time.  </p>
 
-<p><br></p>
+<p>
+</p>
 
 <p>Beyond that headline number, modern reference catalogs show why “all identified” keeps moving:</p>
 
@@ -118,13 +119,13 @@ From Human “Colonizers” to Cosmic “Stomachs”: Microbial Life, the Spark 
 
 <li>
 
-<p>Gut viruses (mostly bacteriophages): A large metagenomic survey reported &gt;140,000 gut viral “species” (sequence-defined groups), with many novel.  </p>
+<p>Gut viruses (mostly bacteriophages): A large metagenomic survey reported >140,000 gut viral “species” (sequence-defined groups), with many novel.  </p>
 
 </li>
 
 <li>
 
-<p>Fungi (mycobiome): Reviews note &gt;390 fungal species identified across human niches.  </p>
+<p>Fungi (mycobiome): Reviews note >390 fungal species identified across human niches.  </p>
 
 </li>
 
@@ -137,7 +138,8 @@ From Human “Colonizers” to Cosmic “Stomachs”: Microbial Life, the Spark 
 
 <p></p>
 
-<p><br></p>
+<p>
+</p>
 
 <p></p>
 
@@ -145,7 +147,8 @@ From Human “Colonizers” to Cosmic “Stomachs”: Microbial Life, the Spark 
 
 <p></p>
 
-<p><br></p>
+<p>
+</p>
 
 <p>If you include viruses as “living,” then viruses likely dominate by species-level group counts in current catalogs; if you exclude them, bacteria dominate among cellular life. The rough ordering by identified diversity is:</p>
 
@@ -189,11 +192,13 @@ From Human “Colonizers” to Cosmic “Stomachs”: Microbial Life, the Spark 
 
 <p></p>
 
-<p><br></p>
+<p>
+</p>
 
 <p>You proposed simplifying to organisms “closer to humans” (animals with nervous systems and a heart-like pump). That essentially shifts the discussion from microbiomes to ectoparasites and skin-associated arthropods. Here, “constant colonizer” becomes narrow: the most “normal” long-term residents are mites; lice and scabies are obligate human parasites but not universal; others (bed bugs, botflies, sand fleas) are human-associated but usually not permanent residents.</p>
 
-<p><br></p>
+<p>
+</p>
 
 <p></p>
 
@@ -201,7 +206,8 @@ From Human “Colonizers” to Cosmic “Stomachs”: Microbial Life, the Spark 
 
 <p></p>
 
-<p><br></p>
+<p>
+</p>
 
 <p>(Ordered roughly from “most commonly present as a long-term resident” → “less common / more regional / more episodic.”)</p>
 
@@ -271,7 +277,8 @@ From Human “Colonizers” to Cosmic “Stomachs”: Microbial Life, the Spark 
 
 <p></p>
 
-<p><br></p>
+<p>
+</p>
 
 <p>Key caveat: only a few of these are plausibly “constant colonizers” in ordinary, healthy adults (notably Demodex). The rest are better described as parasites/infestations that can become persistent in the right social/ecological conditions.</p>
 
@@ -285,11 +292,13 @@ From Human “Colonizers” to Cosmic “Stomachs”: Microbial Life, the Spark 
 
 <p></p>
 
-<p><br></p>
+<p>
+</p>
 
 <p>You asked for a single being “on top of the food chain alone,” not getting eaten “like humans.” Ecologically, there’s a mismatch in the framing: apex predators can be hard to prey upon while alive, but no organism escapes being consumed by decomposers eventually.</p>
 
-<p><br></p>
+<p>
+</p>
 
 <p>A useful reframing is your later “stomach of the world” idea: the organisms that ultimately digest everything. In that framing, the closest answer is:</p>
 
@@ -305,11 +314,13 @@ From Human “Colonizers” to Cosmic “Stomachs”: Microbial Life, the Spark 
 
 <p></p>
 
-<p><br></p>
+<p>
+</p>
 
 <p>So if “master” means “final consumer / the biosphere’s stomach,” it’s microbial decomposers.</p>
 
-<p><br></p>
+<p>
+</p>
 
 <p>If “master” means “dominant shaper of Earth’s surface right now,” you can argue for humans, but that’s a statement about technology and global impact—not immunity from being consumed in the long run.</p>
 
@@ -323,11 +334,13 @@ From Human “Colonizers” to Cosmic “Stomachs”: Microbial Life, the Spark 
 
 <p></p>
 
-<p><br></p>
+<p>
+</p>
 
 <p>Your intuition that the first aliens are likely microbial is consistent with mainstream astrobiology strategy: microbes are simpler, more robust, and can exploit chemical energy in dark environments (e.g., subsurface oceans). NASA discussions of Europa/Enceladus life-detection commonly emphasize biosignatures compatible with microbial life and the plausibility of sampling for such signatures.  </p>
 
-<p><br></p>
+<p>
+</p>
 
 <p>A second point you implicitly raised: we may detect biosignatures (chemical/isotopic/mineral patterns) before we ever “see” a cell. That’s why sample return and in situ life-detection are major priorities in Mars and ocean-world exploration.</p>
 
@@ -341,11 +354,13 @@ From Human “Colonizers” to Cosmic “Stomachs”: Microbial Life, the Spark 
 
 <p></p>
 
-<p><br></p>
+<p>
+</p>
 
 <p>You proposed something like: a carbonaceous meteorite delivers amino acids and other organics, seeding Earth with the building blocks for microbes. Murchison is a good symbol because we have strong evidence it contains abundant organics, including many amino acids, with isotopic signatures supporting extraterrestrial origin.</p>
 
-<p><br></p>
+<p>
+</p>
 
 <p>Examples of the evidence:</p>
 
@@ -367,7 +382,8 @@ From Human “Colonizers” to Cosmic “Stomachs”: Microbial Life, the Spark 
 
 <p></p>
 
-<p><br></p>
+<p>
+</p>
 
 <p>However: this is best viewed as one input stream, not “the origin event.” Early Earth likely received organics from multiple sources (endogenous synthesis + many impacts), across many environments.</p>
 
@@ -381,11 +397,13 @@ From Human “Colonizers” to Cosmic “Stomachs”: Microbial Life, the Spark 
 
 <p></p>
 
-<p><br></p>
+<p>
+</p>
 
 <p>You pressed for a concrete “spark” rather than “billions of years happened.” The scientifically useful “spark” is not “a random amino acid,” but:</p>
 
-<p><br></p>
+<p>
+</p>
 
 <p></p>
 
@@ -393,17 +411,20 @@ From Human “Colonizers” to Cosmic “Stomachs”: Microbial Life, the Spark 
 
 <p></p>
 
-<p><br></p>
+<p>
+</p>
 
 <p>A self-copying system with heredity and variation capable of Darwinian evolution—often discussed as an RNA-like replicator (information storage + catalysis) coupled to compartments (protocells). This is the point where chemistry becomes an evolutionary process, not just reactions.</p>
 
-<p><br></p>
+<p>
+</p>
 
 <p>Work on fatty-acid vesicles encapsulating genetic polymers is one experimentally grounded line for how protocell-like systems could arise and couple growth with division.  </p>
 
 <p>RNA-world literature motivates why RNA (or an RNA-like polymer) is attractive: it can carry information and catalyze reactions, enabling a bridge from chemistry to heredity.  </p>
 
-<p><br></p>
+<p>
+</p>
 
 <p></p>
 
@@ -411,7 +432,8 @@ From Human “Colonizers” to Cosmic “Stomachs”: Microbial Life, the Spark 
 
 <p></p>
 
-<p><br></p>
+<p>
+</p>
 
 <p>You also asked what’s “the spark of a human,” not just life. A strong candidate for the pivotal transition enabling complex multicellular life is:</p>
 
@@ -427,7 +449,8 @@ From Human “Colonizers” to Cosmic “Stomachs”: Microbial Life, the Spark 
 
 <p></p>
 
-<p><br></p>
+<p>
+</p>
 
 <p>From there, the path to humans is “standard” evolutionary history: multicellularity → animals → vertebrates → mammals → primates → hominins.</p>
 
@@ -441,11 +464,13 @@ From Human “Colonizers” to Cosmic “Stomachs”: Microbial Life, the Spark 
 
 <p></p>
 
-<p><br></p>
+<p>
+</p>
 
 <p>You proposed that physical processes—nuclear chains, fusion/fission transformations, even warm/cold air exchange—look like “competition,” “variation,” and “information preservation,” suggesting an RNA-like information flow in matter itself.</p>
 
-<p><br></p>
+<p>
+</p>
 
 <p>A careful synthesis is:</p>
 
@@ -473,7 +498,8 @@ From Human “Colonizers” to Cosmic “Stomachs”: Microbial Life, the Spark 
 
 <p></p>
 
-<p><br></p>
+<p>
+</p>
 
 <p>So your analogy works best if interpreted as: far-from-equilibrium physics can generate persistent structures, but open-ended Darwinian evolution needs templated heredity.</p>
 
@@ -487,11 +513,13 @@ From Human “Colonizers” to Cosmic “Stomachs”: Microbial Life, the Spark 
 
 <p></p>
 
-<p><br></p>
+<p>
+</p>
 
 <p>This was the core conceptual knot you kept returning to. The resolution is that there are two different things people call “state change”:</p>
 
-<p><br></p>
+<p>
+</p>
 
 <p></p>
 
@@ -499,11 +527,13 @@ From Human “Colonizers” to Cosmic “Stomachs”: Microbial Life, the Spark 
 
 <p></p>
 
-<p><br></p>
+<p>
+</p>
 
 <p>If A and B are entangled, a measurement on A lets you update the conditional state you assign to B given the outcome at A.</p>
 
-<p><br></p>
+<p>
+</p>
 
 <p></p>
 
@@ -515,11 +545,13 @@ From Human “Colonizers” to Cosmic “Stomachs”: Microbial Life, the Spark 
 
 <p></p>
 
-<p><br></p>
+<p>
+</p>
 
 <p>Local physics at B is governed by B’s reduced state. The no-communication (no-signaling) principle says local operations/measurements on A cannot be used to transmit information to B faster than light; B’s local outcome statistics remain unchanged unless a classical signal arrives.  </p>
 
-<p><br></p>
+<p>
+</p>
 
 <p></p>
 
@@ -529,7 +561,8 @@ From Human “Colonizers” to Cosmic “Stomachs”: Microbial Life, the Spark 
 
 <p></p>
 
-<p><br></p>
+<p>
+</p>
 
 <p>You asked: “How do we influence it and prove it—do we need to change both sides at the same time?” A standard approach:</p>
 
@@ -559,7 +592,8 @@ From Human “Colonizers” to Cosmic “Stomachs”: Microbial Life, the Spark 
 
 <p></p>
 
-<p><br></p>
+<p>
+</p>
 
 <p>Answer to your timing question: you do not need to “change both sides simultaneously.” You need measurements on both sides and a correlation analysis; spacelike separation is used to prevent ordinary causal coordination.</p>
 
@@ -573,11 +607,13 @@ From Human “Colonizers” to Cosmic “Stomachs”: Microbial Life, the Spark 
 
 <p></p>
 
-<p><br></p>
+<p>
+</p>
 
 <p>You asked whether entanglement is limited to two-state “spin up/down,” and whether spin has real physical consequences in nuclear processes.</p>
 
-<p><br></p>
+<p>
+</p>
 
 <p></p>
 
@@ -585,11 +621,13 @@ From Human “Colonizers” to Cosmic “Stomachs”: Microbial Life, the Spark 
 
 <p></p>
 
-<p><br></p>
+<p>
+</p>
 
 <p>Entanglement can involve many degrees of freedom (polarization, path, energy/time bins, orbital angular momentum, etc.), and systems are not limited to two levels—qudits and continuous-variable entanglement exist in principle and practice.</p>
 
-<p><br></p>
+<p>
+</p>
 
 <p></p>
 
@@ -597,7 +635,8 @@ From Human “Colonizers” to Cosmic “Stomachs”: Microbial Life, the Spark 
 
 <p></p>
 
-<p><br></p>
+<p>
+</p>
 
 <p>Yes: reaction probabilities can depend on spin configurations. In particular, spin-polarized fusion is studied because aligning spins of reactants can increase cross sections.</p>
 
@@ -613,7 +652,8 @@ From Human “Colonizers” to Cosmic “Stomachs”: Microbial Life, the Spark 
 
 <p></p>
 
-<p><br></p>
+<p>
+</p>
 
 <p>This is a local effect: spin influences nuclear reaction channels and cross sections. It is not an example of “remote entanglement making distant matter behave differently.”</p>
 
@@ -627,11 +667,13 @@ From Human “Colonizers” to Cosmic “Stomachs”: Microbial Life, the Spark 
 
 <p></p>
 
-<p><br></p>
+<p>
+</p>
 
 <p>You asked for the closest experiment where two entangled systems each interact with their local environments in a way that looks Darwinian—i.e., persistence + competition + emergence of stable “winners.”</p>
 
-<p><br></p>
+<p>
+</p>
 
 <p>The closest well-developed framework is Quantum Darwinism:</p>
 
@@ -659,11 +701,13 @@ From Human “Colonizers” to Cosmic “Stomachs”: Microbial Life, the Spark 
 
 <p></p>
 
-<p><br></p>
+<p>
+</p>
 
 <p>A recent superconducting-circuit experiment reports a comprehensive demonstration consistent with these Quantum Darwinism signatures (branching structure, redundancy / mutual information plateau behavior).  </p>
 
-<p><br></p>
+<p>
+</p>
 
 <p></p>
 
@@ -671,7 +715,8 @@ From Human “Colonizers” to Cosmic “Stomachs”: Microbial Life, the Spark 
 
 <p></p>
 
-<p><br></p>
+<p>
+</p>
 
 <p>Step 1: Prepare A and B in an entangled state.</p>
 
@@ -681,7 +726,8 @@ From Human “Colonizers” to Cosmic “Stomachs”: Microbial Life, the Spark 
 
 <p>Step 4: Verify Darwinism-like behavior by showing that small fragments of E_A (and separately E_B) each reveal essentially the same pointer-state information (redundancy / plateau), while the underlying quantum coherences are suppressed.  </p>
 
-<p><br></p>
+<p>
+</p>
 
 <p>This is “Darwin-like” in a precise, limited sense:</p>
 
@@ -715,11 +761,13 @@ From Human “Colonizers” to Cosmic “Stomachs”: Microbial Life, the Spark 
 
 <p></p>
 
-<p><br></p>
+<p>
+</p>
 
 <p>You suggested a speculative extrapolation: if distant systems are entangled (e.g., black hole interiors entangled with Hawking radiation or other cosmological degrees of freedom), perhaps “one side” could create changes or chaos elsewhere in a Darwin-like way.</p>
 
-<p><br></p>
+<p>
+</p>
 
 <p>A careful statement consistent with known constraints is:</p>
 
@@ -747,7 +795,8 @@ From Human “Colonizers” to Cosmic “Stomachs”: Microbial Life, the Spark 
 
 <p></p>
 
-<p><br></p>
+<p>
+</p>
 
 <p>So your “black hole ↔ expansion ↔ creation” picture is best treated as a research-level speculation about global correlations, not as a mechanism for remote Darwin-like causal influence.</p>
 
@@ -766,7 +815,7 @@ From Human “Colonizers” to Cosmic “Stomachs”: Microbial Life, the Spark 
 <ol>
 <li>
 
-<p>Humans host vast biodiversity, especially microbial; global catalogs suggest ~10,000 bacterial species associated with humans, ~1,000 per person at a time, gut prokaryote catalogs at 4,644 species, gut viromes at &gt;140,000 viral groups, and mycobiomes at &gt;390 fungal species.  </p>
+<p>Humans host vast biodiversity, especially microbial; global catalogs suggest ~10,000 bacterial species associated with humans, ~1,000 per person at a time, gut prokaryote catalogs at 4,644 species, gut viromes at >140,000 viral groups, and mycobiomes at >390 fungal species.  </p>
 
 </li>
 
@@ -817,18 +866,8 @@ From Human “Colonizers” to Cosmic “Stomachs”: Microbial Life, the Spark 
 
 <p></p>
 
-<p><br></p>
-
-</div>
-</div>
-
-<div>
-<div>
-<div>
-<div></div>
-</div>
-</div>
-</div>
+<p>
+</p>
 
 ![IMG_7971](/media/from-human-colonizers-to-cosmic-stomachs-microbial-life-the-/IMG_7971.jpeg)
 

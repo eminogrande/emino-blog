@@ -7,8 +7,21 @@ categories = ["blog"]
 slug = "testing-the-post-by-email-function"
 +++
 
+![](/media/testing-the-post-by-email-function/cover.jpg)
 
 Pretty sure its not working.
 
 ---
 *Post created via email from emin@nuri.com*
+## Notes
+
+A quick note for now: this post is a snapshot — a small anchor for an idea/image that I want to return to.
+
+If you’re reading this later: I’ll expand it with more context (why it mattered, what I learned, and what changed after).
+## Context
+
+A short post for now — I’ll add more detail and links when I revisit this.
+## Context
+
+A short post for now — I’ll add more detail and links when I revisit this.
+

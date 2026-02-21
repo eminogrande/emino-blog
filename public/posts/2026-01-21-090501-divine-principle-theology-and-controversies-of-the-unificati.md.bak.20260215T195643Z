@@ -1,0 +1,24 @@
++++
+title = "Divine Principle: Theology and Controversies of the Unification Church"
+date = 2026-01-21T09:05:01Z
+draft = false
+tags = ["email-post"]
+categories = ["blog"]
+slug = "divine-principle-theology-and-controversies-of-the-unificati"
+markup = "html"
+body_format = "html"
++++
+
+
+<div>
+<div><a href="https://drive.google.com/file/d/1t_ljxo1YfJLn0D1fPGZbhQtBd3CTY0hQ/view?usp=drive_web" target="_blank"><img alt="" src="https://ssl.gstatic.com/docs/doclist/images/icon_10_generic_list.png"> <span>Shinzo_Abe’s_Fatal_Unification_Church_Ties.m4a</span></a></div>
+
+<div><a href="https://drive.google.com/file/d/1PJJbLF-M-W68KBYU8C2Rfh1HybYmms89/view?usp=drive_web" target="_blank"><img alt="" src="https://ssl.gstatic.com/docs/doclist/images/icon_10_generic_list.png"> <span>Sushi,_Guns,_and_the_Moonies__Collapse.m4a</span></a></div>
+These sources provide a comprehensive overview of the life and political legacy of Shinzo Abe, alongside a detailed history of the Unification Church. The first text examines Abe&#x27;s long tenure as Japan&#x27;s Prime Minister, highlighting his conservative economic strategies, efforts to reform the pacifist constitution, and his firm stance on national security. In contrast, the second source explores the theological foundations and global controversies surrounding the religious movement founded by Sun Myung Moon. It details the group&#x27;s anti-communist activism, its extensive media empire, and the significant political influence it exerted through various international affiliates. Crucially, the sources intersect by addressing the controversial ties between Japanese politicians and the church, a relationship that gained intense scrutiny following Abe’s assassination. Together, they document the complex interplay between religious movements, right-wing ideology, and state governance in the modern era.
+<div><br></div>
+
+<div><br></div>
+</div>
+
+---
+*Post created via email from emin@nuri.com*

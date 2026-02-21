@@ -9,7 +9,6 @@ markup = "markdown"
 body_format = "markdown"
 +++
 
-
 In his landmark talk at MoMath, Jim Simons recounts one of the most
 thrilling breakthroughs in modern mathematics. It is the story of how
 he, along with a few brilliant colleagues, discovered a "crack" in the

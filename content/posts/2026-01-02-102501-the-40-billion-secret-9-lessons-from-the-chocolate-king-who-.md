@@ -9,6 +9,7 @@ markup = "markdown"
 body_format = "markdown"
 +++
 
+![](/media/the-40-billion-secret-9-lessons-from-the-chocolate-king-who-/cover.jpg)
 
 The $40 Billion Secret: 9 Lessons from the Chocolate King Who Built an
 Empire in the Shadows

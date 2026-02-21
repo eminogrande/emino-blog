@@ -7,6 +7,7 @@ categories = ["blog"]
 slug = "building-a-cross-chain-btc-eure-market-maker-with-near-inten"
 +++
 
+![](/media/building-a-cross-chain-btc-eure-market-maker-with-near-inten/cover.jpg)
 
 Over the last days we wired up a complete BTC ↔ EURe swap stack:
 

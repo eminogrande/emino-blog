@@ -9,6 +9,7 @@ markup = "markdown"
 body_format = "markdown"
 +++
 
+![](/media/code-is-law-vs-the-9-4m-rescue-the-gnosis-chain-hard-fork/cover.jpg)
 
 ## TL;DR
 **The Event:** In December 2025, Gnosis Chain executed a controversial

@@ -9,6 +9,7 @@ markup = "markdown"
 body_format = "markdown"
 +++
 
+![](/media/the-invisible-giants-21-developers-who-built-your-internet/cover.jpg)
 
 We often praise the founders of Facebook or Google, but the modern
 internet is actually built on a foundation of open-source code

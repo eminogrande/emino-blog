@@ -13,7 +13,8 @@
       <link>https://emino.app/posts/complete-blog-infrastructure-guide/</link>
       <pubDate>Mon, 26 Aug 2024 15:45:00 +0000</pubDate>
       <guid>https://emino.app/posts/complete-blog-infrastructure-guide/</guid>
-      <description>&lt;h2 id=&#34;what-we-built-a-complete-modern-blog-infrastructure&#34;&gt;What We Built: A Complete Modern Blog Infrastructure&lt;/h2&gt;
+      <description>&lt;p&gt;&lt;img loading=&#34;lazy&#34; src=&#34;https://emino.app/media/complete-blog-infrastructure-guide/cover.jpg&#34;&gt;&lt;/p&gt;
+&lt;h2 id=&#34;what-we-built-a-complete-modern-blog-infrastructure&#34;&gt;What We Built: A Complete Modern Blog Infrastructure&lt;/h2&gt;
 &lt;p&gt;This comprehensive guide documents the creation of a fully-featured, decentralized blog platform with cutting-edge features including Bitcoin Lightning payments, Nostr integration, email-to-blog publishing, and automated GitHub deployments.&lt;/p&gt;
 &lt;h2 id=&#34;infrastructure-overview&#34;&gt;Infrastructure Overview&lt;/h2&gt;
 &lt;h3 id=&#34;core-components&#34;&gt;Core Components&lt;/h3&gt;

@@ -7,6 +7,7 @@ categories = ["blog"]
 slug = "governing-governance-why-human-consensus-is-harder-than-code"
 +++
 
+![](/media/governing-governance-why-human-consensus-is-harder-than-code/cover.jpg)
 
 I’ve been following the blockchain space for quite some time—mostly by
 coincidence because I live in Berlin. We saw a massive amount of

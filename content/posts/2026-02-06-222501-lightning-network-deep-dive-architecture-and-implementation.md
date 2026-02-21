@@ -9,7 +9,6 @@ markup = "markdown"
 body_format = "markdown"
 +++
 
-
 Speaker: Laolu "Roasbeef" Osuntokun
 
 [00:00:26] Introduction

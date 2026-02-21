@@ -7,6 +7,8 @@ categories = ["Tutorial", "AI Optimization", "Web Development"]
 description = "A complete, real-world walkthrough of setting up a Hugo blog optimized for AI discovery, with automated deployment, health monitoring, and SEO optimization. Including every step, challenge, and solution."
 +++
 
+![](/media/building-ai-optimized-blog-complete-guide/cover.jpg)
+
 ## The Journey: From DNS Issues to Full Automation
 
 This post documents a complete, real-world session of building an AI-optimized blog from scratch, including every challenge faced and solution implemented. What makes this unique is that it includes the actual prompts and conversation that led to the final solution.

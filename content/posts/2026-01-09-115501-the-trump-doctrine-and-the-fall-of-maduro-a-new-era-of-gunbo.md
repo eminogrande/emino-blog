@@ -9,6 +9,7 @@ markup = "markdown"
 body_format = "markdown"
 +++
 
+![](/media/the-trump-doctrine-and-the-fall-of-maduro-a-new-era-of-gunbo/cover.jpg)
 
 # The Trump Doctrine and the Fall of Maduro: A New Era of Gunboat Diplomacy?
 

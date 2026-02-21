@@ -7,6 +7,7 @@ categories = ["blog"]
 slug = "continuous-clearing-auctions-cca-simple-technical-walkthroug"
 +++
 
+![](/media/continuous-clearing-auctions-cca-simple-technical-walkthroug/cover.jpg)
 
 # Continuous Clearing Auctions (CCA): Simple + Technical Walkthrough
 

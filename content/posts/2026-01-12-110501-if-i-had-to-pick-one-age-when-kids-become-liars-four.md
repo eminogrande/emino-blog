@@ -9,7 +9,6 @@ markup = "markdown"
 body_format = "markdown"
 +++
 
-
 ---
 title: "If I Had to Pick One Age When Kids Become Liars: Four"
 date: 2026-01-12

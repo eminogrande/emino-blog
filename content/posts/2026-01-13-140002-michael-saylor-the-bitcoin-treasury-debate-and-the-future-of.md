@@ -9,7 +9,6 @@ markup = "markdown"
 body_format = "markdown"
 +++
 
-
 In this intense discussion on *What Bitcoin Did*, Michael Saylor
 reflects on the structural shifts for Bitcoin throughout 2025 and
 early 2026. He addresses the "toxic" criticism surrounding Bitcoin

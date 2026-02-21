@@ -9,6 +9,7 @@ markup = "markdown"
 body_format = "markdown"
 +++
 
+![](/media/what-we-built-nostr-dm-in-nuri/cover.jpg)
 
 What We Built (Nostr DM in Nuri)
   This is a lightweight, encrypted, relay-based 1:1 chat that lives

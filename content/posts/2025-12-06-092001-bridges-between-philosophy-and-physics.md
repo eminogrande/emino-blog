@@ -7,6 +7,7 @@ categories = ["blog"]
 slug = "bridges-between-philosophy-and-physics"
 +++
 
+![](/media/bridges-between-philosophy-and-physics/cover.jpg)
 
 The Question:
 

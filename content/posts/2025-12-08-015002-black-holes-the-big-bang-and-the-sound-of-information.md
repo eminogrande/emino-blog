@@ -9,6 +9,7 @@ markup = "markdown"
 body_format = "markdown"
 +++
 
+![](/media/black-holes-the-big-bang-and-the-sound-of-information/cover.jpg)
 
 # Black Holes, the Big Bang, and the Sound of Information
 

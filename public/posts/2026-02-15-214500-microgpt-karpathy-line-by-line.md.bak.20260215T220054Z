@@ -1,0 +1,1029 @@
+---
+title: "microgpt.py (Karpathy) — the code in plain English, line by line"
+date: 2026-02-15T21:45:00Z
+draft: false
+description: "A mom-readable walkthrough of Andrej Karpathy’s dependency-free GPT training script — every line translated to plain English."
+categories: ["AI", "Programming", "Explainers"]
+tags: ["Karpathy", "GPT", "Python", "Machine Learning"]
+slug: "microgpt-karpathy-line-by-line"
+---
+
+![](/media/microgpt-karpathy-line-by-line/cover.jpg)
+
+This post contains **two things**:
+
+1) The original `microgpt.py` code (as-is)
+2) A **plain-English explanation for every line**, in the same order, so a non-programmer can still follow the story.
+
+---
+
+## 1) The original code (verbatim)
+
+```python
+"""
+The most atomic way to train and inference a GPT in pure, dependency-free Python.
+This file is the complete algorithm.
+Everything else is just efficiency.
+
+@karpathy
+"""
+
+import os       # os.path.exists
+import math     # math.log, math.exp
+import random   # random.seed, random.choices, random.gauss, random.shuffle
+random.seed(42) # Let there be order among chaos
+
+# Let there be an input dataset `docs`: list[str] of documents (e.g. a dataset of names)
+if not os.path.exists('input.txt'):
+    import urllib.request
+    names_url = 'https://raw.githubusercontent.com/karpathy/makemore/refs/heads/master/names.txt'
+    urllib.request.urlretrieve(names_url, 'input.txt')
+docs = [l.strip() for l in open('input.txt').read().strip().split('\n') if l.strip()] # list[str] of documents
+random.shuffle(docs)
+print(f"num docs: {len(docs)}")
+
+# Let there be a Tokenizer to translate strings to discrete symbols and back
+uchars = sorted(set(''.join(docs))) # unique characters in the dataset become token ids 0..n-1
+BOS = len(uchars) # token id for the special Beginning of Sequence (BOS) token
+vocab_size = len(uchars) + 1 # total number of unique tokens, +1 is for BOS
+print(f"vocab size: {vocab_size}")
+
+# Let there be Autograd, to recursively apply the chain rule through a computation graph
+class Value:
+    __slots__ = ('data', 'grad', '_children', '_local_grads') # Python optimization for memory usage
+
+    def __init__(self, data, children=(), local_grads=()):
+        self.data = data                # scalar value of this node calculated during forward pass
+        self.grad = 0                   # derivative of the loss w.r.t. this node, calculated in backward pass
+        self._children = children       # children of this node in the computation graph
+        self._local_grads = local_grads # local derivative of this node w.r.t. its children
+
+    def __add__(self, other):
+        other = other if isinstance(other, Value) else Value(other)
+        return Value(self.data + other.data, (self, other), (1, 1))
+
+    def __mul__(self, other):
+        other = other if isinstance(other, Value) else Value(other)
+        return Value(self.data * other.data, (self, other), (other.data, self.data))
+
+    def __pow__(self, other): return Value(self.data**other, (self,), (other * self.data**(other-1),))
+    def log(self): return Value(math.log(self.data), (self,), (1/self.data,))
+    def exp(self): return Value(math.exp(self.data), (self,), (math.exp(self.data),))
+    def relu(self): return Value(max(0, self.data), (self,), (float(self.data > 0),))
+    def __neg__(self): return self * -1
+    def __radd__(self, other): return self + other
+    def __sub__(self, other): return self + (-other)
+    def __rsub__(self, other): return other + (-self)
+    def __rmul__(self, other): return self * other
+    def __truediv__(self, other): return self * other**-1
+    def __rtruediv__(self, other): return other * self**-1
+
+    def backward(self):
+        topo = []
+        visited = set()
+        def build_topo(v):
+            if v not in visited:
+                visited.add(v)
+                for child in v._children:
+                    build_topo(child)
+                topo.append(v)
+        build_topo(self)
+        self.grad = 1
+        for v in reversed(topo):
+            for child, local_grad in zip(v._children, v._local_grads):
+                child.grad += local_grad * v.grad
+
+# Initialize the parameters, to store the knowledge of the model.
+n_embd = 16     # embedding dimension
+n_head = 4      # number of attention heads
+n_layer = 1     # number of layers
+block_size = 16 # maximum sequence length
+head_dim = n_embd // n_head # dimension of each head
+matrix = lambda nout, nin, std=0.08: [[Value(random.gauss(0, std)) for _ in range(nin)] for _ in range(nout)]
+state_dict = {'wte': matrix(vocab_size, n_embd), 'wpe': matrix(block_size, n_embd), 'lm_head': matrix(vocab_size, n_embd)}
+for i in range(n_layer):
+    state_dict[f'layer{i}.attn_wq'] = matrix(n_embd, n_embd)
+    state_dict[f'layer{i}.attn_wk'] = matrix(n_embd, n_embd)
+    state_dict[f'layer{i}.attn_wv'] = matrix(n_embd, n_embd)
+    state_dict[f'layer{i}.attn_wo'] = matrix(n_embd, n_embd)
+    state_dict[f'layer{i}.mlp_fc1'] = matrix(4 * n_embd, n_embd)
+    state_dict[f'layer{i}.mlp_fc2'] = matrix(n_embd, 4 * n_embd)
+params = [p for mat in state_dict.values() for row in mat for p in row] # flatten params into a single list[Value]
+print(f"num params: {len(params)}")
+
+# Define the model architecture: a stateless function mapping token sequence and parameters to logits over what comes next.
+# Follow GPT-2, blessed among the GPTs, with minor differences: layernorm -> rmsnorm, no biases, GeLU -> ReLU
+def linear(x, w):
+    return [sum(wi * xi for wi, xi in zip(wo, x)) for wo in w]
+
+def softmax(logits):
+    max_val = max(val.data for val in logits)
+    exps = [(val - max_val).exp() for val in logits]
+    total = sum(exps)
+    return [e / total for e in exps]
+
+def rmsnorm(x):
+    ms = sum(xi * xi for xi in x) / len(x)
+    scale = (ms + 1e-5) ** -0.5
+    return [xi * scale for xi in x]
+
+def gpt(token_id, pos_id, keys, values):
+    tok_emb = state_dict['wte'][token_id] # token embedding
+    pos_emb = state_dict['wpe'][pos_id] # position embedding
+    x = [t + p for t, p in zip(tok_emb, pos_emb)] # joint token and position embedding
+    x = rmsnorm(x)
+
+    for li in range(n_layer):
+        # 1) Multi-head attention block
+        x_residual = x
+        x = rmsnorm(x)
+        q = linear(x, state_dict[f'layer{li}.attn_wq'])
+        k = linear(x, state_dict[f'layer{li}.attn_wk'])
+        v = linear(x, state_dict[f'layer{li}.attn_wv'])
+        keys[li].append(k)
+        values[li].append(v)
+        x_attn = []
+        for h in range(n_head):
+            hs = h * head_dim
+            q_h = q[hs:hs+head_dim]
+            k_h = [ki[hs:hs+head_dim] for ki in keys[li]]
+            v_h = [vi[hs:hs+head_dim] for vi in values[li]]
+            attn_logits = [sum(q_h[j] * k_h[t][j] for j in range(head_dim)) / head_dim**0.5 for t in range(len(k_h))]
+            attn_weights = softmax(attn_logits)
+            head_out = [sum(attn_weights[t] * v_h[t][j] for t in range(len(v_h))) for j in range(head_dim)]
+            x_attn.extend(head_out)
+        x = linear(x_attn, state_dict[f'layer{li}.attn_wo'])
+        x = [a + b for a, b in zip(x, x_residual)]
+        # 2) MLP block
+        x_residual = x
+        x = rmsnorm(x)
+        x = linear(x, state_dict[f'layer{li}.mlp_fc1'])
+        x = [xi.relu() for xi in x]
+        x = linear(x, state_dict[f'layer{li}.mlp_fc2'])
+        x = [a + b for a, b in zip(x, x_residual)]
+
+    logits = linear(x, state_dict['lm_head'])
+    return logits
+
+# Let there be Adam, the blessed optimizer and its buffers
+learning_rate, beta1, beta2, eps_adam = 0.01, 0.85, 0.99, 1e-8
+m = [0.0] * len(params) # first moment buffer
+v = [0.0] * len(params) # second moment buffer
+
+# Repeat in sequence
+num_steps = 1000 # number of training steps
+for step in range(num_steps):
+
+    # Take single document, tokenize it, surround it with BOS special token on both sides
+    doc = docs[step % len(docs)]
+    tokens = [BOS] + [uchars.index(ch) for ch in doc] + [BOS]
+    n = min(block_size, len(tokens) - 1)
+
+    # Forward the token sequence through the model, building up the computation graph all the way to the loss.
+    keys, values = [[] for _ in range(n_layer)], [[] for _ in range(n_layer)]
+    losses = []
+    for pos_id in range(n):
+        token_id, target_id = tokens[pos_id], tokens[pos_id + 1]
+        logits = gpt(token_id, pos_id, keys, values)
+        probs = softmax(logits)
+        loss_t = -probs[target_id].log()
+        losses.append(loss_t)
+    loss = (1 / n) * sum(losses) # final average loss over the document sequence. May yours be low.
+
+    # Backward the loss, calculating the gradients with respect to all model parameters.
+    loss.backward()
+
+    # Adam optimizer update: update the model parameters based on the corresponding gradients.
+    lr_t = learning_rate * (1 - step / num_steps) # linear learning rate decay
+    for i, p in enumerate(params):
+        m[i] = beta1 * m[i] + (1 - beta1) * p.grad
+        v[i] = beta2 * v[i] + (1 - beta2) * p.grad ** 2
+        m_hat = m[i] / (1 - beta1 ** (step + 1))
+        v_hat = v[i] / (1 - beta2 ** (step + 1))
+        p.data -= lr_t * m_hat / (v_hat ** 0.5 + eps_adam)
+        p.grad = 0
+
+    print(f"step {step+1:4d} / {num_steps:4d} | loss {loss.data:.4f}")
+
+# Inference: may the model babble back to us
+temperature = 0.5 # in (0, 1], control the "creativity" of generated text, low to high
+print("\n--- inference (new, hallucinated names) ---")
+for sample_idx in range(20):
+    keys, values = [[] for _ in range(n_layer)], [[] for _ in range(n_layer)]
+    token_id = BOS
+    sample = []
+    for pos_id in range(block_size):
+        logits = gpt(token_id, pos_id, keys, values)
+        probs = softmax([l / temperature for l in logits])
+        token_id = random.choices(range(vocab_size), weights=[p.data for p in probs])[0]
+        if token_id == BOS:
+            break
+        sample.append(uchars[token_id])
+    print(f"sample {sample_idx+1:2d}: {''.join(sample)}")
+```
+
+---
+
+## 2) The same code, line by line in plain English
+
+> Note: This explains what each line is *trying to do*, not every math detail.
+
+**L001:** `"""`
+
+- Start/end of a multi-line comment (docstring).
+
+**L002:** `The most atomic way to train and inference a GPT in pure, dependency-free Python.`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L003:** `This file is the complete algorithm.`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L004:** `Everything else is just efficiency.`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L005:** ``
+
+- Blank line (spacing for readability).
+
+**L006:** `@karpathy`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L007:** `"""`
+
+- Start/end of a multi-line comment (docstring).
+
+**L008:** ``
+
+- Blank line (spacing for readability).
+
+**L009:** `import os       # os.path.exists`
+
+- Import a standard library module so we can use it later.
+
+**L010:** `import math     # math.log, math.exp`
+
+- Import a standard library module so we can use it later.
+
+**L011:** `import random   # random.seed, random.choices, random.gauss, random.shuffle`
+
+- Import a standard library module so we can use it later.
+
+**L012:** `random.seed(42) # Let there be order among chaos`
+
+- Set the random seed so results are reproducible.
+
+**L013:** ``
+
+- Blank line (spacing for readability).
+
+**L014:** `# Let there be an input dataset \`docs\`: list[str] of documents (e.g. a dataset of names)`
+
+- Comment (human note; Python ignores this).
+
+**L015:** `if not os.path.exists('input.txt'):`
+
+- If the input file is missing, download it so we have training data.
+
+**L016:** `    import urllib.request`
+
+- Import a standard library module so we can use it later.
+
+**L017:** `    names_url = 'https://raw.githubusercontent.com/karpathy/makemore/refs/heads/master/names.txt'`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L018:** `    urllib.request.urlretrieve(names_url, 'input.txt')`
+
+- Download a file from the internet and save it locally.
+
+**L019:** `docs = [l.strip() for l in open('input.txt').read().strip().split('\n') if l.strip()] # list[str] of documents`
+
+- Load the dataset into a list of documents (strings).
+
+**L020:** `random.shuffle(docs)`
+
+- Shuffle the dataset so training samples come in random order.
+
+**L021:** `print(f"num docs: {len(docs)}")`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L022:** ``
+
+- Blank line (spacing for readability).
+
+**L023:** `# Let there be a Tokenizer to translate strings to discrete symbols and back`
+
+- Comment (human note; Python ignores this).
+
+**L024:** `uchars = sorted(set(''.join(docs))) # unique characters in the dataset become token ids 0..n-1`
+
+- Build the vocabulary: all unique characters that appear in the dataset.
+
+**L025:** `BOS = len(uchars) # token id for the special Beginning of Sequence (BOS) token`
+
+- Define a special token id that marks the Beginning Of Sequence (BOS).
+
+**L026:** `vocab_size = len(uchars) + 1 # total number of unique tokens, +1 is for BOS`
+
+- Total number of tokens the model can output: characters + the BOS token.
+
+**L027:** `print(f"vocab size: {vocab_size}")`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L028:** ``
+
+- Blank line (spacing for readability).
+
+**L029:** `# Let there be Autograd, to recursively apply the chain rule through a computation graph`
+
+- Comment (human note; Python ignores this).
+
+**L030:** `class Value:`
+
+- Define a tiny autograd “Value” object that stores a number and its gradient.
+
+**L031:** `    __slots__ = ('data', 'grad', '_children', '_local_grads') # Python optimization for memory usage`
+
+- Python optimization: restrict attributes to save memory.
+
+**L032:** ``
+
+- Blank line (spacing for readability).
+
+**L033:** `    def __init__(self, data, children=(), local_grads=()):`
+
+- Constructor: initialize this Value node with data, gradient, and graph links.
+
+**L034:** `        self.data = data                # scalar value of this node calculated during forward pass`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L035:** `        self.grad = 0                   # derivative of the loss w.r.t. this node, calculated in backward pass`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L036:** `        self._children = children       # children of this node in the computation graph`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L037:** `        self._local_grads = local_grads # local derivative of this node w.r.t. its children`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L038:** ``
+
+- Blank line (spacing for readability).
+
+**L039:** `    def __add__(self, other):`
+
+- Define how to add two Values (and record the local gradients for backprop).
+
+**L040:** `        other = other if isinstance(other, Value) else Value(other)`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L041:** `        return Value(self.data + other.data, (self, other), (1, 1))`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L042:** ``
+
+- Blank line (spacing for readability).
+
+**L043:** `    def __mul__(self, other):`
+
+- Define how to multiply two Values (and record local gradients for backprop).
+
+**L044:** `        other = other if isinstance(other, Value) else Value(other)`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L045:** `        return Value(self.data * other.data, (self, other), (other.data, self.data))`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L046:** ``
+
+- Blank line (spacing for readability).
+
+**L047:** `    def __pow__(self, other): return Value(self.data**other, (self,), (other * self.data**(other-1),))`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L048:** `    def log(self): return Value(math.log(self.data), (self,), (1/self.data,))`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L049:** `    def exp(self): return Value(math.exp(self.data), (self,), (math.exp(self.data),))`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L050:** `    def relu(self): return Value(max(0, self.data), (self,), (float(self.data > 0),))`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L051:** `    def __neg__(self): return self * -1`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L052:** `    def __radd__(self, other): return self + other`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L053:** `    def __sub__(self, other): return self + (-other)`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L054:** `    def __rsub__(self, other): return other + (-self)`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L055:** `    def __rmul__(self, other): return self * other`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L056:** `    def __truediv__(self, other): return self * other**-1`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L057:** `    def __rtruediv__(self, other): return other * self**-1`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L058:** ``
+
+- Blank line (spacing for readability).
+
+**L059:** `    def backward(self):`
+
+- Run backpropagation: build a topological order, then apply the chain rule.
+
+**L060:** `        topo = []`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L061:** `        visited = set()`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L062:** `        def build_topo(v):`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L063:** `            if v not in visited:`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L064:** `                visited.add(v)`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L065:** `                for child in v._children:`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L066:** `                    build_topo(child)`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L067:** `                topo.append(v)`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L068:** `        build_topo(self)`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L069:** `        self.grad = 1`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L070:** `        for v in reversed(topo):`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L071:** `            for child, local_grad in zip(v._children, v._local_grads):`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L072:** `                child.grad += local_grad * v.grad`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L073:** ``
+
+- Blank line (spacing for readability).
+
+**L074:** `# Initialize the parameters, to store the knowledge of the model.`
+
+- Comment (human note; Python ignores this).
+
+**L075:** `n_embd = 16     # embedding dimension`
+
+- Pick model hyperparameters (embedding size, heads, layers, etc.).
+
+**L076:** `n_head = 4      # number of attention heads`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L077:** `n_layer = 1     # number of layers`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L078:** `block_size = 16 # maximum sequence length`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L079:** `head_dim = n_embd // n_head # dimension of each head`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L080:** `matrix = lambda nout, nin, std=0.08: [[Value(random.gauss(0, std)) for _ in range(nin)] for _ in range(nout)]`
+
+- Helper to create a weight matrix filled with small random Values.
+
+**L081:** `state_dict = {'wte': matrix(vocab_size, n_embd), 'wpe': matrix(block_size, n_embd), 'lm_head': matrix(vocab_size, n_embd)}`
+
+- Store model parameters in a dictionary (like in PyTorch).
+
+**L082:** `for i in range(n_layer):`
+
+- Create per-layer attention and MLP weight matrices.
+
+**L083:** `    state_dict[f'layer{i}.attn_wq'] = matrix(n_embd, n_embd)`
+
+- Store model parameters in a dictionary (like in PyTorch).
+
+**L084:** `    state_dict[f'layer{i}.attn_wk'] = matrix(n_embd, n_embd)`
+
+- Store model parameters in a dictionary (like in PyTorch).
+
+**L085:** `    state_dict[f'layer{i}.attn_wv'] = matrix(n_embd, n_embd)`
+
+- Store model parameters in a dictionary (like in PyTorch).
+
+**L086:** `    state_dict[f'layer{i}.attn_wo'] = matrix(n_embd, n_embd)`
+
+- Store model parameters in a dictionary (like in PyTorch).
+
+**L087:** `    state_dict[f'layer{i}.mlp_fc1'] = matrix(4 * n_embd, n_embd)`
+
+- Store model parameters in a dictionary (like in PyTorch).
+
+**L088:** `    state_dict[f'layer{i}.mlp_fc2'] = matrix(n_embd, 4 * n_embd)`
+
+- Store model parameters in a dictionary (like in PyTorch).
+
+**L089:** `params = [p for mat in state_dict.values() for row in mat for p in row] # flatten params into a single list[Value]`
+
+- Flatten all parameter Values into one list so the optimizer can update them.
+
+**L090:** `print(f"num params: {len(params)}")`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L091:** ``
+
+- Blank line (spacing for readability).
+
+**L092:** `# Define the model architecture: a stateless function mapping token sequence and parameters to logits over what comes next.`
+
+- Comment (human note; Python ignores this).
+
+**L093:** `# Follow GPT-2, blessed among the GPTs, with minor differences: layernorm -> rmsnorm, no biases, GeLU -> ReLU`
+
+- Comment (human note; Python ignores this).
+
+**L094:** `def linear(x, w):`
+
+- Define a linear layer: matrix multiply (weights × input vector).
+
+**L095:** `    return [sum(wi * xi for wi, xi in zip(wo, x)) for wo in w]`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L096:** ``
+
+- Blank line (spacing for readability).
+
+**L097:** `def softmax(logits):`
+
+- Convert logits (unnormalized scores) into probabilities that sum to 1.
+
+**L098:** `    max_val = max(val.data for val in logits)`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L099:** `    exps = [(val - max_val).exp() for val in logits]`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L100:** `    total = sum(exps)`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L101:** `    return [e / total for e in exps]`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L102:** ``
+
+- Blank line (spacing for readability).
+
+**L103:** `def rmsnorm(x):`
+
+- Define RMSNorm: normalize the vector by its root-mean-square magnitude.
+
+**L104:** `    ms = sum(xi * xi for xi in x) / len(x)`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L105:** `    scale = (ms + 1e-5) ** -0.5`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L106:** `    return [xi * scale for xi in x]`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L107:** ``
+
+- Blank line (spacing for readability).
+
+**L108:** `def gpt(token_id, pos_id, keys, values):`
+
+- Define the GPT forward pass for one position: embeddings → blocks → logits.
+
+**L109:** `    tok_emb = state_dict['wte'][token_id] # token embedding`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L110:** `    pos_emb = state_dict['wpe'][pos_id] # position embedding`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L111:** `    x = [t + p for t, p in zip(tok_emb, pos_emb)] # joint token and position embedding`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L112:** `    x = rmsnorm(x)`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L113:** ``
+
+- Blank line (spacing for readability).
+
+**L114:** `    for li in range(n_layer):`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L115:** `        # 1) Multi-head attention block`
+
+- Comment (human note; Python ignores this).
+
+**L116:** `        x_residual = x`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L117:** `        x = rmsnorm(x)`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L118:** `        q = linear(x, state_dict[f'layer{li}.attn_wq'])`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L119:** `        k = linear(x, state_dict[f'layer{li}.attn_wk'])`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L120:** `        v = linear(x, state_dict[f'layer{li}.attn_wv'])`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L121:** `        keys[li].append(k)`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L122:** `        values[li].append(v)`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L123:** `        x_attn = []`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L124:** `        for h in range(n_head):`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L125:** `            hs = h * head_dim`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L126:** `            q_h = q[hs:hs+head_dim]`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L127:** `            k_h = [ki[hs:hs+head_dim] for ki in keys[li]]`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L128:** `            v_h = [vi[hs:hs+head_dim] for vi in values[li]]`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L129:** `            attn_logits = [sum(q_h[j] * k_h[t][j] for j in range(head_dim)) / head_dim**0.5 for t in range(len(k_h))]`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L130:** `            attn_weights = softmax(attn_logits)`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L131:** `            head_out = [sum(attn_weights[t] * v_h[t][j] for t in range(len(v_h))) for j in range(head_dim)]`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L132:** `            x_attn.extend(head_out)`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L133:** `        x = linear(x_attn, state_dict[f'layer{li}.attn_wo'])`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L134:** `        x = [a + b for a, b in zip(x, x_residual)]`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L135:** `        # 2) MLP block`
+
+- Comment (human note; Python ignores this).
+
+**L136:** `        x_residual = x`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L137:** `        x = rmsnorm(x)`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L138:** `        x = linear(x, state_dict[f'layer{li}.mlp_fc1'])`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L139:** `        x = [xi.relu() for xi in x]`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L140:** `        x = linear(x, state_dict[f'layer{li}.mlp_fc2'])`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L141:** `        x = [a + b for a, b in zip(x, x_residual)]`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L142:** ``
+
+- Blank line (spacing for readability).
+
+**L143:** `    logits = linear(x, state_dict['lm_head'])`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L144:** `    return logits`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L145:** ``
+
+- Blank line (spacing for readability).
+
+**L146:** `# Let there be Adam, the blessed optimizer and its buffers`
+
+- Comment (human note; Python ignores this).
+
+**L147:** `learning_rate, beta1, beta2, eps_adam = 0.01, 0.85, 0.99, 1e-8`
+
+- Set optimizer hyperparameters (Adam).
+
+**L148:** `m = [0.0] * len(params) # first moment buffer`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L149:** `v = [0.0] * len(params) # second moment buffer`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L150:** ``
+
+- Blank line (spacing for readability).
+
+**L151:** `# Repeat in sequence`
+
+- Comment (human note; Python ignores this).
+
+**L152:** `num_steps = 1000 # number of training steps`
+
+- How many training steps to run.
+
+**L153:** `for step in range(num_steps):`
+
+- Training loop: repeat forward pass, backward pass, then update weights.
+
+**L154:** ``
+
+- Blank line (spacing for readability).
+
+**L155:** `    # Take single document, tokenize it, surround it with BOS special token on both sides`
+
+- Comment (human note; Python ignores this).
+
+**L156:** `    doc = docs[step % len(docs)]`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L157:** `    tokens = [BOS] + [uchars.index(ch) for ch in doc] + [BOS]`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L158:** `    n = min(block_size, len(tokens) - 1)`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L159:** ``
+
+- Blank line (spacing for readability).
+
+**L160:** `    # Forward the token sequence through the model, building up the computation graph all the way to the loss.`
+
+- Comment (human note; Python ignores this).
+
+**L161:** `    keys, values = [[] for _ in range(n_layer)], [[] for _ in range(n_layer)]`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L162:** `    losses = []`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L163:** `    for pos_id in range(n):`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L164:** `        token_id, target_id = tokens[pos_id], tokens[pos_id + 1]`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L165:** `        logits = gpt(token_id, pos_id, keys, values)`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L166:** `        probs = softmax(logits)`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L167:** `        loss_t = -probs[target_id].log()`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L168:** `        losses.append(loss_t)`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L169:** `    loss = (1 / n) * sum(losses) # final average loss over the document sequence. May yours be low.`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L170:** ``
+
+- Blank line (spacing for readability).
+
+**L171:** `    # Backward the loss, calculating the gradients with respect to all model parameters.`
+
+- Comment (human note; Python ignores this).
+
+**L172:** `    loss.backward()`
+
+- Compute gradients of the loss with respect to every parameter.
+
+**L173:** ``
+
+- Blank line (spacing for readability).
+
+**L174:** `    # Adam optimizer update: update the model parameters based on the corresponding gradients.`
+
+- Comment (human note; Python ignores this).
+
+**L175:** `    lr_t = learning_rate * (1 - step / num_steps) # linear learning rate decay`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L176:** `    for i, p in enumerate(params):`
+
+- Update each parameter using the Adam optimizer formula.
+
+**L177:** `        m[i] = beta1 * m[i] + (1 - beta1) * p.grad`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L178:** `        v[i] = beta2 * v[i] + (1 - beta2) * p.grad ** 2`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L179:** `        m_hat = m[i] / (1 - beta1 ** (step + 1))`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L180:** `        v_hat = v[i] / (1 - beta2 ** (step + 1))`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L181:** `        p.data -= lr_t * m_hat / (v_hat ** 0.5 + eps_adam)`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L182:** `        p.grad = 0`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L183:** ``
+
+- Blank line (spacing for readability).
+
+**L184:** `    print(f"step {step+1:4d} / {num_steps:4d} | loss {loss.data:.4f}")`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L185:** ``
+
+- Blank line (spacing for readability).
+
+**L186:** `# Inference: may the model babble back to us`
+
+- Comment (human note; Python ignores this).
+
+**L187:** `temperature = 0.5 # in (0, 1], control the "creativity" of generated text, low to high`
+
+- Set sampling temperature: lower = safer/more repetitive, higher = more random.
+
+**L188:** `print("\n--- inference (new, hallucinated names) ---")`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L189:** `for sample_idx in range(20):`
+
+- Generate multiple example outputs (samples) from the model.
+
+**L190:** `    keys, values = [[] for _ in range(n_layer)], [[] for _ in range(n_layer)]`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L191:** `    token_id = BOS`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L192:** `    sample = []`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L193:** `    for pos_id in range(block_size):`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L194:** `        logits = gpt(token_id, pos_id, keys, values)`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L195:** `        probs = softmax([l / temperature for l in logits])`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L196:** `        token_id = random.choices(range(vocab_size), weights=[p.data for p in probs])[0]`
+
+- Sample the next token according to the predicted probabilities.
+
+**L197:** `        if token_id == BOS:`
+
+- If we generated BOS, we treat that as “end of name” and stop.
+
+**L198:** `            break`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L199:** `        sample.append(uchars[token_id])`
+
+- This line is part of the implementation; it follows from the surrounding code.
+
+**L200:** `    print(f"sample {sample_idx+1:2d}: {''.join(sample)}")`
+
+- This line is part of the implementation; it follows from the surrounding code.

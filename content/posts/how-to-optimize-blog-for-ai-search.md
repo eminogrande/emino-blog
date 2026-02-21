@@ -8,6 +8,8 @@ description = "Learn how to make your blog discoverable by AI systems like ChatG
 summary = "A comprehensive guide to optimizing your blog for AI search engines, including llms.txt implementation, structured data, and content strategies."
 +++
 
+![](/media/how-to-optimize-blog-for-ai-search/cover.jpg)
+
 ## What is AI Search Optimization?
 
 AI search optimization refers to making your content easily discoverable and understandable by large language models (LLMs) like ChatGPT, Claude, and Google Gemini. Unlike traditional SEO, AI optimization focuses on structured content and semantic clarity.

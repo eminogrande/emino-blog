@@ -5,19 +5,14 @@ draft = false
 tags = ["email-post"]
 categories = ["blog"]
 slug = "correlations-copying-and-darwinism-in-quantum-physics"
-markup = "html"
-body_format = "html"
 +++
-
-
-<div>
-<div>
 
 <p></p>
 
 <h1>
-<div><img></div>
-<br></h1>
+<img>
+
+</h1>
 
 <p></p>
 <hr>
@@ -29,7 +24,8 @@ body_format = "html"
 
 <p></p>
 
-<p><br></p>
+<p>
+</p>
 
 <p>We began with a biological question—what lives on and in humans—and quickly moved toward a deeper unifying theme: information. In biology, information becomes “alive” in the Darwinian sense when it is copied with heredity and variation and subjected to selection. You then asked whether physics, especially quantum entanglement across distance, could also support Darwin-like dynamics: states “competing,” information being preserved, and local environments reacting. The resolution is subtle: entanglement creates nonclassical correlations but does not enable remote causal control (no-signaling), while Quantum Darwinism is a well-developed framework where decoherence selects stable states and the environment makes many redundant records of them—giving an experimentally testable, Darwin-analogy mechanism for the emergence of classical reality.</p>
 
@@ -43,7 +39,8 @@ body_format = "html"
 
 <p></p>
 
-<p><br></p>
+<p>
+</p>
 
 <p></p>
 
@@ -51,11 +48,13 @@ body_format = "html"
 
 <p></p>
 
-<p><br></p>
+<p>
+</p>
 
 <p>You wanted: How many different species of living beings live in or on the human body constantly, ordered most → least, and all identified.</p>
 
-<p><br></p>
+<p>
+</p>
 
 <p></p>
 
@@ -63,7 +62,8 @@ body_format = "html"
 
 <p></p>
 
-<p><br></p>
+<p>
+</p>
 
 <p>There is no single finalized “all identified” list for “constant” residents, because microbial discovery is ongoing and “constant” depends on body site and person. A widely used Human Microbiome Project summary is: humans host ~10,000 bacterial species globally, while an individual carries around ~1,000 at a time.  </p>
 
@@ -77,7 +77,8 @@ body_format = "html"
 
 <p></p>
 
-<p><br></p>
+<p>
+</p>
 
 <p></p>
 
@@ -85,11 +86,13 @@ body_format = "html"
 
 <p></p>
 
-<p><br></p>
+<p>
+</p>
 
 <p>Restrict to “living beings” that feel closer to humans—e.g., animals with a nervous system and a heart-like pump—and list a top 10 colonizers on/in humans.</p>
 
-<p><br></p>
+<p>
+</p>
 
 <p></p>
 
@@ -97,7 +100,8 @@ body_format = "html"
 
 <p></p>
 
-<p><br></p>
+<p>
+</p>
 
 <p>This shifts from microbiomes to mostly arthropods (mites, lice) and a few persistent parasites. The most “constant” true residents among these are Demodex mites, widely described as common/permanent residents of human follicles/sebaceous units.  </p>
 
@@ -111,7 +115,8 @@ body_format = "html"
 
 <p></p>
 
-<p><br></p>
+<p>
+</p>
 
 <p></p>
 
@@ -119,11 +124,13 @@ body_format = "html"
 
 <p></p>
 
-<p><br></p>
+<p>
+</p>
 
 <p>Who is truly at the top of the food chain “alone,” not getting eaten like humans?</p>
 
-<p><br></p>
+<p>
+</p>
 
 <p></p>
 
@@ -131,7 +138,8 @@ body_format = "html"
 
 <p></p>
 
-<p><br></p>
+<p>
+</p>
 
 <p>Ecologically, no macroscopic organism escapes being consumed eventually—if not by predators, then by decomposers. Your “stomach of the world” framing is strong: in the long run, the closest thing to the final “consumer” is the decomposer system (microbes, fungi, etc.) that returns biomass to chemistry.</p>
 
@@ -145,7 +153,8 @@ body_format = "html"
 
 <p></p>
 
-<p><br></p>
+<p>
+</p>
 
 <p></p>
 
@@ -153,11 +162,13 @@ body_format = "html"
 
 <p></p>
 
-<p><br></p>
+<p>
+</p>
 
 <p>Is microbial alien life the most likely discovery, and is that because microbes are the most abundant?</p>
 
-<p><br></p>
+<p>
+</p>
 
 <p></p>
 
@@ -165,7 +176,8 @@ body_format = "html"
 
 <p></p>
 
-<p><br></p>
+<p>
+</p>
 
 <p>The conservative mainstream expectation is: first discoveries are likely microbial life or biosignatures, because microbes are robust and because it’s easier to detect chemical/structural traces than complex organisms. NASA’s astrobiology materials explicitly frame a biosignature as any feature that can serve as evidence for past or present life.  </p>
 
@@ -179,7 +191,8 @@ body_format = "html"
 
 <p></p>
 
-<p><br></p>
+<p>
+</p>
 
 <p></p>
 
@@ -187,11 +200,13 @@ body_format = "html"
 
 <p></p>
 
-<p><br></p>
+<p>
+</p>
 
 <p>Could a Murchison-like meteorite delivering amino acids/organics be “the” pivotal event?</p>
 
-<p><br></p>
+<p>
+</p>
 
 <p></p>
 
@@ -199,7 +214,8 @@ body_format = "html"
 
 <p></p>
 
-<p><br></p>
+<p>
+</p>
 
 <p>Meteorites like Murchison are strong evidence for extraterrestrial delivery of organics (including amino acids), supported by isotopic analyses arguing against simple terrestrial contamination.  </p>
 
@@ -217,11 +233,13 @@ body_format = "html"
 
 <p></p>
 
-<p><br></p>
+<p>
+</p>
 
 <p>You pushed hard (correctly) against vague “billions of years happened” answers.</p>
 
-<p><br></p>
+<p>
+</p>
 
 <p></p>
 
@@ -229,19 +247,23 @@ body_format = "html"
 
 <p></p>
 
-<p><br></p>
+<p>
+</p>
 
 <p>The minimal step from chemistry to evolution is:</p>
 
-<p><br></p>
+<p>
+</p>
 
 <blockquote>A self-copying system with heredity and variation, able to undergo Darwinian evolution—often imagined as an RNA-like replicator in a compartment (a protocell).</blockquote>
 
-<p><br></p>
+<p>
+</p>
 
 <p>This is where “information” becomes a population-level process rather than a one-off chemical pattern.</p>
 
-<p><br></p>
+<p>
+</p>
 
 <p></p>
 
@@ -249,7 +271,8 @@ body_format = "html"
 
 <p></p>
 
-<p><br></p>
+<p>
+</p>
 
 <p>A later pivotal step toward human-level complexity is often framed as eukaryogenesis with mitochondria (energy and cellular complexity jump), although that portion of our discussion was more conceptual than deeply sourced here.</p>
 
@@ -263,7 +286,8 @@ body_format = "html"
 
 <p></p>
 
-<p><br></p>
+<p>
+</p>
 
 <p>You proposed a deep analogy:</p>
 
@@ -297,7 +321,8 @@ body_format = "html"
 
 <p></p>
 
-<p><br></p>
+<p>
+</p>
 
 <p>To address this faithfully, we need three separations:</p>
 
@@ -335,7 +360,8 @@ body_format = "html"
 
 <p></p>
 
-<p><br></p>
+<p>
+</p>
 
 <p></p>
 
@@ -343,11 +369,13 @@ body_format = "html"
 
 <p></p>
 
-<p><br></p>
+<p>
+</p>
 
 <p>“If A and B are entangled, a change of A updates B; if B is not alone, B must influence its surroundings.”</p>
 
-<p><br></p>
+<p>
+</p>
 
 <p></p>
 
@@ -355,11 +383,13 @@ body_format = "html"
 
 <p></p>
 
-<p><br></p>
+<p>
+</p>
 
 <p>Entanglement means strong nonclassical correlations in the joint system, but local statistics at B do not become controllably different based solely on what you do at A. This is formalized in the no-communication (no-signaling) theorem: operations on A cannot be used to send information to B faster than light; B’s reduced state (what B can locally access) remains unchanged in the relevant sense.  </p>
 
-<p><br></p>
+<p>
+</p>
 
 <p></p>
 
@@ -393,7 +423,8 @@ body_format = "html"
 
 <p></p>
 
-<p><br></p>
+<p>
+</p>
 
 <p></p>
 
@@ -401,11 +432,13 @@ body_format = "html"
 
 <p></p>
 
-<p><br></p>
+<p>
+</p>
 
 <p>No. To demonstrate entanglement you measure both sides and analyze correlations. In strong demonstrations, measurement settings are chosen independently and rapidly to prevent classical coordination. This logic underlies Bell tests and “loophole-free” experiments.  </p>
 
-<p><br></p>
+<p>
+</p>
 
 <p></p>
 
@@ -417,11 +450,13 @@ body_format = "html"
 
 <p></p>
 
-<p><br></p>
+<p>
+</p>
 
 <p>The standard route is a Bell inequality violation (often CHSH). Loophole-free Bell tests using separated spins in diamond are a canonical example of ruling out local-realist explanations under stringent conditions.  </p>
 
-<p><br></p>
+<p>
+</p>
 
 <p></p>
 
@@ -429,7 +464,8 @@ body_format = "html"
 
 <p></p>
 
-<p><br></p>
+<p>
+</p>
 
 <p>You implicitly gestured toward this with “information passed over long distance.” Quantum teleportation is the clean case: it transfers an unknown quantum state’s identity but requires classical communication, so it cannot be faster-than-light.  </p>
 
@@ -443,11 +479,13 @@ body_format = "html"
 
 <p></p>
 
-<p><br></p>
+<p>
+</p>
 
 <p>You asked whether entanglement is only about two-state spin “0/1,” and whether other entangled properties could influence surroundings differently.</p>
 
-<p><br></p>
+<p>
+</p>
 
 <p></p>
 
@@ -455,7 +493,8 @@ body_format = "html"
 
 <p></p>
 
-<p><br></p>
+<p>
+</p>
 
 <p>Entanglement is not limited to spin or two levels. Many degrees of freedom can be entangled (e.g., polarization, path, energy/time-bin, orbital angular momentum), and systems can be qudits (d-level) or continuous-variable modes. The reason qubits dominate technology is engineering convenience, not a fundamental limit.</p>
 
@@ -469,11 +508,13 @@ body_format = "html"
 
 <p></p>
 
-<p><br></p>
+<p>
+</p>
 
 <p>You asked whether spin matters in nuclear processes and whether entanglement could change fusion pathways.</p>
 
-<p><br></p>
+<p>
+</p>
 
 <p></p>
 
@@ -481,7 +522,8 @@ body_format = "html"
 
 <p></p>
 
-<p><br></p>
+<p>
+</p>
 
 <p>Spin matters locally in nuclear reaction channels. A concrete example: spin-polarized deuterium–tritium fuel is predicted/argued to increase the D–T fusion cross section by about a factor ~1.5 (≈ 50%) under ideal polarization assumptions.  </p>
 
@@ -499,11 +541,13 @@ body_format = "html"
 
 <p></p>
 
-<p><br></p>
+<p>
+</p>
 
 <p>This is the heart of what you were reaching for: a mechanism where some states persist, others die out, and “information” spreads into surroundings.</p>
 
-<p><br></p>
+<p>
+</p>
 
 <p></p>
 
@@ -511,7 +555,8 @@ body_format = "html"
 
 <p></p>
 
-<p><br></p>
+<p>
+</p>
 
 <p>Quantum Darwinism is a framework (associated strongly with Zurek’s program) describing how classical reality can emerge from quantum substrate:</p>
 
@@ -545,11 +590,13 @@ body_format = "html"
 
 <p></p>
 
-<p><br></p>
+<p>
+</p>
 
 <p>This “redundant recording” is the Darwin-analogy part: selection (pointer states) + replication (environmental records).  </p>
 
-<p><br></p>
+<p>
+</p>
 
 <p></p>
 
@@ -557,11 +604,13 @@ body_format = "html"
 
 <p></p>
 
-<p><br></p>
+<p>
+</p>
 
 <p>A standard diagnostic is the quantum mutual information between the system and fragments of the environment: as you intercept larger environment fragments, information about the pointer state rises quickly and then hits a plateau—meaning many small fragments already tell you the same thing. This plateau is widely described as a hallmark of Quantum Darwinism.  </p>
 
-<p><br></p>
+<p>
+</p>
 
 <p></p>
 
@@ -569,7 +618,8 @@ body_format = "html"
 
 <p></p>
 
-<p><br></p>
+<p>
+</p>
 
 <p></p>
 
@@ -601,7 +651,8 @@ body_format = "html"
 
 <p></p>
 
-<p><br></p>
+<p>
+</p>
 
 <p></p>
 
@@ -609,7 +660,8 @@ body_format = "html"
 
 <p></p>
 
-<p><br></p>
+<p>
+</p>
 
 <p>Biological Darwinism yields open-ended adaptation because the template (genome) can encode many complex functions and copy with variation. Quantum Darwinism is about which states become objective/classical, not about building complex machines through cumulative selection.</p>
 
@@ -623,7 +675,8 @@ body_format = "html"
 
 <p></p>
 
-<p><br></p>
+<p>
+</p>
 
 <p></p>
 
@@ -631,11 +684,13 @@ body_format = "html"
 
 <p></p>
 
-<p><br></p>
+<p>
+</p>
 
 <p>You wanted: A and B entangled, and in both regions the surroundings respond in a Darwinistic way (selection/replication of information).</p>
 
-<p><br></p>
+<p>
+</p>
 
 <p>The correct way to make this physically meaningful (and testable) is:</p>
 
@@ -673,7 +728,8 @@ body_format = "html"
 
 <p></p>
 
-<p><br></p>
+<p>
+</p>
 
 <p></p>
 
@@ -699,11 +755,13 @@ body_format = "html"
 
 <p></p>
 
-<p><br></p>
+<p>
+</p>
 
 <p>A key reason superconducting circuits are attractive is that comprehensive Quantum Darwinism signatures have been demonstrated there in a recent Science Advances paper.  </p>
 
-<p><br></p>
+<p>
+</p>
 
 <p></p>
 
@@ -711,7 +769,8 @@ body_format = "html"
 
 <p></p>
 
-<p><br></p>
+<p>
+</p>
 
 <p>Step 0 — Prepare entanglement</p>
 
@@ -727,13 +786,15 @@ body_format = "html"
 
 <p></p>
 
-<p><br></p>
+<p>
+</p>
 
 <p>Step 1 — Verify entanglement (before Darwinism)</p>
 
 <p>2) Perform a CHSH Bell test (or state tomography) to verify nonclassical correlations, using the same logic as loophole-free tests (though a lab implementation may not be spacelike-separated).  </p>
 
-<p><br></p>
+<p>
+</p>
 
 <p>Step 2 — Attach environments</p>
 
@@ -741,7 +802,8 @@ body_format = "html"
 
 <p>4) Couple B to an independent environment E_B.</p>
 
-<p><br></p>
+<p>
+</p>
 
 <p>Step 3 — Engineer “copying” into the environment</p>
 
@@ -749,25 +811,29 @@ body_format = "html"
 
 <p>This is the replication element: many environment fragments carry the same record.</p>
 
-<p><br></p>
+<p>
+</p>
 
 <p>Step 4 — Demonstrate the Darwinism signature locally</p>
 
 <p>6) For each wing separately, compute the mutual information between the system and environment fragments as a function of fragment size; look for the characteristic rapid rise + plateau (redundant records).  </p>
 
-<p><br></p>
+<p>
+</p>
 
 <p>Step 5 — Demonstrate “selection”</p>
 
 <p>7) Repeat the experiment preparing the system in a superposition of non-pointer states and show that the environment does not redundantly encode that information (it gets decohered away). This operationally shows that the environment “selects” a pointer basis.</p>
 
-<p><br></p>
+<p>
+</p>
 
 <p>Step 6 — Show the entanglement-to-classical transition</p>
 
 <p>8) Track how the initial A–B entanglement degrades as local records proliferate, while classical correlations between records in E_A and E_B (consistent with the initial entanglement structure) become the accessible “reality.”</p>
 
-<p><br></p>
+<p>
+</p>
 
 <p></p>
 
@@ -803,7 +869,8 @@ body_format = "html"
 
 <p></p>
 
-<p><br></p>
+<p>
+</p>
 
 <p></p>
 
@@ -829,7 +896,8 @@ body_format = "html"
 
 <p></p>
 
-<p><br></p>
+<p>
+</p>
 
 <p></p>
 
@@ -837,7 +905,8 @@ body_format = "html"
 
 <p></p>
 
-<p><br></p>
+<p>
+</p>
 
 <p>The specific two-wing combination—start with A–B entanglement, then build two independent redundant-record environments E_A and E_B, and map the entanglement-to-objective-record transition—is conceptually straightforward but experimentally heavier:</p>
 
@@ -865,7 +934,8 @@ body_format = "html"
 
 <p></p>
 
-<p><br></p>
+<p>
+</p>
 
 <p>In other words: the experimental ingredients exist; the combined demonstration is a credible next-step style experiment rather than science fiction.</p>
 
@@ -913,18 +983,8 @@ body_format = "html"
 <hr>
 <p></p>
 
-<p><br></p>
-
-</div>
-</div>
-
-<div>
-<div>
-<div>
-<div></div>
-</div>
-</div>
-</div>
+<p>
+</p>
 
 ![IMG_8063](/media/correlations-copying-and-darwinism-in-quantum-physics/IMG_8063.jpeg)
 

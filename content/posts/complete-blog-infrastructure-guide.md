@@ -6,6 +6,8 @@ tags = ["infrastructure", "bitcoin", "nostr", "automation", "devops", "lightning
 categories = ["tutorial", "web-development"]
 +++
 
+![](/media/complete-blog-infrastructure-guide/cover.jpg)
+
 ## What We Built: A Complete Modern Blog Infrastructure
 
 This comprehensive guide documents the creation of a fully-featured, decentralized blog platform with cutting-edge features including Bitcoin Lightning payments, Nostr integration, email-to-blog publishing, and automated GitHub deployments.

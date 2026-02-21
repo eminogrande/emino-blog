@@ -9,6 +9,7 @@ markup = "markdown"
 body_format = "markdown"
 +++
 
+![](/media/ai-feature-code-review-of-nuri-com/cover.jpg)
 
 Based on my analysis of the Nuri Expo app, here are all the
 user-facing features:

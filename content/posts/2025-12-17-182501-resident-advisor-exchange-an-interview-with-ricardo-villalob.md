@@ -9,6 +9,7 @@ markup = "markdown"
 body_format = "markdown"
 +++
 
+![](/media/resident-advisor-exchange-an-interview-with-ricardo-villalob/cover.jpg)
 
 # Resident Advisor Exchange: Ricardo Villalobos
 

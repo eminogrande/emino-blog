@@ -7,6 +7,8 @@ tags = ["email-post", "photos"]
 categories = ["blog"]
 +++
 
+![](/media/complete-ios-developer-onboarding-guide-for-eas-build-with-expo-dev/cover.jpg)
+
 # Complete iOS Developer Onboarding Guide for EAS Build
 
 ## Phase 1: Company Admin Setup (You Do This First)

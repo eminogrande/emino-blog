@@ -7,7 +7,6 @@ categories = ["blog"]
 slug = "claudes-document-of-the-soul"
 +++
 
-
 ## Excerpt: Claude's wellbeing
 
 > We believe Claude may have functional emotions in some sense. Not

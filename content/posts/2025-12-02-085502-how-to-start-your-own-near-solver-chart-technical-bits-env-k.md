@@ -7,7 +7,6 @@ categories = ["blog"]
 slug = "how-to-start-your-own-near-solver-chart-technical-bits-env-k"
 +++
 
-
 ## 1. What this solver is and why it exists
 
   - The Near Intents protocol lets users express “I want to swap X for Y

@@ -9,6 +9,7 @@ markup = "markdown"
 body_format = "markdown"
 +++
 
+![](/media/no-true-beginning-and-infinite-regression/cover.jpg)
 
 ## My Idea of the Beginning of the Universe:
 

@@ -9,6 +9,7 @@ markup = "markdown"
 body_format = "markdown"
 +++
 
+![](/media/radical-georgism/cover.jpg)
 
 This conversation, primarily led by a member of the Amoveo project in
 early 2026, explores the intersection of Georgism (Land Value Tax) and

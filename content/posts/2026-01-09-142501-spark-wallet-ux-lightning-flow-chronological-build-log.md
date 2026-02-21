@@ -9,6 +9,7 @@ markup = "markdown"
 body_format = "markdown"
 +++
 
+![](/media/spark-wallet-ux-lightning-flow-chronological-build-log/cover.jpg)
 
 # Spark Wallet UX + Lightning Flow — Chronological Build Log
 

@@ -9,6 +9,7 @@ markup = "markdown"
 body_format = "markdown"
 +++
 
+![](/media/comprehensive-history-of-the-threefold-network-and-tokens/cover.jpg)
 
 The ThreeFold Network is a decentralized peer-to-peer (P2P) internet
 infrastructure project. It provides a global grid of computing,

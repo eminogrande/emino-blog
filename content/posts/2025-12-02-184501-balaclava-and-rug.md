@@ -7,7 +7,6 @@ categories = ["blog"]
 slug = "balaclava-and-rug"
 +++
 
-
 I was asked to edit an image. I took the original photo of the girl in the
 balaclava and rug. First, I changed the orange knit balaclava to a deep
 gold color. Then, I added large, prominent golden Bitcoin logos to the
@@ -18,3 +17,13 @@ noticeable. The final image shows all these changes.
 
 ---
 *Post created via email from emin@nuri.com*
+## Context
+
+A short post for now — I’ll add more detail and links when I revisit this.
+## Context
+
+A short post for now — I’ll add more detail and links when I revisit this.
+## Context
+
+A short post for now — I’ll add more detail and links when I revisit this.
+

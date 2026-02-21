@@ -9,6 +9,7 @@ markup = "markdown"
 body_format = "markdown"
 +++
 
+![](/media/a-cryptographically-safe-method-for-zero-confirmation-bitcoi/cover.jpg)
 
 ## Abstract
 

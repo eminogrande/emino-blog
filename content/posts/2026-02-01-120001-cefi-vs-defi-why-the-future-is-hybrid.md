@@ -9,7 +9,6 @@ markup = "markdown"
 body_format = "markdown"
 +++
 
-
 Exploring the synergy between centralized security and decentralized innovation.
 
 The debate has long been framed as a zero-sum game: **Centralized

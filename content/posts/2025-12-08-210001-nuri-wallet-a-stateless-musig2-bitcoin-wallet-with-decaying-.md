@@ -9,6 +9,7 @@ markup = "markdown"
 body_format = "markdown"
 +++
 
+![](/media/nuri-wallet-a-stateless-musig2-bitcoin-wallet-with-decaying-/cover.jpg)
 
 Work in Progress. Document written by Opus 4.5
 

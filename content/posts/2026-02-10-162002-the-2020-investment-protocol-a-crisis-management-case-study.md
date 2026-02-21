@@ -9,6 +9,7 @@ markup = "markdown"
 body_format = "markdown"
 +++
 
+![](/media/the-2020-investment-protocol-a-crisis-management-case-study/cover.jpg)
 
 # The 2020 Investment Protocol: A Crisis Management Case Study
 

@@ -7,7 +7,6 @@ categories = ["blog"]
 slug = "how-email-to-blog-publishing-works-on-emino-app"
 +++
 
-
 This is the full, technical path from an email sent to post@emino.app to a
 published post, including DNS/TLS, SMTP/IMAP, filtering/
   validation, and the importer internals. The flowchart now includes sender

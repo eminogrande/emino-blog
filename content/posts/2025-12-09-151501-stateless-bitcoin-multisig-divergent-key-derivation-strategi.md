@@ -9,6 +9,7 @@ markup = "markdown"
 body_format = "markdown"
 +++
 
+![](/media/stateless-bitcoin-multisig-divergent-key-derivation-strategi/cover.jpg)
 
 In the implementation of non-custodial Bitcoin wallets utilizing
 MuSig2 and WebAuthn (Passkeys), "statelessness" defines the

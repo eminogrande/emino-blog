@@ -8,6 +8,8 @@ description = "Complete guide to building and deploying Hugo static sites with m
 summary = "Learn how to leverage Hugo static site generator for blazing-fast websites with excellent SEO and AI discoverability."
 +++
 
+![](/media/building-with-hugo-2025/cover.jpg)
+
 ## Why Choose Hugo for Your Static Site?
 
 Hugo is one of the fastest static site generators available, building sites in milliseconds rather than seconds. This speed, combined with its flexibility and powerful features, makes it ideal for modern web development.

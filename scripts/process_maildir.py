@@ -443,7 +443,15 @@ def generate_ai_image(slug: str, subject: str, body: str, body_format: str) -> O
     return dest
 
 
-def compose_post(subject: str, slug: str, body: str, body_format: str, sender: str, images: List[Path]) -> str:
+def compose_post(
+    subject: str,
+    slug: str,
+    body: str,
+    body_format: str,
+    sender: str,
+    images: List[Path],
+    draft: bool,
+) -> str:
     timestamp = datetime.now(timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')
     safe_subject = subject.replace('"', "'")
     markup_value = "html" if body_format == "html" else "markdown"
@@ -455,7 +463,7 @@ def compose_post(subject: str, slug: str, body: str, body_format: str, sender: s
         f'+++\n'
         f'title = "{safe_subject}"\n'
         f'date = {timestamp}\n'
-        f'draft = false\n'
+        f'draft = {"true" if draft else "false"}\n'
         f'tags = ["email-post"]\n'
         f'categories = ["blog"]\n'
         f'slug = "{slug}"\n'
@@ -611,12 +619,14 @@ def send_notification(recipient: str, title: str, slug: str) -> None:
         log(f'Failed to send notification: {exc}')
 
 
-def git_sync(titles: Sequence[str]) -> None:
+def git_sync(titles: Sequence[str], include_public: bool = True) -> None:
     if SKIP_GIT:
         log('EMINO_SKIP_GIT=1, skipping git add/commit/push.')
         return
     try:
-        add_paths = ['content/posts', 'public']
+        add_paths = ['content/posts']
+        if include_public:
+            add_paths.append('public')
         if STATIC_MEDIA_DIR.exists():
             add_paths.append('static/media')
 
@@ -642,30 +652,31 @@ def git_sync(titles: Sequence[str]) -> None:
         log(f'Git command failed: {exc}')
 
 
-def process_maildir() -> Sequence[str]:
+def process_maildir() -> Tuple[Sequence[str], Sequence[str]]:
     if not NEW_DIR.exists():
         log(f'Maildir path not found: {NEW_DIR}')
-        return []
+        return [], []
 
     messages = sorted(p for p in NEW_DIR.iterdir() if p.is_file())
     if not messages:
         log('No new emails found.')
-        return []
+        return [], []
 
     authorized = set(load_authorized_senders())
     log(f'Authorized senders: {", ".join(sorted(authorized))}')
 
     if REQUIRE_TITLE_MARKER and not TITLE_MARKER:
         log('EMINO_REQUIRE_TITLE_MARKER=1 but no EMINO_POST_TITLE_MARKER is configured; refusing to publish.')
-        return []
+        return [], []
 
     post_token = load_post_token() if REQUIRE_POST_TOKEN else ''
     if REQUIRE_POST_TOKEN and not post_token:
         log(f'EMINO_REQUIRE_POST_TOKEN=1 but no token configured at {TOKEN_FILE}; refusing to publish.')
-        return []
+        return [], []
 
     CONTENT_DIR.mkdir(parents=True, exist_ok=True)
     created_titles: List[str] = []
+    published_titles: List[str] = []
 
     for message_path in messages:
         log(f'Processing {message_path.name}...')
@@ -702,11 +713,9 @@ def process_maildir() -> Sequence[str]:
         subject = decode_header_value(message.get('Subject', 'Untitled Post')).strip() or 'Untitled Post'
         body, body_format = extract_body(message)
 
-        if REQUIRE_TITLE_MARKER and TITLE_MARKER:
-            if not has_title_marker(subject, TITLE_MARKER):
-                log(f'Skipping message without required title marker "{TITLE_MARKER}".')
-                move_to_cur(message_path)
-                continue
+        title_has_marker = has_title_marker(subject, TITLE_MARKER) if TITLE_MARKER else False
+        publish_now = title_has_marker or not REQUIRE_TITLE_MARKER
+        if title_has_marker:
             subject = strip_title_marker(subject, TITLE_MARKER).strip() or 'Untitled Post'
 
         token_body = html_to_text(body) if body_format == 'html' else body
@@ -740,25 +749,33 @@ def process_maildir() -> Sequence[str]:
         filename = f'{timestamp}-{slug}.md'
         post_path = CONTENT_DIR / filename
 
-        post_content = compose_post(subject, slug, body, body_format, sender, images)
+        post_content = compose_post(subject, slug, body, body_format, sender, images, draft=not publish_now)
         post_path.write_text(post_content, encoding='utf-8')
-        log(f'Created post {post_path.relative_to(BLOG_DIR)}')
+        if publish_now:
+            log(f'Created published post {post_path.relative_to(BLOG_DIR)}')
+            published_titles.append(subject)
+        else:
+            log(f'Created draft post awaiting admin approval: {post_path.relative_to(BLOG_DIR)}')
 
         created_titles.append(subject)
         move_to_cur(message_path)
-        send_notification(sender, subject, slug)
+        if publish_now:
+            send_notification(sender, subject, slug)
 
-    return created_titles
+    return created_titles, published_titles
 
 
 def main() -> None:
     log(f'=== Email Check at {datetime.now().isoformat()} ===')
-    created = process_maildir()
+    created, published = process_maildir()
     if not created:
         return
 
-    if rebuild_site():
-        git_sync(created)
+    if published:
+        if rebuild_site():
+            git_sync(created, include_public=True)
+    else:
+        git_sync(created, include_public=False)
     log(f'Processed {len(created)} email(s).')
 
 

@@ -26,6 +26,9 @@ TRASH_POSTS_DIR = Path(os.environ.get('EMINO_POSTS_TRASH', BASE_DIR / '.admin-tr
 STATIC_MEDIA_DIR = Path(os.environ.get('EMINO_STATIC_MEDIA_DIR', BASE_DIR / 'static' / 'media'))
 GIT_BRANCH = os.environ.get('EMINO_GIT_BRANCH', 'main')
 SKIP_GIT = os.environ.get('EMINO_SKIP_GIT') == '1'
+DEFAULT_ADMIN_USERNAME = 'admin'
+ADMIN_USERNAME_ENV = os.environ.get('EMINO_ADMIN_USERNAME', '').strip()
+ADMIN_USERNAME_FILE = Path(os.environ.get('EMINO_ADMIN_USERNAME_FILE', '/etc/emino-blog-admin-username'))
 ADMIN_PASSWORD_ENV = os.environ.get('EMINO_ADMIN_PASSWORD', '').strip()
 ADMIN_PASSWORD_HASH_ENV = os.environ.get('EMINO_ADMIN_PASSWORD_HASH', '').strip().lower()
 ADMIN_PASSWORD_HASH_FILE = Path(
@@ -56,8 +59,21 @@ def load_password_hash() -> str:
     return DEFAULT_PASSWORD_HASH
 
 
-def verify_password(password: str) -> bool:
-    return hashlib.sha256(password.encode('utf-8')).hexdigest() == load_password_hash()
+def load_admin_username() -> str:
+    if ADMIN_USERNAME_ENV:
+        return ADMIN_USERNAME_ENV
+    if ADMIN_USERNAME_FILE.exists():
+        try:
+            candidate = ADMIN_USERNAME_FILE.read_text(encoding='utf-8').strip()
+            if candidate:
+                return candidate
+        except Exception:
+            pass
+    return DEFAULT_ADMIN_USERNAME
+
+
+def verify_credentials(username: str, password: str) -> bool:
+    return username == load_admin_username() and hashlib.sha256(password.encode('utf-8')).hexdigest() == load_password_hash()
 
 
 def _parse_post_title(post_path: Path) -> str:
@@ -114,6 +130,25 @@ def _post_slug(post_path: Path) -> str:
     return re.sub(r'^\d{4}-\d{2}-\d{2}-\d{6}-', '', post_path.stem)
 
 
+def _is_post_draft(post_path: Path) -> bool:
+    return _parse_front_matter_value(post_path, 'draft').strip().lower() == 'true'
+
+
+def _set_post_draft(post_path: Path, draft: bool) -> None:
+    content = post_path.read_text(encoding='utf-8', errors='ignore')
+    desired = 'true' if draft else 'false'
+    replacements = [
+        (r'(?m)^(\s*draft\s*=\s*)(true|false)(\s*)$', rf'\g<1>{desired}\3'),
+        (r'(?m)^(\s*draft\s*:\s*)(true|false)(\s*)$', rf'\g<1>{desired}\3'),
+    ]
+    for pattern, replacement in replacements:
+        updated, count = re.subn(pattern, replacement, content, count=1)
+        if count:
+            post_path.write_text(updated, encoding='utf-8')
+            return
+    raise ValueError('Post does not contain a draft field in front matter')
+
+
 def list_posts(limit: int = 200):
     if not POSTS_DIR.exists():
         return []
@@ -124,6 +159,7 @@ def list_posts(limit: int = 200):
         posts.append({
             'path': str(post_path.relative_to(POSTS_DIR)),
             'title': _parse_post_title(post_path),
+            'is_draft': _is_post_draft(post_path),
             'modified': datetime.fromtimestamp(stat.st_mtime).strftime('%Y-%m-%d %H:%M:%S'),
             'size_kb': round(stat.st_size / 1024, 1),
         })
@@ -351,6 +387,23 @@ ADMIN_TEMPLATE = '''
             margin-bottom: 4px;
             color: #1f2937;
         }
+        .status-badge {
+            display: inline-block;
+            margin-left: 8px;
+            padding: 2px 8px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 700;
+            vertical-align: middle;
+        }
+        .status-draft {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        .status-live {
+            background: #dcfce7;
+            color: #166534;
+        }
         .post-meta {
             color: #6b7280;
             font-size: 12px;
@@ -419,6 +472,7 @@ ADMIN_TEMPLATE = '''
         {% if not logged_in %}
         <h1>🔐 Admin Login</h1>
         <form class="password-form" method="POST" action="/admin/login">
+            <input type="text" name="username" placeholder="Username" required>
             <input type="password" name="password" placeholder="Enter password" required>
             <button type="submit" class="btn">Login</button>
         </form>
@@ -477,6 +531,7 @@ ADMIN_TEMPLATE = '''
                 <textarea id="post-editor" placeholder="Select a post above to edit"></textarea>
                 <div class="editor-actions">
                     <button class="btn btn-small" onclick="saveCurrentPost()">Save Post</button>
+                    <button class="btn btn-secondary btn-small" onclick="approveCurrentPost()">Approve Post</button>
                     <button class="btn btn-danger btn-small" onclick="deleteCurrentPost()">Delete Post</button>
                 </div>
             </div>
@@ -491,6 +546,7 @@ ADMIN_TEMPLATE = '''
         <script>
             let allPosts = [];
             let currentPostPath = "";
+            let currentPostDraft = false;
 
             function showOutput(text) {
                 const output = document.getElementById("output");
@@ -577,15 +633,19 @@ ADMIN_TEMPLATE = '''
                     const path = escapeHtml(post.path);
                     const modified = escapeHtml(post.modified || "");
                     const size = escapeHtml(String(post.size_kb || 0));
+                    const statusBadge = post.is_draft
+                        ? '<span class="status-badge status-draft">Draft</span>'
+                        : '<span class="status-badge status-live">Live</span>';
                     const encodedPath = encodeURIComponent(post.path);
                     return `
                         <div class="post-row">
                             <div>
-                                <div class="post-title">${title}</div>
+                                <div class="post-title">${title}${statusBadge}</div>
                                 <div class="post-meta">${path} | ${modified} | ${size} KB</div>
                             </div>
                             <div class="post-actions">
                                 <button class="btn btn-small" onclick="openPost(decodeURIComponent('${encodedPath}'))">Edit</button>
+                                ${post.is_draft ? `<button class="btn btn-secondary btn-small" onclick="approvePost(decodeURIComponent('${encodedPath}'))">Approve</button>` : ''}
                                 <button class="btn btn-danger btn-small" onclick="deletePost(decodeURIComponent('${encodedPath}'))">Delete</button>
                             </div>
                         </div>
@@ -628,6 +688,7 @@ ADMIN_TEMPLATE = '''
                         throw new Error(data.output || "Failed to load post");
                     }
                     currentPostPath = data.path;
+                    currentPostDraft = !!data.is_draft;
                     document.getElementById("editor-path").textContent = data.path;
                     document.getElementById("post-editor").value = data.content || "";
                 } catch (error) {
@@ -661,6 +722,26 @@ ADMIN_TEMPLATE = '''
                 setLoading(false);
             }
 
+            async function approvePost(path) {
+                setLoading(true);
+                try {
+                    const response = await fetch("/admin/approve-post", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ path: path, rebuild: true })
+                    });
+                    const data = await response.json();
+                    showOutput(data.output || "Approved.");
+                    if (currentPostPath === path) {
+                        currentPostDraft = false;
+                    }
+                    await loadPosts();
+                } catch (error) {
+                    showOutput("Failed to approve post: " + error.message);
+                }
+                setLoading(false);
+            }
+
             async function deletePost(path) {
                 if (!confirm("Delete this post? It will be moved to admin trash.")) {
                     return;
@@ -676,6 +757,7 @@ ADMIN_TEMPLATE = '''
                     showOutput(data.output || "Deleted.");
                     if (currentPostPath === path) {
                         currentPostPath = "";
+                        currentPostDraft = false;
                         document.getElementById("editor-path").textContent = "No post selected";
                         document.getElementById("post-editor").value = "";
                     }
@@ -692,6 +774,14 @@ ADMIN_TEMPLATE = '''
                     return;
                 }
                 deletePost(currentPostPath);
+            }
+
+            function approveCurrentPost() {
+                if (!currentPostPath) {
+                    showOutput("Select a post first.");
+                    return;
+                }
+                approvePost(currentPostPath);
             }
 
             async function updateStats() {
@@ -725,15 +815,18 @@ def admin():
 
 @app.route('/admin/login', methods=['POST'])
 def login():
+    username = request.form.get('username', '').strip()
     password = request.form.get('password', '')
-    if verify_password(password):
+    if verify_credentials(username, password):
         session['logged_in'] = True
+        session['admin_username'] = username
         return redirect('/admin')
     return render_template_string(ADMIN_TEMPLATE, logged_in=False, error='Invalid password')
 
 @app.route('/admin/logout')
 def logout():
     session.pop('logged_in', None)
+    session.pop('admin_username', None)
     return redirect('/admin')
 
 @app.route('/admin/check-emails', methods=['POST'])
@@ -795,7 +888,12 @@ def get_post():
         if not post_path.exists():
             return jsonify({'success': False, 'output': 'Post not found'}), 404
         content = post_path.read_text(encoding='utf-8', errors='ignore')
-        return jsonify({'success': True, 'path': str(post_path.relative_to(POSTS_DIR)), 'content': content})
+        return jsonify({
+            'success': True,
+            'path': str(post_path.relative_to(POSTS_DIR)),
+            'content': content,
+            'is_draft': _is_post_draft(post_path),
+        })
     except Exception as e:
         return jsonify({'success': False, 'output': str(e)}), 400
 
@@ -827,6 +925,43 @@ def save_post():
                 return jsonify({'success': False, 'output': '\n'.join(output_lines)})
             git_ok, git_output = run_git_publish(
                 f'Admin edit post: {_parse_post_title(post_path)}',
+                ['content/posts', 'public', 'static/media'],
+            )
+            output_lines.append('\nGit publish:')
+            output_lines.append(git_output)
+            return jsonify({'success': ok and git_ok, 'output': '\n'.join(output_lines)})
+
+        return jsonify({'success': True, 'output': '\n'.join(output_lines)})
+    except Exception as e:
+        return jsonify({'success': False, 'output': str(e)}), 400
+
+
+@app.route('/admin/approve-post', methods=['POST'])
+@login_required
+def approve_post():
+    try:
+        payload = request.get_json(silent=True) or {}
+        raw_path = payload.get('path', '')
+        rebuild_after = payload.get('rebuild', True)
+
+        post_path = resolve_post_path(raw_path)
+        if not post_path.exists():
+            return jsonify({'success': False, 'output': 'Post not found'}), 404
+
+        if not _is_post_draft(post_path):
+            return jsonify({'success': True, 'output': f'{post_path.relative_to(BASE_DIR)} is already live.'})
+
+        _set_post_draft(post_path, False)
+        output_lines = [f'Approved {post_path.relative_to(BASE_DIR)}']
+
+        if rebuild_after:
+            ok, build_output = run_hugo_build(timeout_sec=120)
+            output_lines.append('\nHugo rebuild:')
+            output_lines.append(build_output)
+            if not ok:
+                return jsonify({'success': False, 'output': '\n'.join(output_lines)})
+            git_ok, git_output = run_git_publish(
+                f'Admin approve post: {_parse_post_title(post_path)}',
                 ['content/posts', 'public', 'static/media'],
             )
             output_lines.append('\nGit publish:')

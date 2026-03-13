@@ -1,0 +1,76 @@
+/* Typography tweaks for readability
+   Grounded in PracticalTypography.com + Emin's notes.
+   PaperMod loads assets/css/extended/*.css automatically.
+*/
+
+:root {
+  /* Slightly narrower measure improves long-form readability */
+  --main-width: 680px;
+}
+
+body {
+  /* Practical Typography: 15–25px body text on web */
+  font-size: 18px;
+  /* 1.5 is tighter than PaperMod default 1.6; more “book-like” */
+  line-height: 1.5;
+
+  /* Better kerning + ligatures when available */
+  font-kerning: normal;
+  font-variant-ligatures: common-ligatures contextual;
+  font-feature-settings: "kern" 1, "liga" 1;
+}
+
+/* Keep long-form article text comfortably spaced */
+.post-content {
+  line-height: 1.6;
+
+  /* Prevent ultra-wide lines on large screens */
+  max-width: 65ch;
+  margin-inline: auto;
+
+  /* Reduce widows / single-word last lines where supported */
+  text-wrap: pretty;
+
+  /* Optical punctuation alignment (supported in modern browsers) */
+  hanging-punctuation: first allow-end last;
+}
+
+/* Headings: subtler hierarchy + balanced wrapping + no hyphenation */
+.post-content h1,
+.post-content h2,
+.post-content h3,
+.post-content h4,
+.post-content h5,
+.post-content h6 {
+  hyphens: none;
+  text-wrap: balance;
+}
+
+.post-content h1 { font-size: 1.5rem; margin: 2.2rem 0 1.2rem; }
+.post-content h2 { font-size: 1.35rem; margin: 1.8rem 0 1rem; }
+.post-content h3 { font-size: 1.15rem; margin: 1.4rem 0 0.8rem; }
+
+/* Bind headings a bit tighter to the following content */
+.post-content h1 + p,
+.post-content h2 + p,
+.post-content h3 + p {
+  margin-top: 0.3rem;
+}
+
+/* Blockquotes: slightly smaller, clearer indentation */
+.post-content blockquote {
+  font-size: 0.95em;
+  padding-left: 1.5rem;
+}
+
+/* Code blocks remain readable with tighter body line-height */
+.post-content code,
+.post-content pre code {
+  line-height: 1.5;
+}
+
+/* Optional: reduce overly large page/post title sizes on smaller screens */
+@media (max-width: 600px) {
+  .post-title { font-size: 32px; }
+  .page-header h1 { font-size: 32px; }
+}

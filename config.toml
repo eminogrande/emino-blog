@@ -1,12 +1,12 @@
 baseURL = "https://emino.app/"
 languageCode = "en-us"
-title = "Emino.App's, Art's & Articles by Emin Mahrt"
+title = "Art & Articles by Emin Mahrt"
 theme = "PaperMod"
 
 [params]
 dateFormat = "January 2, 2006"
 env = "production"
-title = "Emino.App's, Art's & Articles by Emin Mahrt"
+title = "Art & Articles by Emin Mahrt"
 description = "Karibu to Emin Henri Mahrt's"
 keywords = ["blog", "art", "articles", "technology", "development"]
 author = "Emin Henri Mahrt"
@@ -22,7 +22,7 @@ ShowCodeCopyButtons = true
 enabled = false
 
 [params.homeInfoParams]
-Title = "Karibu to Emin Henri Mahrt's"
+Title = "Art & Articles by Emin Mahrt"
 Content = "Apps, Art & Articles"
 
 [[params.socialIcons]]
@@ -55,3 +55,8 @@ home = ["HTML", "RSS", "JSON"]
 [minify]
 disableXML = true
 minifyOutput = true
+
+[markup]
+  [markup.goldmark]
+    [markup.goldmark.renderer]
+      unsafe = true

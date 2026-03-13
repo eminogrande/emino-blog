@@ -3,25 +3,13 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://emino.app/</loc>
-    <lastmod>2026-02-21T06:25:01+00:00</lastmod>
-  </url><url>
-    <loc>https://emino.app/categories/blog/</loc>
-    <lastmod>2026-02-21T06:25:01+00:00</lastmod>
-  </url><url>
-    <loc>https://emino.app/categories/</loc>
-    <lastmod>2026-02-21T06:25:01+00:00</lastmod>
-  </url><url>
-    <loc>https://emino.app/tags/email-post/</loc>
-    <lastmod>2026-02-21T06:25:01+00:00</lastmod>
-  </url><url>
-    <loc>https://emino.app/posts/microgpt-py-karpathy-part-2-shapes-at-every-step-a-tiny-forw/</loc>
-    <lastmod>2026-02-21T06:25:01+00:00</lastmod>
+    <lastmod>2026-02-20T23:53:00+00:00</lastmod>
   </url><url>
     <loc>https://emino.app/posts/</loc>
-    <lastmod>2026-02-21T06:25:01+00:00</lastmod>
+    <lastmod>2026-02-20T23:53:00+00:00</lastmod>
   </url><url>
-    <loc>https://emino.app/tags/</loc>
-    <lastmod>2026-02-21T06:25:01+00:00</lastmod>
+    <loc>https://emino.app/categories/</loc>
+    <lastmod>2026-02-20T23:40:00+00:00</lastmod>
   </url><url>
     <loc>https://emino.app/tags/consciousness/</loc>
     <lastmod>2026-02-20T23:40:00+00:00</lastmod>
@@ -42,6 +30,9 @@
     <lastmod>2026-02-20T23:40:00+00:00</lastmod>
   </url><url>
     <loc>https://emino.app/tags/plain-english/</loc>
+    <lastmod>2026-02-20T23:40:00+00:00</lastmod>
+  </url><url>
+    <loc>https://emino.app/tags/</loc>
     <lastmod>2026-02-20T23:40:00+00:00</lastmod>
   </url><url>
     <loc>https://emino.app/posts/2026-02-21-013000-panpsychisms-a-comparative-map/</loc>
@@ -87,39 +78,27 @@
     <lastmod>2026-02-20T21:55:00+00:00</lastmod>
   </url><url>
     <loc>https://emino.app/categories/ai/</loc>
-    <lastmod>2026-02-15T22:05:00+00:00</lastmod>
-  </url><url>
-    <loc>https://emino.app/tags/attention/</loc>
-    <lastmod>2026-02-15T22:05:00+00:00</lastmod>
+    <lastmod>2026-02-15T21:45:00+00:00</lastmod>
   </url><url>
     <loc>https://emino.app/categories/explainers/</loc>
-    <lastmod>2026-02-15T22:05:00+00:00</lastmod>
+    <lastmod>2026-02-15T21:45:00+00:00</lastmod>
   </url><url>
     <loc>https://emino.app/tags/gpt/</loc>
-    <lastmod>2026-02-15T22:05:00+00:00</lastmod>
+    <lastmod>2026-02-15T21:45:00+00:00</lastmod>
   </url><url>
     <loc>https://emino.app/tags/karpathy/</loc>
-    <lastmod>2026-02-15T22:05:00+00:00</lastmod>
+    <lastmod>2026-02-15T21:45:00+00:00</lastmod>
   </url><url>
     <loc>https://emino.app/tags/machine-learning/</loc>
-    <lastmod>2026-02-15T22:05:00+00:00</lastmod>
-  </url><url>
-    <loc>https://emino.app/posts/microgpt-karpathy-part-2-shapes-and-a-tiny-forward-pass/</loc>
-    <lastmod>2026-02-15T22:05:00+00:00</lastmod>
-  </url><url>
-    <loc>https://emino.app/categories/programming/</loc>
-    <lastmod>2026-02-15T22:05:00+00:00</lastmod>
-  </url><url>
-    <loc>https://emino.app/tags/python/</loc>
-    <lastmod>2026-02-15T22:05:00+00:00</lastmod>
-  </url><url>
-    <loc>https://emino.app/tags/explained/</loc>
-    <lastmod>2026-02-15T21:47:02+00:00</lastmod>
-  </url><url>
-    <loc>https://emino.app/posts/microgpt-line-by-line-plain-english/</loc>
-    <lastmod>2026-02-15T21:47:02+00:00</lastmod>
+    <lastmod>2026-02-15T21:45:00+00:00</lastmod>
   </url><url>
     <loc>https://emino.app/posts/microgpt-karpathy-line-by-line/</loc>
+    <lastmod>2026-02-15T21:45:00+00:00</lastmod>
+  </url><url>
+    <loc>https://emino.app/categories/programming/</loc>
+    <lastmod>2026-02-15T21:45:00+00:00</lastmod>
+  </url><url>
+    <loc>https://emino.app/tags/python/</loc>
     <lastmod>2026-02-15T21:45:00+00:00</lastmod>
   </url><url>
     <loc>https://emino.app/categories/astronomy/</loc>
@@ -145,6 +124,12 @@
   </url><url>
     <loc>https://emino.app/tags/telescopes/</loc>
     <lastmod>2026-02-15T20:20:00+00:00</lastmod>
+  </url><url>
+    <loc>https://emino.app/categories/blog/</loc>
+    <lastmod>2026-02-15T14:00:01+00:00</lastmod>
+  </url><url>
+    <loc>https://emino.app/tags/email-post/</loc>
+    <lastmod>2026-02-15T14:00:01+00:00</lastmod>
   </url><url>
     <loc>https://emino.app/posts/the-crazy-picasso/</loc>
     <lastmod>2026-02-15T14:00:01+00:00</lastmod>

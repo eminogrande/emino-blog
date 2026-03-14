@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import base64
+import hashlib
 import io
 import json
 import os
@@ -127,19 +128,124 @@ def slugify_fragment(value: str) -> str:
     return cleaned or 'generated-image'
 
 
+ANIMAL_DIRECTION_HINTS = [
+    (
+        {'hope', 'future', 'renewal', 'faith', 'optimism', 'light', 'joy', 'spring'},
+        ['crane', 'swallow', 'kingfisher', 'ibis'],
+    ),
+    (
+        {'mind', 'consciousness', 'thought', 'thinking', 'cognition', 'awareness', 'perception', 'brain'},
+        ['owl', 'octopus', 'heron', 'lynx'],
+    ),
+    (
+        {'information', 'compute', 'computation', 'computational', 'code', 'signal', 'network', 'system', 'functional', 'functionalist'},
+        ['octopus', 'spider', 'raven', 'antelope'],
+    ),
+    (
+        {'field', 'electromagnetic', 'wave', 'energy', 'frequency', 'vibration', 'resonance'},
+        ['jellyfish', 'manta ray', 'eel', 'moth'],
+    ),
+    (
+        {'dualism', 'duality', 'split', 'shadow', 'conflict', 'contrast', 'critic', 'critics'},
+        ['raven', 'wolf', 'stag', 'crow'],
+    ),
+    (
+        {'map', 'compare', 'comparative', 'overview', 'taxonomy', 'framework'},
+        ['ibis', 'fox', 'snow leopard', 'owl'],
+    ),
+    (
+        {'memory', 'history', 'archive', 'time', 'past', 'ancient', 'legacy'},
+        ['elephant', 'tortoise', 'owl', 'whale'],
+    ),
+    (
+        {'water', 'sea', 'ocean', 'river', 'lake', 'depth', 'fluid'},
+        ['orca', 'seal', 'jellyfish', 'heron'],
+    ),
+    (
+        {'earth', 'forest', 'nature', 'wild', 'mountain', 'stone', 'ground'},
+        ['stag', 'fox', 'ibex', 'snow leopard'],
+    ),
+]
+
+FALLBACK_ANIMALS = [
+    'crane',
+    'owl',
+    'octopus',
+    'jaguar',
+    'snow leopard',
+    'kingfisher',
+    'heron',
+    'raven',
+    'ibex',
+    'red fox',
+    'orca',
+    'elephant',
+]
+
+
+def _stable_unique(values):
+    seen = set()
+    ordered = []
+    for value in values:
+        if not value or value in seen:
+            continue
+        seen.add(value)
+        ordered.append(value)
+    return ordered
+
+
+def _interleave_animal_groups(groups) -> list[str]:
+    picks = []
+    if not groups:
+        return picks
+    longest = max(len(group) for group in groups)
+    for index in range(longest):
+        for group in groups:
+            if index < len(group):
+                picks.append(group[index])
+    return _stable_unique(picks)
+
+
+def suggest_symbolic_animals(title: str, body_text: str = '') -> list[str]:
+    title_words = {part for part in re.findall(r'[a-z0-9]+', (title or '').lower()) if len(part) >= 3}
+    body_words = {part for part in re.findall(r'[a-z0-9]+', (body_text or '').lower()) if len(part) >= 4}
+    matched_title_groups = []
+    matched_body_groups = []
+    for keywords, animals in ANIMAL_DIRECTION_HINTS:
+        if title_words & keywords:
+            matched_title_groups.append(animals)
+        elif body_words & keywords:
+            matched_body_groups.append(animals)
+
+    picks = _interleave_animal_groups(matched_title_groups) + _interleave_animal_groups(matched_body_groups)
+
+    if not picks:
+        digest = hashlib.sha256(f'{title}\n{body_text[:600]}'.encode('utf-8', errors='ignore')).digest()
+        for index in range(4):
+            picks.append(FALLBACK_ANIMALS[digest[index] % len(FALLBACK_ANIMALS)])
+
+    return _stable_unique(picks)[:4]
+
+
 def build_image_prompt(title: str, body_text: str = '', extra_prompt: str = '') -> str:
     clean_body = re.sub(r'\s+', ' ', body_text or '').strip()
     clean_prompt = re.sub(r'\s+', ' ', extra_prompt or '').strip()
     excerpt = clean_body[:load_image_prompt_max_chars()]
+    animal_candidates = suggest_symbolic_animals(title, clean_body)
+    animal_guidance = ', '.join(animal_candidates)
 
     parts = [
-        'Create a photorealistic editorial cover photo for a personal blog post.',
-        'It must look like a real photograph captured with a professional camera.',
-        'Use natural lighting, believable textures, realistic depth of field, subtle imperfections, and documentary-level realism.',
-        'Avoid illustration, painting, CGI, 3D render, surreal anatomy, waxy skin, and obvious AI artifacts.',
+        'Create an artistic but fully realistic editorial cover photograph for a personal blog post.',
+        'The scene must contain exactly one living animal subject and no humans, no human body parts, and no anthropomorphic traits.',
+        'Choose the single animal species that best symbolically fits the headline and summary, and make it feel specific rather than generic stock imagery.',
+        'Render it as a real analog photograph: black-and-white silver gelatin look, film grain, subtle halation, natural contrast, documentary realism, believable lens imperfections, and no digital gloss.',
+        'Keep the entire frame monochrome except for the single animal subject, which may retain restrained natural color as selective color treatment.',
+        'Use natural light, grounded environments, realistic anatomy, realistic fur or feathers or skin texture, and magazine-quality composition.',
+        'Prefer unusual or thoughtful species over default lions or wolves unless they are clearly the best fit.',
+        'Avoid illustration, painting, CGI, 3D render, taxidermy, collage, surreal mutations, duplicate animals, and obvious AI artifacts.',
         'No words, letters, logos, captions, or watermarks in the image.',
-        'Use a cinematic but natural composition with a warm, hopeful emotional tone.',
-        'Landscape orientation, magazine-quality composition, visually strong but grounded in reality.',
+        'Landscape orientation, visually strong but grounded in reality, with an intimate fine-art documentary mood.',
+        f'Strong animal candidates for this article: {animal_guidance}.',
         f'Title: {title or "Untitled Post"}.',
     ]
     if excerpt:

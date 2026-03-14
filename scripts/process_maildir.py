@@ -4,14 +4,13 @@ Process incoming Maildir messages and turn authorized emails into Hugo posts.
 """
 
 import email
-import base64
 import html
 import hashlib
-import json
 import os
 import re
 import shutil
 import subprocess
+import sys
 from datetime import datetime, timezone
 from email import policy
 from email.header import decode_header, make_header
@@ -20,8 +19,6 @@ from email.utils import getaddresses, parseaddr
 from html.parser import HTMLParser
 from pathlib import Path
 from typing import List, Optional, Sequence, Tuple
-from urllib import error as urllib_error
-from urllib import request as urllib_request
 from urllib.parse import urlparse
 
 
@@ -32,7 +29,12 @@ DEFAULT_AUTHORIZED = {
     'proud@me.com',
 }
 
-BLOG_DIR = Path(os.environ.get('EMINO_BLOG_DIR', '/var/www/emino-blog')).resolve()
+BLOG_DIR = Path(os.environ.get('EMINO_BLOG_DIR', Path(__file__).resolve().parent.parent)).resolve()
+if str(BLOG_DIR) not in sys.path:
+    sys.path.insert(0, str(BLOG_DIR))
+
+from image_generation import build_image_prompt as build_cover_image_prompt, generate_image_asset
+
 MAILDIR_PATH = Path(os.environ.get('EMINO_MAILDIR', '/var/mail/vhosts/emino.app/post')).resolve()
 CONTENT_DIR = BLOG_DIR / 'content' / 'posts'
 STATIC_MEDIA_DIR = BLOG_DIR / 'static' / 'media'
@@ -58,11 +60,6 @@ BLOCKED_RECEIVED_HOSTS = tuple(
     if host.strip()
 )
 AUTO_GENERATE_IMAGE = os.environ.get('EMINO_AUTO_GENERATE_IMAGE', '1') != '0'
-OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY', os.environ.get('EMINO_OPENAI_API_KEY', '')).strip()
-OPENAI_IMAGE_MODEL = os.environ.get('EMINO_OPENAI_IMAGE_MODEL', 'gpt-image-1').strip()
-OPENAI_IMAGE_SIZE = os.environ.get('EMINO_OPENAI_IMAGE_SIZE', '1536x1024').strip()
-OPENAI_IMAGE_TIMEOUT = int(os.environ.get('EMINO_OPENAI_IMAGE_TIMEOUT', '90') or '90')
-IMAGE_PROMPT_MAX_CHARS = int(os.environ.get('EMINO_IMAGE_PROMPT_MAX_CHARS', '700') or '700')
 
 NEW_DIR = MAILDIR_PATH / 'new'
 CUR_DIR = MAILDIR_PATH / 'cur'
@@ -366,81 +363,10 @@ def generate_fallback_image(slug: str, subject: str) -> Optional[Path]:
         return None
 
 
-def build_image_prompt(subject: str, body: str, body_format: str) -> str:
-    body_text = html_to_text(body) if body_format == 'html' else body
-    body_text = re.sub(r'\s+', ' ', body_text or '').strip()
-    excerpt = body_text[:IMAGE_PROMPT_MAX_CHARS]
-    parts = [
-        'Create a striking editorial cover illustration for a personal blog post.',
-        'No words, letters, logos, or watermarks in the image.',
-        'Use a cinematic but warm style with a hopeful tone.',
-        f'Title: {subject}.',
-    ]
-    if excerpt:
-        parts.append(f'Post summary: {excerpt}.')
-    return ' '.join(parts)
-
-
 def generate_ai_image(slug: str, subject: str, body: str, body_format: str) -> Optional[Path]:
-    if not OPENAI_API_KEY:
-        return None
-
-    payload = {
-        'model': OPENAI_IMAGE_MODEL,
-        'prompt': build_image_prompt(subject, body, body_format),
-        'size': OPENAI_IMAGE_SIZE,
-    }
-    request = urllib_request.Request(
-        'https://api.openai.com/v1/images/generations',
-        data=json.dumps(payload).encode('utf-8'),
-        headers={
-            'Authorization': f'Bearer {OPENAI_API_KEY}',
-            'Content-Type': 'application/json',
-        },
-        method='POST',
-    )
-
-    try:
-        with urllib_request.urlopen(request, timeout=OPENAI_IMAGE_TIMEOUT) as response:
-            data = json.loads(response.read().decode('utf-8'))
-    except urllib_error.HTTPError as exc:
-        details = exc.read().decode('utf-8', errors='ignore').strip()
-        log(f'AI image generation failed ({exc.code}): {details[:240]}')
-        return None
-    except Exception as exc:
-        log(f'AI image generation failed: {exc}')
-        return None
-
-    image_items = data.get('data') or []
-    if not image_items:
-        log('AI image generation returned no images.')
-        return None
-
-    image_item = image_items[0]
-    image_bytes = b''
-    if image_item.get('b64_json'):
-        try:
-            image_bytes = base64.b64decode(image_item['b64_json'])
-        except Exception as exc:
-            log(f'Failed to decode AI image payload: {exc}')
-            return None
-    elif image_item.get('url'):
-        try:
-            with urllib_request.urlopen(image_item['url'], timeout=OPENAI_IMAGE_TIMEOUT) as response:
-                image_bytes = response.read()
-        except Exception as exc:
-            log(f'Failed to download AI image: {exc}')
-            return None
-
-    if not image_bytes:
-        log('AI image generation returned an empty image payload.')
-        return None
-
-    dest_dir = STATIC_MEDIA_DIR / slug
-    dest_dir.mkdir(parents=True, exist_ok=True)
-    dest = dest_dir / 'cover.png'
-    dest.write_bytes(image_bytes)
-    return dest
+    body_text = html_to_text(body) if body_format == 'html' else body
+    prompt = build_cover_image_prompt(subject, body_text)
+    return generate_image_asset(STATIC_MEDIA_DIR, slug, prompt, filename_stem='cover', logger=log)
 
 
 def compose_post(

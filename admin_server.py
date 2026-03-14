@@ -8,7 +8,9 @@ import shutil
 from functools import wraps
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Tuple
+from typing import Optional, Tuple
+
+from image_generation import build_image_prompt, generate_image_asset, slugify_fragment
 
 app = Flask(__name__)
 app.secret_key = 'emino-blog-admin-secret-key-2025'
@@ -76,30 +78,7 @@ def verify_credentials(username: str, password: str) -> bool:
     return username == load_admin_username() and hashlib.sha256(password.encode('utf-8')).hexdigest() == load_password_hash()
 
 
-def _parse_post_title(post_path: Path) -> str:
-    try:
-        with post_path.open('r', encoding='utf-8', errors='ignore') as handle:
-            for _ in range(40):
-                line = handle.readline()
-                if not line:
-                    break
-                stripped = line.strip()
-                m_colon = re.match(r'^\s*title\s*:\s*["\']?(.*?)["\']?\s*$', stripped, flags=re.IGNORECASE)
-                if m_colon:
-                    return m_colon.group(1).strip() or post_path.stem
-                m_equal = re.match(r'^\s*title\s*=\s*["\'](.*?)["\']\s*$', stripped, flags=re.IGNORECASE)
-                if m_equal:
-                    return m_equal.group(1).strip() or post_path.stem
-    except Exception:
-        pass
-    return post_path.stem
-
-
 def _parse_front_matter_value(post_path: Path, key: str) -> str:
-    patterns = [
-        re.compile(rf'^\s*{re.escape(key)}\s*:\s*["\']?(.*?)["\']?\s*$', flags=re.IGNORECASE),
-        re.compile(rf'^\s*{re.escape(key)}\s*=\s*["\'](.*?)["\']\s*$', flags=re.IGNORECASE),
-    ]
     try:
         with post_path.open('r', encoding='utf-8', errors='ignore') as handle:
             for _ in range(60):
@@ -107,13 +86,32 @@ def _parse_front_matter_value(post_path: Path, key: str) -> str:
                 if not line:
                     break
                 stripped = line.strip()
-                for pattern in patterns:
-                    match = pattern.match(stripped)
-                    if match:
-                        return match.group(1).strip()
+                match = re.match(rf'^\s*{re.escape(key)}\s*[:=]\s*(.+?)\s*$', stripped, flags=re.IGNORECASE)
+                if match:
+                    value = match.group(1).split('#', 1)[0].strip()
+                    if len(value) >= 2 and value[0] == value[-1] and value[0] in {'"', "'"}:
+                        return value[1:-1].strip()
+                    return value
     except Exception:
         pass
     return ''
+
+
+def _parse_post_title_from_content(content: str) -> str:
+    for raw_line in content.splitlines()[:60]:
+        stripped = raw_line.strip()
+        match = re.match(r'^\s*title\s*[:=]\s*(.+?)\s*$', stripped, flags=re.IGNORECASE)
+        if not match:
+            continue
+        value = match.group(1).strip()
+        if len(value) >= 2 and value[0] == value[-1] and value[0] in {'"', "'"}:
+            value = value[1:-1]
+        return value.strip() or 'Untitled Post'
+    return 'Untitled Post'
+
+
+def _parse_post_title(post_path: Path) -> str:
+    return _parse_front_matter_value(post_path, 'title') or post_path.stem
 
 
 def _post_slug(post_path: Path) -> str:
@@ -134,6 +132,52 @@ def _is_post_draft(post_path: Path) -> bool:
     return _parse_front_matter_value(post_path, 'draft').strip().lower() == 'true'
 
 
+def _parse_datetime_value(raw_value: str) -> Optional[datetime]:
+    value = (raw_value or '').strip()
+    if not value:
+        return None
+
+    normalized = value.strip('"\'')
+    if normalized.endswith('Z'):
+        normalized = normalized[:-1] + '+00:00'
+
+    try:
+        parsed = datetime.fromisoformat(normalized)
+    except ValueError:
+        for fmt in ('%Y-%m-%d %H:%M:%S', '%Y-%m-%d'):
+            try:
+                parsed = datetime.strptime(normalized, fmt)
+                break
+            except ValueError:
+                parsed = None
+        if parsed is None:
+            return None
+
+    if parsed.tzinfo is None:
+        return parsed.replace(tzinfo=timezone.utc)
+    return parsed
+
+
+def _parse_post_date(post_path: Path) -> Optional[datetime]:
+    parsed = _parse_datetime_value(_parse_front_matter_value(post_path, 'date'))
+    if parsed:
+        return parsed
+
+    match = re.match(r'^(?P<stamp>\d{4}-\d{2}-\d{2}-\d{6})-', post_path.stem)
+    if not match:
+        return None
+    try:
+        return datetime.strptime(match.group('stamp'), '%Y-%m-%d-%H%M%S').replace(tzinfo=timezone.utc)
+    except ValueError:
+        return None
+
+
+def _format_display_datetime(value: Optional[datetime]) -> str:
+    if not value:
+        return ''
+    return value.astimezone().strftime('%Y-%m-%d %H:%M:%S')
+
+
 def _set_post_draft(post_path: Path, draft: bool) -> None:
     content = post_path.read_text(encoding='utf-8', errors='ignore')
     desired = 'true' if draft else 'false'
@@ -149,23 +193,68 @@ def _set_post_draft(post_path: Path, draft: bool) -> None:
     raise ValueError('Post does not contain a draft field in front matter')
 
 
+def _set_or_insert_front_matter_value(post_path: Path, key: str, raw_value: str) -> None:
+    content = post_path.read_text(encoding='utf-8', errors='ignore')
+    replacements = [
+        (rf'(?m)^(\s*{re.escape(key)}\s*=\s*).*(\s*)$', rf'\g<1>{raw_value}\2'),
+        (rf'(?m)^(\s*{re.escape(key)}\s*:\s*).*(\s*)$', rf'\g<1>{raw_value}\2'),
+    ]
+    for pattern, replacement in replacements:
+        updated, count = re.subn(pattern, replacement, content, count=1)
+        if count:
+            post_path.write_text(updated, encoding='utf-8')
+            return
+
+    if content.startswith('+++\n'):
+        closing = content.find('\n+++\n', 4)
+        if closing != -1:
+            updated = content[:closing] + f'\n{key} = {raw_value}' + content[closing:]
+            post_path.write_text(updated, encoding='utf-8')
+            return
+    if content.startswith('---\n'):
+        closing = content.find('\n---\n', 4)
+        if closing != -1:
+            updated = content[:closing] + f'\n{key}: {raw_value}' + content[closing:]
+            post_path.write_text(updated, encoding='utf-8')
+            return
+    raise ValueError('Post does not contain recognizable front matter')
+
+
+def _strip_front_matter(content: str) -> str:
+    if content.startswith('+++\n'):
+        closing = content.find('\n+++\n', 4)
+        if closing != -1:
+            return content[closing + 5 :].strip()
+    if content.startswith('---\n'):
+        closing = content.find('\n---\n', 4)
+        if closing != -1:
+            return content[closing + 5 :].strip()
+    return content.strip()
+
+
 def list_posts(limit: int = 200):
     if not POSTS_DIR.exists():
         return []
 
     posts = []
-    for post_path in sorted(POSTS_DIR.glob('*.md'), key=lambda p: p.stat().st_mtime, reverse=True):
+    for post_path in POSTS_DIR.glob('*.md'):
         stat = post_path.stat()
+        post_date = _parse_post_date(post_path)
         posts.append({
+            'sort_ts': (post_date or datetime.fromtimestamp(stat.st_mtime, timezone.utc)).timestamp(),
             'path': str(post_path.relative_to(POSTS_DIR)),
             'title': _parse_post_title(post_path),
             'is_draft': _is_post_draft(post_path),
+            'date': _format_display_datetime(post_date),
             'modified': datetime.fromtimestamp(stat.st_mtime).strftime('%Y-%m-%d %H:%M:%S'),
             'size_kb': round(stat.st_size / 1024, 1),
         })
-        if len(posts) >= max(1, min(limit, 1000)):
-            break
-    return posts
+
+    posts.sort(key=lambda post: (post['sort_ts'], post['modified'], post['path']), reverse=True)
+    capped = posts[: max(1, min(limit, 1000))]
+    for post in capped:
+        post.pop('sort_ts', None)
+    return capped
 
 
 def resolve_post_path(raw_path: str) -> Path:
@@ -460,10 +549,29 @@ ADMIN_TEMPLATE = '''
             margin-top: 10px;
             flex-wrap: wrap;
         }
+        .editor input[type="text"] {
+            width: 100%;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 14px;
+            padding: 10px 12px;
+        }
         .muted {
             color: #6b7280;
             font-size: 13px;
             margin-bottom: 8px;
+        }
+        .image-preview {
+            margin-top: 12px;
+            display: none;
+        }
+        .image-preview img {
+            width: 100%;
+            max-height: 320px;
+            object-fit: cover;
+            border-radius: 10px;
+            border: 1px solid #e5e7eb;
+            background: #f3f4f6;
         }
     </style>
 </head>
@@ -533,6 +641,19 @@ ADMIN_TEMPLATE = '''
                     <button class="btn btn-small" onclick="saveCurrentPost()">Save Post</button>
                     <button class="btn btn-secondary btn-small" onclick="approveCurrentPost()">Approve Post</button>
                     <button class="btn btn-danger btn-small" onclick="deleteCurrentPost()">Delete Post</button>
+                </div>
+            </div>
+
+            <div class="editor">
+                <h3>Create Image</h3>
+                <p class="muted">Use the selected post as context and add a short art-direction prompt. If no post is selected, this creates a standalone image.</p>
+                <input id="image-prompt" type="text" placeholder="Warm sunrise over Kilimanjaro, magazine cover illustration, no text">
+                <div class="editor-actions">
+                    <button class="btn btn-small" onclick="createImage()">Create Image</button>
+                </div>
+                <div class="editor-meta" id="image-result">No image generated yet</div>
+                <div class="image-preview" id="image-preview">
+                    <img id="image-preview-img" alt="Generated image preview">
                 </div>
             </div>
         </div>
@@ -631,6 +752,7 @@ ADMIN_TEMPLATE = '''
                 list.innerHTML = posts.map(post => {
                     const title = escapeHtml(post.title || post.path);
                     const path = escapeHtml(post.path);
+                    const date = escapeHtml(post.date || "");
                     const modified = escapeHtml(post.modified || "");
                     const size = escapeHtml(String(post.size_kb || 0));
                     const statusBadge = post.is_draft
@@ -641,7 +763,7 @@ ADMIN_TEMPLATE = '''
                         <div class="post-row">
                             <div>
                                 <div class="post-title">${title}${statusBadge}</div>
-                                <div class="post-meta">${path} | ${modified} | ${size} KB</div>
+                                <div class="post-meta">${path} | ${date || "No date"} | modified ${modified} | ${size} KB</div>
                             </div>
                             <div class="post-actions">
                                 <button class="btn btn-small" onclick="openPost(decodeURIComponent('${encodedPath}'))">Edit</button>
@@ -768,6 +890,46 @@ ADMIN_TEMPLATE = '''
                 setLoading(false);
             }
 
+            async function createImage() {
+                const prompt = document.getElementById("image-prompt").value.trim();
+                if (!currentPostPath && !prompt) {
+                    showOutput("Enter an image prompt or select a post first.");
+                    return;
+                }
+                setLoading(true);
+                try {
+                    const response = await fetch("/admin/create-image", {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({
+                            path: currentPostPath,
+                            prompt: prompt,
+                            content: document.getElementById("post-editor").value,
+                            rebuild: true
+                        })
+                    });
+                    const data = await response.json();
+                    if (!response.ok || !data.success) {
+                        throw new Error(data.output || "Failed to create image");
+                    }
+                    document.getElementById("image-result").textContent = data.image_url || "Image created.";
+                    if (data.image_url) {
+                        const previewWrap = document.getElementById("image-preview");
+                        const previewImg = document.getElementById("image-preview-img");
+                        previewImg.src = data.image_url + "?t=" + Date.now();
+                        previewWrap.style.display = "block";
+                    }
+                    showOutput(data.output || "Image created.");
+                    await loadPosts();
+                    if (data.path) {
+                        await openPost(data.path);
+                    }
+                } catch (error) {
+                    showOutput("Failed to create image: " + error.message);
+                }
+                setLoading(false);
+            }
+
             function deleteCurrentPost() {
                 if (!currentPostPath) {
                     showOutput("Select a post first.");
@@ -821,7 +983,7 @@ def login():
         session['logged_in'] = True
         session['admin_username'] = username
         return redirect('/admin')
-    return render_template_string(ADMIN_TEMPLATE, logged_in=False, error='Invalid password')
+    return render_template_string(ADMIN_TEMPLATE, logged_in=False, error='Invalid credentials')
 
 @app.route('/admin/logout')
 def logout():
@@ -969,6 +1131,84 @@ def approve_post():
             return jsonify({'success': ok and git_ok, 'output': '\n'.join(output_lines)})
 
         return jsonify({'success': True, 'output': '\n'.join(output_lines)})
+    except Exception as e:
+        return jsonify({'success': False, 'output': str(e)}), 400
+
+
+@app.route('/admin/create-image', methods=['POST'])
+@login_required
+def create_image():
+    try:
+        payload = request.get_json(silent=True) or {}
+        raw_path = (payload.get('path') or '').strip()
+        prompt = (payload.get('prompt') or '').strip()
+        draft_content = payload.get('content')
+        rebuild_after = payload.get('rebuild', True)
+        output_lines = []
+        image_url = ''
+        add_paths = ['static/media', 'public']
+        response_path = ''
+
+        if raw_path:
+            post_path = resolve_post_path(raw_path)
+            if not post_path.exists():
+                return jsonify({'success': False, 'output': 'Post not found'}), 404
+
+            source_content = post_path.read_text(encoding='utf-8', errors='ignore')
+            if isinstance(draft_content, str) and draft_content.strip():
+                prompt_source = draft_content
+            else:
+                prompt_source = source_content
+
+            title = _parse_post_title_from_content(prompt_source) or _parse_post_title(post_path)
+            slug = _post_slug(post_path)
+            body_text = _strip_front_matter(prompt_source)
+            full_prompt = build_image_prompt(title, body_text, prompt)
+            generated = generate_image_asset(STATIC_MEDIA_DIR, slug, full_prompt, filename_stem='cover', logger=output_lines.append)
+            if not generated:
+                return jsonify({'success': False, 'output': '\n'.join(output_lines) or 'Image generation failed.'}), 502
+
+            _set_or_insert_front_matter_value(post_path, 'image', f'"/media/{slug}/{generated.name}"')
+            output_lines.append(f'Generated {generated.relative_to(BASE_DIR)}')
+            output_lines.append(f'Updated {post_path.relative_to(BASE_DIR)} image front matter')
+            image_url = f'/media/{slug}/{generated.name}'
+            add_paths = ['content/posts', 'static/media', 'public']
+            response_path = str(post_path.relative_to(POSTS_DIR))
+            commit_message = f'Admin generate image: {title}'
+        else:
+            if not prompt:
+                return jsonify({'success': False, 'output': 'Prompt is required when no post is selected.'}), 400
+
+            timestamp = datetime.now(timezone.utc).strftime('%Y%m%d-%H%M%S')
+            prompt_slug = slugify_fragment(prompt)[:50]
+            slug = f'generated/{timestamp}-{prompt_slug}'
+            full_prompt = build_image_prompt('Dashboard image', '', prompt)
+            generated = generate_image_asset(STATIC_MEDIA_DIR, slug, full_prompt, filename_stem='image', logger=output_lines.append)
+            if not generated:
+                return jsonify({'success': False, 'output': '\n'.join(output_lines) or 'Image generation failed.'}), 502
+
+            output_lines.append(f'Generated {generated.relative_to(BASE_DIR)}')
+            image_url = f'/media/{slug}/{generated.name}'
+            commit_message = f'Admin create image: {prompt_slug}'
+
+        if rebuild_after:
+            ok, build_output = run_hugo_build(timeout_sec=120)
+            output_lines.append('\nHugo rebuild:')
+            output_lines.append(build_output)
+            if not ok:
+                return jsonify({'success': False, 'output': '\n'.join(output_lines), 'image_url': image_url, 'path': response_path})
+
+            git_ok, git_output = run_git_publish(commit_message, add_paths)
+            output_lines.append('\nGit publish:')
+            output_lines.append(git_output)
+            return jsonify({
+                'success': ok and git_ok,
+                'output': '\n'.join(output_lines),
+                'image_url': image_url,
+                'path': response_path,
+            })
+
+        return jsonify({'success': True, 'output': '\n'.join(output_lines), 'image_url': image_url, 'path': response_path})
     except Exception as e:
         return jsonify({'success': False, 'output': str(e)}), 400
 

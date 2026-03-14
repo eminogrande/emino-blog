@@ -639,6 +639,7 @@ ADMIN_TEMPLATE = '''
                 <textarea id="post-editor" placeholder="Select a post above to edit"></textarea>
                 <div class="editor-actions">
                     <button class="btn btn-small" onclick="saveCurrentPost()">Save Post</button>
+                    <button class="btn btn-small" onclick="createImage()">Create Image</button>
                     <button class="btn btn-secondary btn-small" onclick="approveCurrentPost()">Approve Post</button>
                     <button class="btn btn-danger btn-small" onclick="deleteCurrentPost()">Delete Post</button>
                 </div>
@@ -646,7 +647,7 @@ ADMIN_TEMPLATE = '''
 
             <div class="editor">
                 <h3>Create Image</h3>
-                <p class="muted">Use the selected post as context and add a short art-direction prompt. If no post is selected, this creates a standalone image.</p>
+                <p class="muted">Use the Image button on an article or in the editor. Add a short art-direction prompt here if you want.</p>
                 <input id="image-prompt" type="text" placeholder="Warm sunrise over Kilimanjaro, magazine cover illustration, no text">
                 <div class="editor-actions">
                     <button class="btn btn-small" onclick="createImage()">Create Image</button>
@@ -767,6 +768,7 @@ ADMIN_TEMPLATE = '''
                             </div>
                             <div class="post-actions">
                                 <button class="btn btn-small" onclick="openPost(decodeURIComponent('${encodedPath}'))">Edit</button>
+                                <button class="btn btn-small" onclick="createImageForPath(decodeURIComponent('${encodedPath}'))">Image</button>
                                 ${post.is_draft ? `<button class="btn btn-secondary btn-small" onclick="approvePost(decodeURIComponent('${encodedPath}'))">Approve</button>` : ''}
                                 <button class="btn btn-danger btn-small" onclick="deletePost(decodeURIComponent('${encodedPath}'))">Delete</button>
                             </div>
@@ -890,9 +892,10 @@ ADMIN_TEMPLATE = '''
                 setLoading(false);
             }
 
-            async function createImage() {
+            async function createImage(pathOverride = "") {
                 const prompt = document.getElementById("image-prompt").value.trim();
-                if (!currentPostPath && !prompt) {
+                const targetPath = pathOverride || currentPostPath;
+                if (!targetPath && !prompt) {
                     showOutput("Enter an image prompt or select a post first.");
                     return;
                 }
@@ -902,7 +905,7 @@ ADMIN_TEMPLATE = '''
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({
-                            path: currentPostPath,
+                            path: targetPath,
                             prompt: prompt,
                             content: document.getElementById("post-editor").value,
                             rebuild: true
@@ -928,6 +931,13 @@ ADMIN_TEMPLATE = '''
                     showOutput("Failed to create image: " + error.message);
                 }
                 setLoading(false);
+            }
+
+            async function createImageForPath(path) {
+                if (path && currentPostPath !== path) {
+                    await openPost(path);
+                }
+                await createImage(path);
             }
 
             function deleteCurrentPost() {

@@ -236,10 +236,10 @@ def build_image_prompt(title: str, body_text: str = '', extra_prompt: str = '') 
 
     parts = [
         'Create an artistic but fully realistic editorial cover photograph for a personal blog post.',
-        'The scene must contain exactly one living animal subject and no humans, no human body parts, and no anthropomorphic traits.',
-        'Choose the single animal species that best symbolically fits the headline and summary, and make it feel specific rather than generic stock imagery.',
-        'Render it as a real analog photograph: black-and-white silver gelatin look, film grain, subtle halation, natural contrast, documentary realism, believable lens imperfections, and no digital gloss.',
-        'Keep the entire frame monochrome except for the single animal subject, which may retain restrained natural color as selective color treatment.',
+        'The scene must contain exactly one living animal subject, never any human, never any human body part, and never anthropomorphic traits.',
+        'Choose the single animal species that best fits the headline and summary, and prefer varied species across different articles instead of repeating the same obvious animal.',
+        'Render it as a genuine analog photograph: black-and-white silver gelatin look, film grain, subtle halation, natural contrast, documentary realism, believable lens imperfections, and no digital gloss.',
+        'Everything in the frame must be black and white except the one animal, which alone keeps restrained natural color as the selective-color focal point.',
         'Use natural light, grounded environments, realistic anatomy, realistic fur or feathers or skin texture, and magazine-quality composition.',
         'Prefer unusual or thoughtful species over default lions or wolves unless they are clearly the best fit.',
         'Avoid illustration, painting, CGI, 3D render, taxidermy, collage, surreal mutations, duplicate animals, and obvious AI artifacts.',

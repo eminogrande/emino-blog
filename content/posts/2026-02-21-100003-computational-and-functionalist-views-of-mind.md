@@ -1,7 +1,7 @@
 ---
 title: "Computational and Functionalist Views of Mind"
 date: 2026-02-20T23:53:00Z
-draft: true
+draft: false
 author: "Emin Henri Mahrt"
 tags: ["consciousness", "philosophy", "mind"]
 categories: ["Philosophy"]

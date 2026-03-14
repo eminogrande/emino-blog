@@ -1,7 +1,7 @@
 ---
 title: "Embodied and Enactive Consciousness"
 date: 2026-02-20T22:01:00Z
-draft: true
+draft: false
 author: "Emin Henri Mahrt"
 tags: ["consciousness", "philosophy", "mind"]
 categories: ["Philosophy"]

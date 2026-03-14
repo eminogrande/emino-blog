@@ -1,7 +1,7 @@
 ---
 title: "Electromagnetic Field Theories of Consciousness"
 date: 2026-02-20T23:52:00Z
-draft: true
+draft: false
 author: "Emin Henri Mahrt"
 tags: ["consciousness", "philosophy", "mind"]
 categories: ["Philosophy"]

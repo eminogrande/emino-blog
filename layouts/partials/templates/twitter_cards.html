@@ -1,0 +1,33 @@
+{{- $shareImage := .Params.image | default .Params.cover.image -}}
+{{- if $shareImage -}}
+<meta name="twitter:card" content="summary_large_image">
+{{- if and .Params.cover.image (eq $shareImage .Params.cover.image) (.Params.cover.relative | default false) }}
+<meta name="twitter:image" content="{{ (path.Join .RelPermalink $shareImage) | absURL }}">
+{{- else }}
+<meta name="twitter:image" content="{{ $shareImage | absURL }}">
+{{- end }}
+<meta name="twitter:image:alt" content="{{ .Title | plainify }}">
+{{- else }}
+{{- $images := partial "templates/_funcs/get-page-images" . -}}
+{{- with index $images 0 -}}
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="{{ .Permalink }}">
+{{- else -}}
+<meta name="twitter:card" content="summary">
+{{- end -}}
+{{- end }}
+<meta name="twitter:title" content="{{ .Title }}">
+<meta name="twitter:description" content="{{ with .Description }}{{ . }}{{ else }}{{if .IsPage}}{{ .Summary }}{{ else }}{{ with site.Params.description }}{{ . }}{{ end }}{{ end }}{{ end -}}">
+
+{{- $twitterSite := "" }}
+{{- with site.Params.social }}
+  {{- if reflect.IsMap . }}
+    {{- with .twitter }}
+      {{- $content := . }}
+      {{- if not (strings.HasPrefix . "@") }}
+        {{- $content = printf "@%v" . }}
+      {{- end }}
+      <meta name="twitter:site" content="{{ $content }}">
+    {{- end }}
+  {{- end }}
+{{- end }}

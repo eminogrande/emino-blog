@@ -5,6 +5,7 @@ draft = false
 tags = ["email-post"]
 categories = ["blog"]
 slug = "a-darwin-like-quantum-thought-experiment-entanglement-compet"
+image =  "/media/a-darwin-like-quantum-thought-experiment-entanglement-compet/cover.webp"
 +++
 
 <img>

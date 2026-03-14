@@ -7,6 +7,7 @@ categories = ["blog"]
 slug = "the-invisible-giants-21-developers-who-built-your-internet"
 markup = "markdown"
 body_format = "markdown"
+image =  "/media/the-invisible-giants-21-developers-who-built-your-internet/cover.webp"
 +++
 
 ![](/media/the-invisible-giants-21-developers-who-built-your-internet/cover.jpg)

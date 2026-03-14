@@ -7,6 +7,7 @@ categories = ["blog"]
 slug = "radical-georgism"
 markup = "markdown"
 body_format = "markdown"
+image =  "/media/radical-georgism/cover.webp"
 +++
 
 ![](/media/radical-georgism/cover.jpg)

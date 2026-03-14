@@ -7,6 +7,7 @@ categories = ["blog"]
 slug = "a-cryptographically-safe-method-for-zero-confirmation-bitcoi"
 markup = "markdown"
 body_format = "markdown"
+image =  "/media/a-cryptographically-safe-method-for-zero-confirmation-bitcoi/cover.webp"
 +++
 
 ![](/media/a-cryptographically-safe-method-for-zero-confirmation-bitcoi/cover.jpg)

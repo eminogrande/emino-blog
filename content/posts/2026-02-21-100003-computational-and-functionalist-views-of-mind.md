@@ -8,7 +8,7 @@ categories: ["Philosophy"]
 description: "Long-form, easy-to-read guide based on your consciousness map."
 showToc: true
 TocOpen: true
-image: "/media/computational-and-functionalist-views-of-mind/cover.png"
+image:  "/media/computational-and-functionalist-views-of-mind/cover.webp"
 ---
 
 This is a long-form guide written in simpler language, so people new to the topic can still follow. The goal is to explain each point from your map clearly and fairly.

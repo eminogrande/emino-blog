@@ -5,6 +5,7 @@ draft = false
 tags = ["Hugo", "AI", "SEO", "DevOps", "GitHub Actions", "Automation", "LLM Optimization"]
 categories = ["Tutorial", "AI Optimization", "Web Development"]
 description = "A complete, real-world walkthrough of setting up a Hugo blog optimized for AI discovery, with automated deployment, health monitoring, and SEO optimization. Including every step, challenge, and solution."
+image =  "/media/building-ai-optimized-blog-complete-guide/cover.webp"
 +++
 
 ![](/media/building-ai-optimized-blog-complete-guide/cover.jpg)

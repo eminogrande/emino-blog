@@ -7,6 +7,7 @@ categories = ["blog"]
 slug = "black-holes-the-big-bang-and-the-sound-of-information"
 markup = "markdown"
 body_format = "markdown"
+image =  "/media/black-holes-the-big-bang-and-the-sound-of-information/cover.webp"
 +++
 
 ![](/media/black-holes-the-big-bang-and-the-sound-of-information/cover.jpg)

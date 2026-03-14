@@ -8,6 +8,7 @@ categories: ["Philosophy"]
 description: "Long-form, easy-to-read guide based on your consciousness map."
 showToc: true
 TocOpen: true
+image:  "/media/language-meaning-and-consciousness/cover.webp"
 ---
 
 This is a long-form guide written in simpler language, so people new to the topic can still follow. The goal is to explain each point from your map clearly and fairly.

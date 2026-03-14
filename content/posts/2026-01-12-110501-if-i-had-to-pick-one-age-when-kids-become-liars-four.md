@@ -7,6 +7,7 @@ categories = ["blog"]
 slug = "if-i-had-to-pick-one-age-when-kids-become-liars-four"
 markup = "markdown"
 body_format = "markdown"
+image =  "/media/if-i-had-to-pick-one-age-when-kids-become-liars-four/cover.webp"
 +++
 
 ---

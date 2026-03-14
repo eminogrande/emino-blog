@@ -7,6 +7,7 @@ categories = ["blog"]
 slug = "what-we-built-nostr-dm-in-nuri"
 markup = "markdown"
 body_format = "markdown"
+image =  "/media/what-we-built-nostr-dm-in-nuri/cover.webp"
 +++
 
 ![](/media/what-we-built-nostr-dm-in-nuri/cover.jpg)

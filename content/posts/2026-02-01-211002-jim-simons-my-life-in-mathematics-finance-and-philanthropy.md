@@ -7,6 +7,7 @@ categories = ["blog"]
 slug = "jim-simons-my-life-in-mathematics-finance-and-philanthropy"
 markup = "markdown"
 body_format = "markdown"
+image =  "/media/jim-simons-my-life-in-mathematics-finance-and-philanthropy/cover.webp"
 +++
 
 # Jim Simons: My Life in Mathematics, Finance, and Philanthropy

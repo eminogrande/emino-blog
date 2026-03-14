@@ -5,6 +5,7 @@ draft = false
 author = "Emino"
 tags = ["email-post", "photos"]
 categories = ["blog"]
+image =  "/media/nuri-bitcoin-wallet-logo/cover.webp"
 +++
 
 ![nuri-logo](/media/nuri-bitcoin-wallet-logo/nuri-logo.png)

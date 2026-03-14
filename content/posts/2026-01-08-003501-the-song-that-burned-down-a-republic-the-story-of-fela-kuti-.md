@@ -5,6 +5,7 @@ draft = false
 tags = ["email-post"]
 categories = ["blog"]
 slug = "the-song-that-burned-down-a-republic-the-story-of-fela-kuti-"
+image = "/media/the-song-that-burned-down-a-republic-the-story-of-fela-kuti-/cover.jpg"
 +++
 
 ![](/media/the-song-that-burned-down-a-republic-the-story-of-fela-kuti-/cover.jpg)

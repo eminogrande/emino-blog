@@ -6,6 +6,7 @@ tags = ["Hugo", "Static Sites", "Web Development", "Performance"]
 categories = ["Web Development"]
 description = "Complete guide to building and deploying Hugo static sites with modern best practices for performance and SEO."
 summary = "Learn how to leverage Hugo static site generator for blazing-fast websites with excellent SEO and AI discoverability."
+image =  "/media/building-with-hugo-2025/cover.webp"
 +++
 
 ![](/media/building-with-hugo-2025/cover.jpg)

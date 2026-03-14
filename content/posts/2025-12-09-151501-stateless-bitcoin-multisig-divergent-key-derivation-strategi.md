@@ -7,6 +7,7 @@ categories = ["blog"]
 slug = "stateless-bitcoin-multisig-divergent-key-derivation-strategi"
 markup = "markdown"
 body_format = "markdown"
+image =  "/media/stateless-bitcoin-multisig-divergent-key-derivation-strategi/cover.webp"
 +++
 
 ![](/media/stateless-bitcoin-multisig-divergent-key-derivation-strategi/cover.jpg)

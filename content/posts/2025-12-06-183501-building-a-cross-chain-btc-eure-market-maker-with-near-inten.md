@@ -5,6 +5,7 @@ draft = false
 tags = ["email-post"]
 categories = ["blog"]
 slug = "building-a-cross-chain-btc-eure-market-maker-with-near-inten"
+image =  "/media/building-a-cross-chain-btc-eure-market-maker-with-near-inten/cover.webp"
 +++
 
 ![](/media/building-a-cross-chain-btc-eure-market-maker-with-near-inten/cover.jpg)

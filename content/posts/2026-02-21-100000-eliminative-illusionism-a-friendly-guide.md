@@ -9,6 +9,7 @@ description: "A plain-language long-form guide to eliminative and illusionist ap
 showToc: true
 TocOpen: true
 series: ["Consciousness Maps"]
+image:  "/media/eliminative-illusionism-a-friendly-guide/cover.webp"
 ---
 
 ## Overview

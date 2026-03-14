@@ -9,6 +9,7 @@ description: "Plain-English long-form guide to this consciousness theory map —
 showToc: true
 TocOpen: true
 series: ["Consciousness Maps"]
+image:  "/media/monisms-a-comparative-map-across-science-and-philosophy/cover.webp"
 ---
 
 ## Overview

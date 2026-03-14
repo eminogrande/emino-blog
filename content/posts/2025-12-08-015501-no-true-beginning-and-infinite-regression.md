@@ -7,6 +7,7 @@ categories = ["blog"]
 slug = "no-true-beginning-and-infinite-regression"
 markup = "markdown"
 body_format = "markdown"
+image =  "/media/no-true-beginning-and-infinite-regression/cover.webp"
 +++
 
 ![](/media/no-true-beginning-and-infinite-regression/cover.jpg)

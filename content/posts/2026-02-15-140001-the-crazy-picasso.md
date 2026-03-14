@@ -5,6 +5,7 @@ draft = false
 tags = ["email-post"]
 categories = ["blog"]
 slug = "the-crazy-picasso"
+image =  "/media/the-crazy-picasso/cover.webp"
 +++
 
 The life of Pablo Picasso presents a jarring paradox: a man of unprecedented creative output and financial success who was, by many accounts, a "monster of assured egoism."

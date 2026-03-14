@@ -4,6 +4,7 @@ date = 2024-08-26T15:45:00Z
 draft = false
 tags = ["infrastructure", "bitcoin", "nostr", "automation", "devops", "lightning", "email", "hugo"]
 categories = ["tutorial", "web-development"]
+image =  "/media/complete-blog-infrastructure-guide/cover.webp"
 +++
 
 ![](/media/complete-blog-infrastructure-guide/cover.jpg)

@@ -7,6 +7,7 @@ categories = ["blog"]
 slug = "ai-feature-code-review-of-nuri-com"
 markup = "markdown"
 body_format = "markdown"
+image =  "/media/ai-feature-code-review-of-nuri-com/cover.webp"
 +++
 
 ![](/media/ai-feature-code-review-of-nuri-com/cover.jpg)

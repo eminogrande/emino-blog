@@ -7,6 +7,7 @@ categories = ["blog"]
 slug = "the-40-billion-secret-9-lessons-from-the-chocolate-king-who-"
 markup = "markdown"
 body_format = "markdown"
+image =  "/media/the-40-billion-secret-9-lessons-from-the-chocolate-king-who-/cover.jpg"
 +++
 
 ![](/media/the-40-billion-secret-9-lessons-from-the-chocolate-king-who-/cover.jpg)

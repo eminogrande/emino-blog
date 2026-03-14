@@ -7,6 +7,7 @@ categories = ["blog"]
 slug = "comprehensive-transaction-analysis-34ycrebo-jtvm"
 markup = "markdown"
 body_format = "markdown"
+image =  "/media/comprehensive-transaction-analysis-34ycrebo-jtvm/cover.webp"
 +++
 
 ![](/media/comprehensive-transaction-analysis-34ycrebo-jtvm/cover.jpg)

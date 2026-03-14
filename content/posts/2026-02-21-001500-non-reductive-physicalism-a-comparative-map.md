@@ -9,6 +9,7 @@ description: "Plain-English long-form guide to this consciousness theory map —
 showToc: true
 TocOpen: true
 series: ["Consciousness Maps"]
+image:  "/media/non-reductive-physicalism-a-comparative-map/cover.webp"
 ---
 
 ## Overview

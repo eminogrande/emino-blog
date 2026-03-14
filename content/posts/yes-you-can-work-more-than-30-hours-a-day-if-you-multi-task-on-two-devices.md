@@ -5,6 +5,7 @@ draft = false
 author = "Emino"
 tags = ["email-post", "photos"]
 categories = ["blog"]
+image =  "/media/yes-you-can-work-more-than-30-hours-a-day-if-you-multi-task-on-two-devices/cover.webp"
 +++
 
 [image: image.png]

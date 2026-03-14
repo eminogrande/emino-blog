@@ -7,6 +7,7 @@ categories = ["blog"]
 slug = "comprehensive-history-of-the-threefold-network-and-tokens"
 markup = "markdown"
 body_format = "markdown"
+image =  "/media/comprehensive-history-of-the-threefold-network-and-tokens/cover.webp"
 +++
 
 ![](/media/comprehensive-history-of-the-threefold-network-and-tokens/cover.jpg)

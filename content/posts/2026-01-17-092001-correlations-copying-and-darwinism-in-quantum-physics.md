@@ -5,6 +5,7 @@ draft = false
 tags = ["email-post"]
 categories = ["blog"]
 slug = "correlations-copying-and-darwinism-in-quantum-physics"
+image =  "/media/correlations-copying-and-darwinism-in-quantum-physics/cover.webp"
 +++
 
 <p></p>

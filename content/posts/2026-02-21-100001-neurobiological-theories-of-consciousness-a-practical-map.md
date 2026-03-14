@@ -9,6 +9,7 @@ description: "A plain-language long-form guide to neurobiological theories of co
 showToc: true
 TocOpen: true
 series: ["Consciousness Maps"]
+image:  "/media/neurobiological-theories-of-consciousness-a-practical-map/cover.webp"
 ---
 
 ## Overview

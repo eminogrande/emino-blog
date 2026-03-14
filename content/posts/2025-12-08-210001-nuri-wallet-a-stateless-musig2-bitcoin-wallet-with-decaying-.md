@@ -7,6 +7,7 @@ categories = ["blog"]
 slug = "nuri-wallet-a-stateless-musig2-bitcoin-wallet-with-decaying-"
 markup = "markdown"
 body_format = "markdown"
+image =  "/media/nuri-wallet-a-stateless-musig2-bitcoin-wallet-with-decaying-/cover.jpg"
 +++
 
 ![](/media/nuri-wallet-a-stateless-musig2-bitcoin-wallet-with-decaying-/cover.jpg)

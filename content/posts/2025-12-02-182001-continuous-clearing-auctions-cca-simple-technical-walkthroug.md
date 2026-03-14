@@ -5,6 +5,7 @@ draft = false
 tags = ["email-post"]
 categories = ["blog"]
 slug = "continuous-clearing-auctions-cca-simple-technical-walkthroug"
+image =  "/media/continuous-clearing-auctions-cca-simple-technical-walkthroug/cover.webp"
 +++
 
 ![](/media/continuous-clearing-auctions-cca-simple-technical-walkthroug/cover.jpg)

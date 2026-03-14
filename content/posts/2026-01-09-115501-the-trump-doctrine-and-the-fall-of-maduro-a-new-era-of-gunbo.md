@@ -7,6 +7,7 @@ categories = ["blog"]
 slug = "the-trump-doctrine-and-the-fall-of-maduro-a-new-era-of-gunbo"
 markup = "markdown"
 body_format = "markdown"
+image =  "/media/the-trump-doctrine-and-the-fall-of-maduro-a-new-era-of-gunbo/cover.webp"
 +++
 
 ![](/media/the-trump-doctrine-and-the-fall-of-maduro-a-new-era-of-gunbo/cover.jpg)

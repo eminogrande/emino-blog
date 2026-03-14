@@ -5,6 +5,7 @@ draft = false
 tags = ["email-post"]
 categories = ["blog"]
 slug = "balaclava-and-rug"
+image =  "/media/balaclava-and-rug/cover.webp"
 +++
 
 I was asked to edit an image. I took the original photo of the girl in the

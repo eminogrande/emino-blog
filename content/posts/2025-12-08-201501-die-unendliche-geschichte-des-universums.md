@@ -5,6 +5,7 @@ draft = false
 tags = ["email-post"]
 categories = ["blog"]
 slug = "die-unendliche-geschichte-des-universums"
+image =  "/media/die-unendliche-geschichte-des-universums/cover.webp"
 +++
 
 ![](/media/die-unendliche-geschichte-des-universums/cover.jpg)

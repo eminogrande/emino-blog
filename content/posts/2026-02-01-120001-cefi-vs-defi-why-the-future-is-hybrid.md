@@ -7,6 +7,7 @@ categories = ["blog"]
 slug = "cefi-vs-defi-why-the-future-is-hybrid"
 markup = "markdown"
 body_format = "markdown"
+image =  "/media/cefi-vs-defi-why-the-future-is-hybrid/cover.webp"
 +++
 
 Exploring the synergy between centralized security and decentralized innovation.

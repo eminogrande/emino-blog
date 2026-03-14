@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 from flask import Flask, render_template_string, request, jsonify, redirect, url_for, session
+import json
 import subprocess
 import os
 import hashlib
 import re
+import shlex
 import shutil
 from functools import wraps
 from datetime import datetime, timezone
@@ -114,18 +116,44 @@ def _parse_post_title(post_path: Path) -> str:
     return _parse_front_matter_value(post_path, 'title') or post_path.stem
 
 
+def _post_image_value(post_path: Path) -> str:
+    return _parse_front_matter_value(post_path, 'image').strip()
+
+
+def _post_image_url(post_path: Path) -> str:
+    return _post_image_value(post_path).strip('"\' ')
+
+
+def _post_has_image(post_path: Path) -> bool:
+    image_value = _post_image_url(post_path)
+    if not image_value:
+        return False
+    if image_value.startswith(('http://', 'https://')):
+        return True
+    if image_value.startswith('/media/'):
+        return (STATIC_MEDIA_DIR / image_value.removeprefix('/media/')).exists()
+    if image_value.startswith('/'):
+        return (
+            (BASE_DIR / image_value.lstrip('/')).exists()
+            or (BASE_DIR / 'static' / image_value.lstrip('/')).exists()
+            or (BASE_DIR / 'public' / image_value.lstrip('/')).exists()
+        )
+    return (BASE_DIR / image_value).exists()
+
+
 def _post_slug(post_path: Path) -> str:
     slug = _parse_front_matter_value(post_path, 'slug')
     if slug:
         return slug.strip('/')
 
-    image_value = _parse_front_matter_value(post_path, 'image')
+    image_value = _post_image_value(post_path)
     if image_value:
         match = re.search(r'/media/([^/]+)/', image_value)
         if match:
             return match.group(1)
 
-    return re.sub(r'^\d{4}-\d{2}-\d{2}-\d{6}-', '', post_path.stem)
+    fallback = re.sub(r'^\d{4}-\d{2}-\d{2}-\d{6}-', '', post_path.stem)
+    return slugify_fragment(fallback)
 
 
 def _is_post_draft(post_path: Path) -> bool:
@@ -245,6 +273,8 @@ def list_posts(limit: int = 200):
             'path': str(post_path.relative_to(POSTS_DIR)),
             'title': _parse_post_title(post_path),
             'is_draft': _is_post_draft(post_path),
+            'has_image': _post_has_image(post_path),
+            'image_url': _post_image_url(post_path),
             'date': _format_display_datetime(post_date),
             'modified': datetime.fromtimestamp(stat.st_mtime).strftime('%Y-%m-%d %H:%M:%S'),
             'size_kb': round(stat.st_size / 1024, 1),
@@ -313,6 +343,35 @@ def run_git_publish(commit_message: str, add_paths) -> Tuple[bool, str]:
         return True, f'Committed and pushed: {commit_message}'
     except Exception as exc:
         return False, str(exc)
+
+
+def queue_git_publish(commit_message: str, add_paths) -> Tuple[bool, str]:
+    if SKIP_GIT:
+        return True, 'EMINO_SKIP_GIT=1, skipping git commit/push.'
+
+    publish_log = Path(os.environ.get('EMINO_ADMIN_PUBLISH_LOG', '/var/log/emino-admin-publish.log'))
+    safe_paths = ' '.join(shlex.quote(path) for path in add_paths)
+    script = f"""
+cd {shlex.quote(str(BASE_DIR))}
+echo "[$(date -u +%Y-%m-%dT%H:%M:%SZ)] Starting background git publish: {commit_message}"
+git add -A {safe_paths}
+if git diff --cached --quiet; then
+  echo "No staged git changes to commit."
+  exit 0
+fi
+git commit -m {shlex.quote(commit_message)}
+git push origin {shlex.quote(GIT_BRANCH)}
+"""
+    publish_log.parent.mkdir(parents=True, exist_ok=True)
+    with publish_log.open('a', encoding='utf-8') as handle:
+        subprocess.Popen(
+            ['/bin/bash', '-lc', script],
+            cwd=BASE_DIR,
+            stdout=handle,
+            stderr=subprocess.STDOUT,
+            start_new_session=True,
+        )
+    return True, f'Queued git publish in background: {commit_message}'
 
 ADMIN_TEMPLATE = '''
 <!DOCTYPE html>
@@ -639,7 +698,7 @@ ADMIN_TEMPLATE = '''
                 <textarea id="post-editor" placeholder="Select a post above to edit"></textarea>
                 <div class="editor-actions">
                     <button class="btn btn-small" onclick="saveCurrentPost()">Save Post</button>
-                    <button class="btn btn-small" onclick="createImage()">Create Image</button>
+                    <button class="btn btn-small" id="editor-create-image" onclick="createImage()" style="display:none;">Create Image</button>
                     <button class="btn btn-secondary btn-small" onclick="approveCurrentPost()">Approve Post</button>
                     <button class="btn btn-danger btn-small" onclick="deleteCurrentPost()">Delete Post</button>
                 </div>
@@ -647,11 +706,8 @@ ADMIN_TEMPLATE = '''
 
             <div class="editor">
                 <h3>Create Image</h3>
-                <p class="muted">Use the Image button on an article or in the editor. Add a short art-direction prompt here if you want.</p>
+                <p class="muted">Only posts without an image get an Image button. Add an optional prompt here to steer the photo style.</p>
                 <input id="image-prompt" type="text" placeholder="Warm sunrise over Kilimanjaro, magazine cover illustration, no text">
-                <div class="editor-actions">
-                    <button class="btn btn-small" onclick="createImage()">Create Image</button>
-                </div>
                 <div class="editor-meta" id="image-result">No image generated yet</div>
                 <div class="image-preview" id="image-preview">
                     <img id="image-preview-img" alt="Generated image preview">
@@ -669,11 +725,46 @@ ADMIN_TEMPLATE = '''
             let allPosts = [];
             let currentPostPath = "";
             let currentPostDraft = false;
+            let currentPostHasImage = false;
+            let currentPostImageUrl = "";
 
             function showOutput(text) {
                 const output = document.getElementById("output");
                 output.textContent = text;
                 output.classList.add("show");
+            }
+
+            async function parseJsonResponse(response) {
+                const text = await response.text();
+                try {
+                    return JSON.parse(text);
+                } catch (error) {
+                    const snippet = (text || "").replace(/<[^>]+>/g, " ").replace(/\\s+/g, " ").trim();
+                    throw new Error(snippet || `HTTP ${response.status}`);
+                }
+            }
+
+            function setImagePreview(url) {
+                const previewWrap = document.getElementById("image-preview");
+                const previewImg = document.getElementById("image-preview-img");
+                const imageResult = document.getElementById("image-result");
+                if (url) {
+                    previewImg.src = url + (url.includes("?") ? "&" : "?") + "t=" + Date.now();
+                    previewWrap.style.display = "block";
+                    imageResult.textContent = url;
+                    return;
+                }
+                previewImg.removeAttribute("src");
+                previewWrap.style.display = "none";
+                imageResult.textContent = "No image generated yet";
+            }
+
+            function refreshEditorImageButton() {
+                const button = document.getElementById("editor-create-image");
+                if (!button) {
+                    return;
+                }
+                button.style.display = currentPostPath && !currentPostHasImage ? "inline-block" : "none";
             }
             
             function setLoading(loading) {
@@ -685,7 +776,7 @@ ADMIN_TEMPLATE = '''
                 setLoading(true);
                 try {
                     const response = await fetch("/admin/check-emails", { method: "POST" });
-                    const data = await response.json();
+                    const data = await parseJsonResponse(response);
                     showOutput(data.output);
                     updateStats();
                 } catch (error) {
@@ -698,7 +789,7 @@ ADMIN_TEMPLATE = '''
                 setLoading(true);
                 try {
                     const response = await fetch("/admin/sync-github", { method: "POST" });
-                    const data = await response.json();
+                    const data = await parseJsonResponse(response);
                     showOutput(data.output);
                     updateStats();
                 } catch (error) {
@@ -711,7 +802,7 @@ ADMIN_TEMPLATE = '''
                 setLoading(true);
                 try {
                     const response = await fetch("/admin/rebuild", { method: "POST" });
-                    const data = await response.json();
+                    const data = await parseJsonResponse(response);
                     showOutput(data.output);
                 } catch (error) {
                     showOutput("Error: " + error.message);
@@ -723,7 +814,7 @@ ADMIN_TEMPLATE = '''
                 setLoading(true);
                 try {
                     const response = await fetch("/admin/logs");
-                    const data = await response.json();
+                    const data = await parseJsonResponse(response);
                     showOutput(data.logs);
                 } catch (error) {
                     showOutput("Error: " + error.message);
@@ -759,6 +850,9 @@ ADMIN_TEMPLATE = '''
                     const statusBadge = post.is_draft
                         ? '<span class="status-badge status-draft">Draft</span>'
                         : '<span class="status-badge status-live">Live</span>';
+                    const imageButton = post.has_image
+                        ? ''
+                        : `<button class="btn btn-small" onclick="createImageForPath(decodeURIComponent('${encodeURIComponent(post.path)}'))">Image</button>`;
                     const encodedPath = encodeURIComponent(post.path);
                     return `
                         <div class="post-row">
@@ -768,7 +862,7 @@ ADMIN_TEMPLATE = '''
                             </div>
                             <div class="post-actions">
                                 <button class="btn btn-small" onclick="openPost(decodeURIComponent('${encodedPath}'))">Edit</button>
-                                <button class="btn btn-small" onclick="createImageForPath(decodeURIComponent('${encodedPath}'))">Image</button>
+                                ${imageButton}
                                 ${post.is_draft ? `<button class="btn btn-secondary btn-small" onclick="approvePost(decodeURIComponent('${encodedPath}'))">Approve</button>` : ''}
                                 <button class="btn btn-danger btn-small" onclick="deletePost(decodeURIComponent('${encodedPath}'))">Delete</button>
                             </div>
@@ -794,7 +888,7 @@ ADMIN_TEMPLATE = '''
                 setLoading(true);
                 try {
                     const response = await fetch("/admin/posts");
-                    const data = await response.json();
+                    const data = await parseJsonResponse(response);
                     allPosts = data.posts || [];
                     filterPosts();
                 } catch (error) {
@@ -807,14 +901,18 @@ ADMIN_TEMPLATE = '''
                 setLoading(true);
                 try {
                     const response = await fetch("/admin/post?path=" + encodeURIComponent(path));
-                    const data = await response.json();
+                    const data = await parseJsonResponse(response);
                     if (!response.ok || !data.success) {
                         throw new Error(data.output || "Failed to load post");
                     }
                     currentPostPath = data.path;
                     currentPostDraft = !!data.is_draft;
+                    currentPostHasImage = !!data.has_image;
+                    currentPostImageUrl = data.image_url || "";
                     document.getElementById("editor-path").textContent = data.path;
                     document.getElementById("post-editor").value = data.content || "";
+                    setImagePreview(currentPostImageUrl);
+                    refreshEditorImageButton();
                 } catch (error) {
                     showOutput("Failed to open post: " + error.message);
                 }
@@ -837,7 +935,7 @@ ADMIN_TEMPLATE = '''
                             rebuild: true
                         })
                     });
-                    const data = await response.json();
+                    const data = await parseJsonResponse(response);
                     showOutput(data.output || "Saved.");
                     await loadPosts();
                 } catch (error) {
@@ -854,7 +952,7 @@ ADMIN_TEMPLATE = '''
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({ path: path, rebuild: true })
                     });
-                    const data = await response.json();
+                    const data = await parseJsonResponse(response);
                     showOutput(data.output || "Approved.");
                     if (currentPostPath === path) {
                         currentPostDraft = false;
@@ -877,13 +975,17 @@ ADMIN_TEMPLATE = '''
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({ path: path, rebuild: true })
                     });
-                    const data = await response.json();
+                    const data = await parseJsonResponse(response);
                     showOutput(data.output || "Deleted.");
                     if (currentPostPath === path) {
                         currentPostPath = "";
                         currentPostDraft = false;
+                        currentPostHasImage = false;
+                        currentPostImageUrl = "";
                         document.getElementById("editor-path").textContent = "No post selected";
                         document.getElementById("post-editor").value = "";
+                        setImagePreview("");
+                        refreshEditorImageButton();
                     }
                     await loadPosts();
                 } catch (error) {
@@ -895,8 +997,8 @@ ADMIN_TEMPLATE = '''
             async function createImage(pathOverride = "") {
                 const prompt = document.getElementById("image-prompt").value.trim();
                 const targetPath = pathOverride || currentPostPath;
-                if (!targetPath && !prompt) {
-                    showOutput("Enter an image prompt or select a post first.");
+                if (!targetPath) {
+                    showOutput("Select a post first.");
                     return;
                 }
                 setLoading(true);
@@ -907,20 +1009,19 @@ ADMIN_TEMPLATE = '''
                         body: JSON.stringify({
                             path: targetPath,
                             prompt: prompt,
-                            content: document.getElementById("post-editor").value,
+                            content: currentPostPath === targetPath ? document.getElementById("post-editor").value : "",
                             rebuild: true
                         })
                     });
-                    const data = await response.json();
+                    const data = await parseJsonResponse(response);
                     if (!response.ok || !data.success) {
                         throw new Error(data.output || "Failed to create image");
                     }
-                    document.getElementById("image-result").textContent = data.image_url || "Image created.";
                     if (data.image_url) {
-                        const previewWrap = document.getElementById("image-preview");
-                        const previewImg = document.getElementById("image-preview-img");
-                        previewImg.src = data.image_url + "?t=" + Date.now();
-                        previewWrap.style.display = "block";
+                        currentPostHasImage = true;
+                        currentPostImageUrl = data.image_url;
+                        setImagePreview(data.image_url);
+                        refreshEditorImageButton();
                     }
                     showOutput(data.output || "Image created.");
                     await loadPosts();
@@ -959,7 +1060,7 @@ ADMIN_TEMPLATE = '''
             async function updateStats() {
                 try {
                     const response = await fetch("/admin/stats");
-                    const data = await response.json();
+                    const data = await parseJsonResponse(response);
                     document.getElementById("status").textContent = data.status;
                     document.getElementById("last-email").textContent = data.last_email;
                     document.getElementById("last-sync").textContent = data.last_sync;
@@ -1065,6 +1166,8 @@ def get_post():
             'path': str(post_path.relative_to(POSTS_DIR)),
             'content': content,
             'is_draft': _is_post_draft(post_path),
+            'has_image': _post_has_image(post_path),
+            'image_url': _post_image_url(post_path),
         })
     except Exception as e:
         return jsonify({'success': False, 'output': str(e)}), 400
@@ -1208,7 +1311,7 @@ def create_image():
             if not ok:
                 return jsonify({'success': False, 'output': '\n'.join(output_lines), 'image_url': image_url, 'path': response_path})
 
-            git_ok, git_output = run_git_publish(commit_message, add_paths)
+            git_ok, git_output = queue_git_publish(commit_message, add_paths)
             output_lines.append('\nGit publish:')
             output_lines.append(git_output)
             return jsonify({

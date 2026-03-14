@@ -5,6 +5,7 @@ draft = false
 tags = ["email-post"]
 categories = ["blog"]
 slug = "a-stateless-passkey-signer-for-bitcoin"
+image =  "/media/a-stateless-passkey-signer-for-bitcoin/cover.webp"
 +++
 
 Stateless Bitcoin Wallet With Passkeys and a Minimal Signer

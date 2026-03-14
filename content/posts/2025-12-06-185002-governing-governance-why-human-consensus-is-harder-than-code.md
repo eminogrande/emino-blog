@@ -5,6 +5,7 @@ draft = false
 tags = ["email-post"]
 categories = ["blog"]
 slug = "governing-governance-why-human-consensus-is-harder-than-code"
+image =  "/media/governing-governance-why-human-consensus-is-harder-than-code/cover.webp"
 +++
 
 ![](/media/governing-governance-why-human-consensus-is-harder-than-code/cover.jpg)

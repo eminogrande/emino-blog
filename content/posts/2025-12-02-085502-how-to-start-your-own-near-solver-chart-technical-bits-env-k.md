@@ -5,6 +5,7 @@ draft = false
 tags = ["email-post"]
 categories = ["blog"]
 slug = "how-to-start-your-own-near-solver-chart-technical-bits-env-k"
+image =  "/media/how-to-start-your-own-near-solver-chart-technical-bits-env-k/cover.webp"
 +++
 
 ## 1. What this solver is and why it exists

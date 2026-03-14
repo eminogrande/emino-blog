@@ -5,6 +5,7 @@ draft = false
 tags = ["email-post"]
 categories = ["blog"]
 slug = "how-email-to-blog-publishing-works-on-emino-app"
+image =  "/media/how-email-to-blog-publishing-works-on-emino-app/cover.webp"
 +++
 
 This is the full, technical path from an email sent to post@emino.app to a

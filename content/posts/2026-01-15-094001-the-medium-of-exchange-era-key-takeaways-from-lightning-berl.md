@@ -5,6 +5,7 @@ draft = false
 tags = ["email-post"]
 categories = ["blog"]
 slug = "the-medium-of-exchange-era-key-takeaways-from-lightning-berl"
+image =  "/media/the-medium-of-exchange-era-key-takeaways-from-lightning-berl/cover.webp"
 +++
 
 ![](/media/the-medium-of-exchange-era-key-takeaways-from-lightning-berl/cover.jpg)

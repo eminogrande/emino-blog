@@ -5,6 +5,7 @@ draft = false
 tags = ["email-post"]
 categories = ["blog"]
 slug = "a-passkey-derived-2-of-2-taproot-wallet-architecture-elimina"
+image =  "/media/a-passkey-derived-2-of-2-taproot-wallet-architecture-elimina/cover.webp"
 +++
 
 This post

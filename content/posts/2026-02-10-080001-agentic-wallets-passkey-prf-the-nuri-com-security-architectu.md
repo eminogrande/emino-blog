@@ -7,6 +7,7 @@ categories = ["blog"]
 slug = "agentic-wallets-passkey-prf-the-nuri-com-security-architectu"
 markup = "markdown"
 body_format = "markdown"
+image =  "/media/agentic-wallets-passkey-prf-the-nuri-com-security-architectu/cover.webp"
 +++
 
 # Agentic Wallets & Passkey PRF: The Nuri.com Security Architecture

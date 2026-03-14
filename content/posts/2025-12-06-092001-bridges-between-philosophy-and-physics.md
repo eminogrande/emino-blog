@@ -5,6 +5,7 @@ draft = false
 tags = ["email-post"]
 categories = ["blog"]
 slug = "bridges-between-philosophy-and-physics"
+image =  "/media/bridges-between-philosophy-and-physics/cover.webp"
 +++
 
 ![](/media/bridges-between-philosophy-and-physics/cover.jpg)

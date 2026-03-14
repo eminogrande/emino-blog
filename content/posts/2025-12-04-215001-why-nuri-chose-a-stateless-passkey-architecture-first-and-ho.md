@@ -5,6 +5,7 @@ draft = false
 tags = ["email-post"]
 categories = ["blog"]
 slug = "why-nuri-chose-a-stateless-passkey-architecture-first-and-ho"
+image =  "/media/why-nuri-chose-a-stateless-passkey-architecture-first-and-ho/cover.webp"
 +++
 
 [image: image.png]

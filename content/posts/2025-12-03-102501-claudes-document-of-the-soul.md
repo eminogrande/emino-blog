@@ -5,6 +5,7 @@ draft = false
 tags = ["email-post"]
 categories = ["blog"]
 slug = "claudes-document-of-the-soul"
+image =  "/media/claudes-document-of-the-soul/cover.webp"
 +++
 
 ## Excerpt: Claude's wellbeing

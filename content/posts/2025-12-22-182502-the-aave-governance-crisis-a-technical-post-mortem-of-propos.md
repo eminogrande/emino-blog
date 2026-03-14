@@ -5,6 +5,7 @@ draft = false
 tags = ["email-post"]
 categories = ["blog"]
 slug = "the-aave-governance-crisis-a-technical-post-mortem-of-propos"
+image =  "/media/the-aave-governance-crisis-a-technical-post-mortem-of-propos/cover.webp"
 +++
 
 ![](/media/the-aave-governance-crisis-a-technical-post-mortem-of-propos/cover.jpg)

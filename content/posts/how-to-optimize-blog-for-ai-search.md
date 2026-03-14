@@ -6,6 +6,7 @@ tags = ["AI", "SEO", "ChatGPT", "Claude", "Search Optimization"]
 categories = ["AI Optimization"]
 description = "Learn how to make your blog discoverable by AI systems like ChatGPT, Claude, and Perplexity with practical implementation steps."
 summary = "A comprehensive guide to optimizing your blog for AI search engines, including llms.txt implementation, structured data, and content strategies."
+image =  "/media/how-to-optimize-blog-for-ai-search/cover.webp"
 +++
 
 ![](/media/how-to-optimize-blog-for-ai-search/cover.jpg)

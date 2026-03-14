@@ -7,6 +7,7 @@ categories = ["blog"]
 slug = "lightning-network-deep-dive-architecture-and-implementation"
 markup = "markdown"
 body_format = "markdown"
+image =  "/media/lightning-network-deep-dive-architecture-and-implementation/cover.webp"
 +++
 
 Speaker: Laolu "Roasbeef" Osuntokun

@@ -5,7 +5,7 @@ draft = false
 author = "Emino"
 tags = ["email-post"]
 categories = ["blog"]
-image = "/media/this-is-a-chicken/20250823-211005145.jpg"
+image =  "/media/this-is-a-chicken/cover.webp"
 +++
 
 My Chicken

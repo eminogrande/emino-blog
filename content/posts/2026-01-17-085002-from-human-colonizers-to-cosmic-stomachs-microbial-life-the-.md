@@ -5,6 +5,7 @@ draft = false
 tags = ["email-post"]
 categories = ["blog"]
 slug = "from-human-colonizers-to-cosmic-stomachs-microbial-life-the-"
+image =  "/media/from-human-colonizers-to-cosmic-stomachs-microbial-life-the-/IMG_7971.jpeg"
 +++
 
 <p></p>

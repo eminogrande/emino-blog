@@ -7,6 +7,7 @@ categories = ["blog"]
 slug = "resident-advisor-exchange-an-interview-with-ricardo-villalob"
 markup = "markdown"
 body_format = "markdown"
+image = "/media/resident-advisor-exchange-an-interview-with-ricardo-villalob/cover.webp"
 +++
 
 ![](/media/resident-advisor-exchange-an-interview-with-ricardo-villalob/cover.jpg)

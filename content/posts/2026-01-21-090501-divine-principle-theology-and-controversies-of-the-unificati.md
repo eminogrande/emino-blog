@@ -5,6 +5,7 @@ draft = false
 tags = ["email-post"]
 categories = ["blog"]
 slug = "divine-principle-theology-and-controversies-of-the-unificati"
+image =  "/media/divine-principle-theology-and-controversies-of-the-unificati/cover.webp"
 +++
 
 ![](/media/divine-principle-theology-and-controversies-of-the-unificati/cover.jpg)

@@ -5,6 +5,7 @@ draft = false
 author = "Emino"
 tags = ["email-post", "photos"]
 categories = ["blog"]
+image =  "/media/iceland/cover.webp"
 +++
 
 ![EAF5372C-238A-45EE-BD7A-F74689B5D8DA.jpeg](/media/iceland/EAF5372C-238A-45EE-BD7A-F74689B5D8DA.jpeg)

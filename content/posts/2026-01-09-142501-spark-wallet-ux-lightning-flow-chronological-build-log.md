@@ -7,6 +7,7 @@ categories = ["blog"]
 slug = "spark-wallet-ux-lightning-flow-chronological-build-log"
 markup = "markdown"
 body_format = "markdown"
+image =  "/media/spark-wallet-ux-lightning-flow-chronological-build-log/cover.webp"
 +++
 
 ![](/media/spark-wallet-ux-lightning-flow-chronological-build-log/cover.jpg)

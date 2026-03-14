@@ -5,6 +5,7 @@ draft = false
 tags = ["email-post"]
 categories = ["blog"]
 slug = "aave-dao-s-governance-showdown-the-fight-for-brand-ownership"
+image =  "/media/aave-dao-s-governance-showdown-the-fight-for-brand-ownership/cover.webp"
 +++
 
 ![](/media/aave-dao-s-governance-showdown-the-fight-for-brand-ownership/cover.jpg)

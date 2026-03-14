@@ -6,6 +6,7 @@ description: "A mom-readable walkthrough of Andrej Karpathy’s dependency-free 
 categories: ["AI", "Programming", "Explainers"]
 tags: ["Karpathy", "GPT", "Python", "Machine Learning"]
 slug: "microgpt-karpathy-line-by-line"
+image:  "/media/microgpt-karpathy-line-by-line/cover.webp"
 ---
 
 ![](/media/microgpt-karpathy-line-by-line/cover.jpg)

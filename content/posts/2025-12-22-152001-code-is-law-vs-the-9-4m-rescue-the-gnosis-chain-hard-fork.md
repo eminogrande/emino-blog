@@ -7,6 +7,7 @@ categories = ["blog"]
 slug = "code-is-law-vs-the-9-4m-rescue-the-gnosis-chain-hard-fork"
 markup = "markdown"
 body_format = "markdown"
+image =  "/media/code-is-law-vs-the-9-4m-rescue-the-gnosis-chain-hard-fork/cover.webp"
 +++
 
 ![](/media/code-is-law-vs-the-9-4m-rescue-the-gnosis-chain-hard-fork/cover.jpg)

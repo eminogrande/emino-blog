@@ -5,6 +5,7 @@ draft = false
 tags = ["email-post"]
 categories = ["blog"]
 slug = "testing-the-post-by-email-function"
+image =  "/media/testing-the-post-by-email-function/cover.webp"
 +++
 
 ![](/media/testing-the-post-by-email-function/cover.jpg)

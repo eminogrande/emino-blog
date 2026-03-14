@@ -7,6 +7,7 @@ categories = ["blog"]
 slug = "the-ai-playbook-9-mental-models-for-building-in-the-age-of-i"
 markup = "markdown"
 body_format = "markdown"
+image =  "/media/the-ai-playbook-9-mental-models-for-building-in-the-age-of-i/cover.webp"
 +++
 
 ![](/media/the-ai-playbook-9-mental-models-for-building-in-the-age-of-i/cover.jpg)

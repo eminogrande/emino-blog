@@ -5,6 +5,7 @@ draft = false
 author = "Emino"
 tags = ["email-post", "photos"]
 categories = ["blog"]
+image =  "/media/complete-ios-developer-onboarding-guide-for-eas-build-with-expo-dev/cover.webp"
 +++
 
 ![](/media/complete-ios-developer-onboarding-guide-for-eas-build-with-expo-dev/cover.jpg)

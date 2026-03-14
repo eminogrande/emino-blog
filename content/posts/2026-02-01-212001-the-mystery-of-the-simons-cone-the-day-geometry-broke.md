@@ -7,6 +7,7 @@ categories = ["blog"]
 slug = "the-mystery-of-the-simons-cone-the-day-geometry-broke"
 markup = "markdown"
 body_format = "markdown"
+image =  "/media/the-mystery-of-the-simons-cone-the-day-geometry-broke/cover.webp"
 +++
 
 In his landmark talk at MoMath, Jim Simons recounts one of the most

@@ -5,7 +5,7 @@ draft = false
 author = "Emino"
 tags = ["email-post", "photos"]
 categories = ["blog"]
-image = "/media/nuri-wallet-ios-expo-app-mermaid-chart-of-the-architecture/mermaid-chart-nuri-passkey-security.png"
+image =  "/media/nuri-wallet-ios-expo-app-mermaid-chart-of-the-architecture/cover.webp"
 +++
 
 Based on my analysis of the codebase, including the README.md and the main

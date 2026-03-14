@@ -7,6 +7,7 @@ categories = ["blog"]
 slug = "the-2020-investment-protocol-a-crisis-management-case-study"
 markup = "markdown"
 body_format = "markdown"
+image =  "/media/the-2020-investment-protocol-a-crisis-management-case-study/cover.webp"
 +++
 
 ![](/media/the-2020-investment-protocol-a-crisis-management-case-study/cover.jpg)

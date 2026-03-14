@@ -7,6 +7,7 @@ categories = ["blog"]
 slug = "michael-saylor-the-bitcoin-treasury-debate-and-the-future-of"
 markup = "markdown"
 body_format = "markdown"
+image =  "/media/michael-saylor-the-bitcoin-treasury-debate-and-the-future-of/cover.webp"
 +++
 
 In this intense discussion on *What Bitcoin Did*, Michael Saylor

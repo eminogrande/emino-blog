@@ -6,6 +6,7 @@ description: "A 400-year showdown between the father of modern astronomy and the
 categories: ["Astronomy", "Photography", "History"]
 tags: ["Galileo", "Nikon P1000", "Telescopes", "Astrophotography"]
 slug: "from-starry-sketches-to-superzoom-pixels-galileo-vs-nikon-p1000"
+image:  "/media/from-starry-sketches-to-superzoom-pixels-galileo-vs-nikon-p1000/cover.webp"
 ---
 
 ![](/media/from-starry-sketches-to-superzoom-pixels-galileo-vs-nikon-p1000/cover.jpg)

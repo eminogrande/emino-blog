@@ -9,6 +9,7 @@ description: "Plain-English long-form guide to this consciousness theory map —
 showToc: true
 TocOpen: true
 series: ["Consciousness Maps"]
+image:  "/media/information-theories-of-consciousness-and-their-critics/cover.webp"
 ---
 
 ## Tononi

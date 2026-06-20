@@ -1,7 +1,7 @@
 +++
 title = "I Asked My Mac How Much AI I Burned. It Found 45 Billion Token Events."
 date = 2026-05-18T14:25:16Z
-draft = true
+draft = false
 tags = ["email-post"]
 categories = ["blog"]
 slug = "i-asked-my-mac-how-much-ai-i-burned-it-found-45-billion-toke"

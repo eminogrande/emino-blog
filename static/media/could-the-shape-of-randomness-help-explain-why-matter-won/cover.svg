@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900">
+<defs>
+  <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0%" stop-color="#68cefc" />
+    <stop offset="100%" stop-color="#734200" />
+  </linearGradient>
+</defs>
+<rect width="1600" height="900" fill="url(#bg)"/>
+<rect x="60" y="60" width="1480" height="780" rx="28" fill="rgba(0,0,0,0.22)" />
+<text x="80" y="155" fill="white" font-size="28" font-weight="600" font-family="-apple-system, Segoe UI, Roboto, Arial, sans-serif">emino.app</text>
+<text x="80" y="330" fill="white" font-size="44" font-weight="700" font-family="-apple-system, Segoe UI, Roboto, Arial, sans-serif">Could the Shape of Randomness Help</text><text x="80" y="388" fill="white" font-size="44" font-weight="700" font-family="-apple-system, Segoe UI, Roboto, Arial, sans-serif">Explain Why Matter Won?</text>
+<text x="80" y="810" fill="rgba(255,255,255,0.9)" font-size="24" font-family="-apple-system, Segoe UI, Roboto, Arial, sans-serif">Auto-generated cover · 2026-06-29</text>
+<text x="1520" y="810" fill="rgba(255,255,255,0.65)" font-size="18" text-anchor="end" font-family="-apple-system, Segoe UI, Roboto, Arial, sans-serif">could-the-shape-of-randomness-help-explain-why-matter-won</text>
+</svg>

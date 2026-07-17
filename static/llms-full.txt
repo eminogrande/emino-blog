@@ -1,5 +1,5 @@
 # Emino Blog - Complete Content for LLMs
-Generated: Fri Mar 13 03:00:01 AM UTC 2026
+Generated: Fri Jul 17 03:00:01 AM UTC 2026
 
 ## All Blog Posts
 
@@ -15067,6 +15067,630 @@ Based on the video's analysis of Paul Johnson’s essay, here is a ranking of th
 ---
 ## 
 
+
+---
+## Re-architecting the Blockchain Execution Layer: How the FATE VM Solves EVM’s Fundamental Flaws
+
+
+
+<div>
+<div>
+<h1><br></h1>
+
+<p>When evaluating the Ethereum Virtual Machine (EVM) from the perspective of language design and low-level runtime safety, numerous architectural bottlenecks become apparent. The EVM operates as an untyped, stack-based machine with a flat memory model, relying heavily on low-level byte manipulation, arbitrary jumps, and raw 256-bit words. While effective in bootstrapping the early smart contract ecosystem, these design choices have led to bloated bytecode, inefficient execution, and frequent security vulnerabilities.</p>
+
+<p>In a technical deep dive, Dr. Erik Stenman outlines the architecture of the <b>Fast Aeternity Transaction Engine (FATE)</b>, a high-level, strongly-typed virtual machine explicitly designed to rectify the historical missteps of the EVM. By fundamentally reimagining how a blockchain VM handles state, memory, and code execution, Stenman and his team achieved an execution environment that is virtually 10 times smaller in compiled code size and 3 times faster than its EVM-equivalent predecessor.</p>
+
+<p>Here is a technical breakdown of what Stenman did to make the &quot;Ethereum EVM paradigm&quot; better.</p>
+
+<h3>1. Eliminating Flat Memory in Favor of Typed Storage Variables</h3>
+
+<p>One of the most dangerous attributes of the EVM is its reliance on raw memory pointers. In the EVM, smart contracts read and write raw bytes to a linear memory array, which can easily result in out-of-bounds errors, pointer aliasing, or misinterpreting the actual data structures those bytes represent.</p>
+
+<p><b>The FATE Solution:</b>
+Stenman stripped flat memory out of the VM entirely. Instead of memory addresses, FATE uses <b>variables</b>—distinct storage slots that exist locally within a function&#x27;s scope.</p>
+
+<ul>
+<li>
+<p><b>Dynamic Typing &amp; Tagging:</b> A storage slot in FATE does not restrict the size of the data it holds. The data inherently carries its type tag. If a slot holds a boolean, the VM guarantees it will only be evaluated as a boolean (
+<code>true</code>
+ or 
+<code>false</code>
+), stripping away the ambiguity of &quot;0 or 1&quot; integer evaluations.</p>
+</li>
+
+<li>
+<p><b>Negative Variables for State Management:</b> FATE abstracts state tree interactions by using a specialized class of variables designated with &quot;negative names&quot; (e.g., 
+<code>-1</code>
+, 
+<code>-2</code>
+). Writing to a negative variable inherently schedules a write to the contract&#x27;s persistent state tree. This abstraction prevents developers from having to manually manage complex storage pointers (like the 
+<code>SLOAD</code>
+/
+<code>SSTORE</code>
+ key derivations in the EVM).</p>
+</li>
+</ul>
+
+<h3>2. First-Class Functions Over Arbitrary Jumps</h3>
+
+<p>The EVM’s control flow relies heavily on Program Counters (PC) and arbitrary jumps. A smart contract deployed to the EVM executes starting from address 
+<code>0x00</code>
+, functioning as a giant monolithic block of code where the user relies on jump tables to route execution to a specific function based on a 4-byte function selector.</p>
+
+<p><b>The FATE Solution:</b>
+FATE treats <b>functions</b> and <b>type signatures</b> as native, first-class entities at the VM level.</p>
+
+<ul>
+<li>
+<p><b>Type-Checked Invocations:</b> Execution no longer begins at an arbitrary 
+<code>0x00</code>
+ entry point. A caller specifies the exact function name and passes typed arguments. The VM intercepts this at the entry level, verifying the caller&#x27;s arguments against the function&#x27;s strict type signature before execution even begins.</p>
+</li>
+
+<li>
+<p><b>Basic Blocks Control Flow:</b> Inside a function, FATE represents code strictly as a sequence of basic blocks. There is no raw &quot;code memory&quot; to manipulate or arbitrarily jump into. A basic block is simply a list of sequential instructions. As soon as branching logic is required, execution cleanly transitions to a new, definitively marked basic block, making the &quot;invalid jump destination&quot; vulnerabilities characteristic of EVM bytecode structurally impossible.</p>
+</li>
+</ul>
+
+<h3>3. Native High-Level Data Types</h3>
+
+<p>The EVM natively understands exactly one data type: a 256-bit word. Operating on strings, lists, arrays, or arbitrarily large numbers requires thousands of lines of compiler-injected assembly to pad bytes, manage pointers, and compute lengths.</p>
+
+<p><b>The FATE Solution:</b>
+By embedding complex data types directly into the VM runtime, FATE aggressively reduces bytecode bloat and execution overhead. FATE includes native support for:</p>
+
+<ul>
+<li>
+<p><b>Unbounded Integers:</b> Rather than hardcoding a 256-bit limit (which risks overflows or forces expensive SafeMath library inclusions), FATE supports infinite-size integers natively.</p>
+</li>
+
+<li>
+<p><b>Constructed Types:</b> FATE handles Tuples, Lists, and Variant Types (e.g., Optional types) natively.</p>
+</li>
+
+<li>
+<p><b>First-Class Chain Primitives:</b> Blockchain-specific constructs like Addresses, Contracts, Oracles, and State Channels are heavily optimized, native types in FATE. When interacting with these elements, the VM executes native opcodes that plug directly into the node&#x27;s underlying transaction mechanics, completely bypassing the massive overhead of EVM external calls.</p>
+</li>
+</ul>
+
+<h3>4. Optimized State Map Abstractions</h3>
+
+<p>In the EVM, storing mappings (key-value stores) requires hashing the key with the storage slot position to derive a random 256-bit storage address. This makes iterating over mappings impossible and reads/writes relatively expensive.</p>
+
+<p><b>The FATE Solution:</b>
+Stenman designed Maps as a distinct entity handled outside standard variable storage. While FATE allows local memory maps, state maps are stored directly inside the Aeternity state tree efficiently. Crucially, a developer interacts with the map naturally, but the FATE engine defers and batches the actual reads and writes to the state tree only reading exactly the elements requested.</p>
+
+<h3>Conclusion: The Performance Yield</h3>
+
+<p>By removing flat memory, implementing native high-level types, and introducing strict basic-block control flow, Stenman managed to cut out the massive compiler boilerplate that plagues EVM smart contracts.</p>
+
+<p>The results shown in Stenman&#x27;s benchmark are profound: FATE contract bytecode is approximately <b>9.6 times smaller</b> (roughly 10% the size) than the identical contract compiled for an EVM architecture. Consequently, because the VM spends zero cycles parsing padding bytes, calculating memory offsets, or executing monolithic jump routing, FATE runs <b>three times faster</b> while significantly lowering the gas costs for the end user.</p>
+</div>
+
+<div>
+<div>
+<div>
+<div></div>
+</div>
+</div>
+</div>
+</div>
+
+<p><img src="/media/re-architecting-the-blockchain-execution-layer-how-the-fate-/cover.webp" alt="cover"></p>
+
+<hr><p><em>Post created via email from emin@nuri.com</em></p>
+
+---
+## I Asked My Mac How Much AI I Burned. It Found 45 Billion Token Events.
+
+
+
+<div>
+<div>I wanted a real answer to a simple question:<br><br>&gt; How much AI have I actually used on this machine?<br><br>Not just one app. Not just one provider dashboard. I wanted the local truth: Codex, Claude, opencode, Goose, OpenHands, Aider, Gemini CLI, Qwen, LM Studio, Zed, OpenRouter, <a href="http://fal.ai">fal.ai</a> experiments, Replit/Lovable traces, and anything else sitting in logs, SQLite databases, JSONL session files, browser storage, or CLI config.<br><br>The final answer was bigger than expected.<br><br>Important caveat: this is a local-machine audit, not a complete provider-account audit. After publishing the first draft, I realized OpenRouter and <a href="http://fal.ai">fal.ai</a> were probably undercounted because the local keys I found were not management keys and <a href="http://fal.ai">fal.ai</a> left no local billing export. I rechecked with extra supplied test keys on 2026-05-18. Those keys still did not unlock account-wide OpenRouter or <a href="http://fal.ai">fal.ai</a> billing history. So treat the headline below as &quot;what this Mac could prove locally plus the Codex report,&quot; not as the final all-account lifetime spend.<br><br>## The Headline<br><br>This Mac has local evidence for about:<br><br>| Metric | Total |<br>|---|---:|<br>| Reported request tokens, excluding cache and hidden reasoning | 23.12 billion |<br>| Request tokens including hidden reasoning | 23.22 billion |<br>| Cache-read token traffic | 21.70 billion |<br>| Total token traffic, including cache and reasoning | 44.96 billion |<br>| Estimated API-equivalent burn | $9,339.89 |<br>| Raw local-event upper-bound estimate | about $9.7k |<br>| Known missing bucket | verified blind spot: account-wide OpenRouter + <a href="http://fal.ai">fal.ai</a> dashboard usage |<br><br>The punchline:<br><br>&gt; I burned through at least roughly 45 billion AI token-events on one Mac. At current and logged API-style rates, that is at least around $9.3k of model usage before adding missing OpenRouter and <a href="http://fal.ai">fal.ai</a> account-wide usage.<br><br>After the second check, the OpenRouter/<a href="http://fal.ai">fal.ai</a> conclusion became sharper: the missing spend is not because I forgot to parse an obvious local file. It is because those services keep the authoritative billing history server-side, and the keys I had could not read that account-level history.<br><br>The fun part is that the number depends heavily on what you mean by &quot;tokens.&quot; AI coding agents spend enormous amounts of tokens repeatedly re-reading context. Much of that traffic is cached, which makes it cheaper than full input tokens, but it is still metered and still shows up in usage reports.<br><br>## What Counts as a Token Here?<br><br>The first trap in this kind of audit is that every tool uses slightly different accounting.<br><br>For this report I separated four concepts:<br><br>| Term | Meaning |<br>|---|---|<br>| Input tokens | Prompt, code, tool output, instructions, and context sent into a model. |<br>| Output tokens | Visible answer text or structured output from the model. |<br>| Reasoning tokens | Hidden reasoning/work tokens exposed by some usage counters. They are usually billed like output tokens, but not shown as normal answer text. |<br>| Cache-read tokens | Previously cached prompt/context tokens reused by the provider. These can be cheaper than fresh input, but still count as metered usage. |<br><br>So there are two useful totals:<br><br>1. Request tokens: what went into and came out of model calls, excluding cache reads.<br>2. Token traffic: request tokens plus cache reads and reasoning tokens.<br><br>When people say &quot;I used X billion tokens,&quot; they often mix these together. I tried to keep them separate.<br><br>## The Final Rollup<br><br>This is the consolidated result after scanning local tool data and using the Codex monthly report screenshot as the canonical Codex number. It deliberately does not pretend to include full OpenRouter or <a href="http://fal.ai">fal.ai</a> account history, because I could not access those with the local non-management keys.<br><br>| Tool / source | Request tokens | Cache tokens | Total token traffic | Cost |<br>|---|---:|---:|---:|---:|<br>| Codex monthly report | 23,046,195,362 | 21,578,277,284 | 44,624,472,646 | $8,926.98 |<br>| Claude summaries and desktop local-agent | 2,607,194 | 115,582,148 | 118,189,342 | $276.64 |<br>| OpenHands | 71,763,722 | 0 | 71,763,722 | $0 logged |<br>| Goose | 67,298,620 | 0 | 67,298,620 | ~$30.29 |<br>| opencode | 18,658,421 | 33,845,847 | 52,504,268 | $15.50 |<br>| Zed | 16,174,500 | 3,442,668 | 19,617,168 | $56.59 |<br>| Droid | 202,115 | 4,017,760 | 4,219,875 | $29.70 |<br>| Aider | 1,682,271 | 0 | 1,682,271 | $4.20 |<br>| LM Studio | 15,777 | 0 | 15,777 | local |<br>| Gemini CLI rough prompt trace | ~38,690 | 0 | ~38,690 | unknown |<br>| Qwen CLI rough prompt trace | ~163 | 0 | ~163 | unknown |<br>| Total | 23,224,636,835 | 21,735,165,707 | 44,959,802,542 | $9,339.89 |<br><br>Known missing or partial buckets:<br><br>| Provider/tool | Status |<br>|---|---|<br>| OpenRouter account-wide traffic | Partial only. Local app logs and current-key usage were included where visible. Rechecked with an extra supplied key: it reported $0 for that key and was not a management key, so it could not read account activity. |<br>| <a href="http://fal.ai">fal.ai</a> | Missing from spend total. I found local code and project traces. Rechecked with an extra supplied key: model invocation auth may exist, but account billing and usage endpoints were not permitted. <a href="http://fal.ai">fal.ai</a> usage is credit/output-unit based, not normal text-token accounting. |<br>| Lovable | Local project/browser traces only; no local credit counter found. |<br>| Replit | No usable local usage counter found. |<br><br>The table above includes hidden reasoning tokens in &quot;request tokens&quot; for Codex because those tokens are part of the model work. If you use only the &quot;Total Tokens&quot; field in the Codex monthly report, excluding reasoning and cache, the Codex subtotal is 22,944,070,768.<br><br>## Codex Was the Monster<br><br>The Codex monthly report dominated the whole audit.<br><br>Codex alone showed:<br><br>| Codex metric | Total |<br>|---|---:|<br>| Input tokens | 22,796,292,873 |<br>| Output tokens | 147,777,895 |<br>| Reasoning tokens | 102,124,594 |<br>| Cache-read tokens | 21,578,277,284 |<br>| Reported total tokens, input plus output | 22,944,070,768 |<br>| Token traffic including cache and reasoning | 44,624,472,646 |<br>| Cost | $8,926.98 |<br><br>The monthly breakdown:<br><br>| Month | Input | Output | Reasoning | Cache read | Reported total | Cost |<br>|---|---:|---:|---:|---:|---:|---:|<br>| 2025-09 | 1,465,027,747 | 6,294,621 | 3,394,176 | 1,408,110,720 | 1,471,322,368 | $310.11 |<br>| 2025-10 | 2,198,317,367 | 12,112,717 | 6,743,168 | 2,087,526,016 | 2,210,430,084 | $520.56 |<br>| 2025-11 | 2,059,065,642 | 12,501,084 | 7,492,878 | 1,933,080,448 | 2,071,566,726 | $524.13 |<br>| 2025-12 | 2,741,470,149 | 27,917,018 | 20,974,512 | 2,620,809,600 | 2,769,387,167 | $851.96 |<br>| 2026-01 | 2,796,216,784 | 38,691,904 | 32,798,748 | 2,671,607,204 | 2,834,908,688 | $1,227.22 |<br>| 2026-02 | 4,296,274,116 | 26,382,801 | 19,076,844 | 4,061,859,456 | 4,322,656,917 | $1,490.41 |<br>| 2026-03 | 2,736,148,304 | 11,486,083 | 6,285,054 | 2,495,058,816 | 2,747,634,387 | $1,257.87 |<br>| 2026-04 | 2,538,939,090 | 6,990,823 | 3,102,999 | 2,435,933,440 | 2,545,929,913 | $1,392.79 |<br>| 2026-05 | 1,964,833,674 | 5,400,844 | 2,256,215 | 1,864,291,584 | 1,970,234,518 | $1,351.93 |<br>| Total | 22,796,292,873 | 147,777,895 | 102,124,594 | 21,578,277,284 | 22,944,070,768 | $8,926.98 |<br><br>That is the story: almost all of the burn came from agentic coding context. Long-running software agents do not just answer once. They read files, inspect diffs, run commands, receive tool output, compact history, continue the task, and repeat. Each loop is another model call.<br><br>## Why My First Count Was Too Low<br><br>The first pass found about 12.89 billion Codex tokens. That number came from a local Codex state database that stores one aggregate token counter per thread/session.<br><br>That was useful, but it undercounted the cost story.<br><br>The deeper scan found three layers of Codex accounting:<br><br>| Layer | What it measured | Result |<br>|---|---|---:|<br>| Session-final counters | Last known aggregate per local Codex session | 12.89B |<br>| Monthly Codex report | Reconciled monthly usage by model and token class | 22.94B reported tokens, $8,926.98 |<br>| Raw `last_token_usage` events | Per-request event stream parsed from JSONL logs | 23.98B request tokens, about 46.53B including cache |<br><br>The monthly report is the number I would publish. The raw event scan is a useful upper-bound cross-check, but it can differ because of resumed sessions, timestamp grouping, duplicated telemetry, or report-window differences.<br><br>The important correction is this:<br><br>&gt; If you want a billing-style number for Codex, sum per-request usage or use the monthly usage report. Do not rely only on the session-final `tokens_used` counter.<br><br>## Where the Data Came From<br><br>I checked local app state, databases, JSONL files, and provider endpoints where available. I avoided publishing prompt contents and redacted API keys.<br><br>The useful local sources were:<br><br>| Tool | Useful local source |<br>|---|---|<br>| Codex | `~/.codex/sessions/**/*.jsonl`, `~/.codex/state_5.sqlite`, `~/.codex/logs_2.sqlite`, plus the monthly report screenshot |<br>| opencode | SQLite DB under `~/.local/share/opencode/` |<br>| Claude Code / Claude Desktop | `~/.claude.json`, Claude desktop local-agent audit logs |<br>| Aider | `.<a href="http://aider.chat.history.md">aider.chat.history.md</a>` files |<br>| Goose | JSONL sessions under `~/.local/share/goose/sessions/` |<br>| OpenHands | Event JSON files under `~/.openhands/sessions/` |<br>| LM Studio | Conversation JSON under `~/.lmstudio/conversations/` |<br>| Gemini CLI | `~/.gemini/tmp/*/logs.json` |<br>| Qwen CLI | `~/.qwen/tmp/*/logs.json` |<br>| Zed and Droid | Found through the `tokscale` usage cache |<br>| OpenRouter | Local API keys, supplied non-management key, and `/api/v1/key` checks |<br>| <a href="http://fal.ai">fal.ai</a> | Local project traces plus supplied key checks, but no usable usage counter |<br>| Lovable / Replit | Browser/project traces, no usable local billing counter |<br><br>I also found a cached `tokscale` rollup:<br><br>```text<br>~/.config/tokscale/cache/tui-data-cache.json<br>```<br><br>That cache reported:<br><br>| tokscale metric | Value |<br>|---|---:|<br>| Total normalized tokens | 13,537,863,939 |<br>| Total normalized cost | $6,438.80 |<br>| Model buckets | 21 |<br>| Clients with usable model buckets | Codex, opencode, Zed, Droid |<br><br>That number is useful, but it is not the same accounting basis as the Codex monthly report. It normalizes and groups data differently. I used it mainly to find extra clients and cost buckets I had missed.<br><br>## The Smaller Tools<br><br>Codex was the giant, but the other tools still mattered.<br><br>### opencode<br><br>opencode had a real SQLite database with per-message token accounting.<br><br>Recovered totals:<br><br>| Field | Count |<br>|---|---:|<br>| Input tokens | 18,329,400 |<br>| Output tokens | 215,350 |<br>| Reasoning tokens | 116,322 |<br>| Cache read | 33,616,558 |<br>| Cache write | 229,289 |<br>| Total token traffic | 52,504,268 |<br>| Cost | $15.50 |<br><br>Models included OpenRouter GLM, Gemini preview through OpenRouter, and opencode/free model buckets.<br><br>### Claude<br><br>Claude had two useful local sources:<br><br>1. `~/.claude.json`, which stores project summary counters.<br>2. Claude Desktop local-agent audit logs, which include model usage summaries.<br><br>Combined recovered Claude traffic:<br><br>| Field | Count |<br>|---|---:|<br>| Non-cache request tokens | 2,607,194 |<br>| Cache tokens | 115,582,148 |<br>| Total token traffic | 118,189,342 |<br>| Cost | $276.64 |<br><br>This is a good example of why cache matters. Most of the Claude token traffic was cache read or cache creation, not fresh prompt/output.<br><br>### OpenHands<br><br>OpenHands stored concrete per-response usage in event files.<br><br>| Field | Count |<br>|---|---:|<br>| Prompt tokens | 71,243,196 |<br>| Completion tokens | 520,526 |<br>| Total tokens | 71,763,722 |<br>| Logged cost | $0 |<br><br>The model bucket was `openrouter/sonoma-sky-alpha`, which appeared as free in the local accounting.<br><br>### Goose<br><br>Goose had cumulative session counters.<br><br>| Field | Count |<br>|---|---:|<br>| Input tokens | 66,266,561 |<br>| Output tokens | 1,032,059 |<br>| Total tokens | 67,298,620 |<br>| Estimated cost | ~$30.29 |<br><br>The current Goose config pointed to OpenRouter with `z-ai/glm-4.6`; older config backups also showed `x-ai/grok-code-fast-1`. Because individual session rows did not preserve the model, I treated the Goose cost as an estimate.<br><br>### Aider<br><br>Aider was simple: it writes token and cost lines into chat history files.<br><br>| Field | Count |<br>|---|---:|<br>| Sent tokens | 1,560,000 |<br>| Received tokens | 122,271 |<br>| Total tokens | 1,682,271 |<br>| Cost | $4.20 |<br><br>I de-duplicated identical history files by hash so a backup copy would not double count.<br><br>### LM Studio<br><br>LM Studio is mostly local model usage, not API spend. It still had generation stats in conversation JSON.<br><br>| Field | Count |<br>|---|---:|<br>| Prompt tokens | 8,796 |<br>| Predicted tokens | 6,981 |<br>| Total local generation tokens | 15,777 |<br><br>This is not API burn unless a remote provider was involved, which the local files did not show.<br><br>### Gemini CLI and Qwen CLI<br><br>Gemini and Qwen had local logs, but I did not find reliable provider-style token usage counters.<br><br>I only found rough prompt text traces:<br><br>| Tool | Sessions/messages | Rough text estimate |<br>|---|---:|---:|<br>| Gemini CLI | 17 sessions, 76 user messages | ~38,690 text tokens |<br>| Qwen CLI | 2 sessions, 9 user messages | ~163 text tokens |<br><br>I did not include those as billable provider usage. They are just rough text-size estimates.<br><br>### Zed and Droid<br><br>These came from the `tokscale` cache rather than manually parsing app-specific logs.<br><br>| Tool | Token traffic | Cost |<br>|---|---:|---:|<br>| Zed | 19,617,168 | $56.59 |<br>| Droid | 4,219,875 | $29.70 |<br><br>## Provider Checks: OpenRouter, <a href="http://fal.ai">fal.ai</a>, Lovable, Replit<br><br>I also checked provider-adjacent tools and account traces. The deeper local pass searched config folders, agent state folders, project directories, browser application support, package caches, and known CLI state for OpenRouter, <a href="http://fal.ai">fal.ai</a>, Lovable, and Replit artifacts. It found project code, SDK packages, pricing caches, config files, and browser/project traces, but not an authoritative local billing ledger for the missing providers.<br><br>### OpenRouter<br><br>I found three local OpenRouter API keys in tool configs. After I suspected the OpenRouter traffic was much larger, I also tested one additional supplied OpenRouter key. I queried the OpenRouter current-key endpoint with each key and redacted the key values.<br><br>Results:<br><br>| Key source | Current-key usage | Account-wide access |<br>|---|---:|---|<br>| Aider key | $4.820189682 | No |<br>| OpenHands key | $0 | No |<br>| Refact key | $0.063351337 | No |<br>| Supplied test key | $0 | No |<br><br>Then I tried OpenRouter&#x27;s `/api/v1/activity` endpoint for account activity. Each key returned:<br><br>```text<br>Only management keys can fetch activity for an account<br>```<br><br>So the OpenRouter check is not a full account-wide history. It is only the usage visible to those specific API keys.<br><br>The supplied key also failed the management-key listing endpoint:<br><br>```text<br>Invalid management key<br>```<br><br>OpenRouter documents that `/api/v1/activity` returns activity for the last completed 30 UTC days and requires a management key. A normal API key can report its own current usage, but not the whole account.<br><br>This means the OpenRouter number in the article is almost certainly too low if the account had heavier dashboard usage, deleted keys, rotated keys, BYOK activity, or other apps that did not preserve local logs.<br><br>To include the missing OpenRouter spend, I need one of these:<br><br>1. An OpenRouter management key with access to `/api/v1/activity`.<br>2. A dashboard export or screenshots for monthly usage.<br>3. A list of all historical API keys plus their current-key usage, if the keys still exist and usage has not reset.<br><br>With a management key, the account-level call is:<br><br>```bash<br>curl <a href="https://openrouter.ai/api/v1/activity">https://openrouter.ai/api/v1/activity</a> \<br>  -H &quot;Authorization: Bearer $OPENROUTER_MANAGEMENT_KEY&quot;<br>```<br><br>For a single normal key, the limited call is:<br><br>```bash<br>curl <a href="https://openrouter.ai/api/v1/key">https://openrouter.ai/api/v1/key</a> \<br>  -H &quot;Authorization: Bearer $OPENROUTER_API_KEY&quot;<br>```<br><br>The first endpoint can give daily/model/provider activity. The second can only say what that one key currently reports.<br><br>### <a href="http://fal.ai">fal.ai</a><br><br>I found <a href="http://fal.ai">fal.ai</a> code and project traces, including text-to-speech and speech-to-text experiments, but no local billing counter that could produce account usage. After I suspected the <a href="http://fal.ai">fal.ai</a> traffic was much larger, I tested one supplied <a href="http://fal.ai">fal.ai</a> key against account billing and usage-style endpoints.<br><br>The result was important: the key did not prove zero spend. It proved that this key was not allowed to read the billing ledger.<br><br>| <a href="http://fal.ai">fal.ai</a> check | Result |<br>|---|---|<br>| Account billing | Authorization error: the key was not permitted to perform the action. |<br>| Model usage from 2024-01-01 through 2026-05-19 | Returned only an error object; no rows were available to aggregate. |<br>| Billing events for the last 90 days | Returned only an error object; no events were available to aggregate. |<br><br>Because those calls returned authorization errors, I did not add `$0` to the report. `$0` would be misleading. The correct accounting state is &quot;unknown and probably missing.&quot;<br><br><a href="http://fal.ai">fal.ai</a> also does not map cleanly to LLM token accounting. Their docs describe model billing by successful outputs and model-specific billing units, using prepaid credits. So a fal audit needs a fal dashboard/API key, not just local token parsing.<br><br>This is also likely undercounted. <a href="http://fal.ai">fal.ai</a> usage often lives in the dashboard rather than in local app logs. A local app may call fal, receive audio/image/video output URLs, and never store the billing unit or credit burn.<br><br>To include <a href="http://fal.ai">fal.ai</a>, I need one of these:<br><br>1. A <a href="http://fal.ai">fal.ai</a> dashboard billing/usage export.<br>2. A screenshot or CSV of credit purchases and credit drawdown.<br>3. A <a href="http://fal.ai">fal.ai</a> admin/team key that is permitted to read billing or usage endpoints, if that access is available for the account.<br><br>The important accounting difference is that <a href="http://fal.ai">fal.ai</a> should not be added to the token table as if it were LLM text. It should be added as a separate spend bucket:<br><br>| <a href="http://fal.ai">fal.ai</a> metric | How to report it |<br>|---|---|<br>| Credits burned | Add to total dollar spend |<br>| Audio/video/image generations | Report as output units |<br>| Text tokens | Only include if the specific fal model exposes token usage |<br><br>So the corrected future headline should probably be:<br><br>&gt; 45B+ AI token-events locally proven, plus OpenRouter/<a href="http://fal.ai">fal.ai</a> dashboard spend still to add.<br><br>### Lovable<br><br>I found:<br><br>```text<br><a href="http://lovable.dev">lovable.dev</a> browser IndexedDB traces<br><a href="http://magic-prf.lovable.app">magic-prf.lovable.app</a> browser IndexedDB traces<br>local .lovable project metadata<br>lovable-tagger packages<br>lovable upload folders<br>```<br><br>I did not find local token, credit, or billing counters. Lovable is probably best audited from its dashboard, not from the local browser IndexedDB files.<br><br>### Replit<br><br>I looked for Replit project metadata, tokens, local DBs, and browser traces. I did not find a usable local usage counter.<br><br>## How We Reproduced the Numbers<br><br>The rough workflow was:<br><br>1. Inventory likely AI-tool directories.<br>2. Search for usage fields without dumping conversation contents.<br>3. Identify structured stores: SQLite, JSONL, JSON, Markdown histories.<br>4. Parse only aggregate counters.<br>5. De-duplicate histories and session summaries where possible.<br>6. Cross-check local counters against provider docs and provider endpoints.<br>7. Separate request tokens from cache traffic.<br><br>The first broad scan looked for installed tool state:<br><br>```bash<br>find ~ -maxdepth 3 -type d \<br>  | rg -i &#x27;codex|claude|opencode|gemini|qwen|goose|aider|openhands|cursor|windsurf|zed|replit|lovable|lmstudio|ollama&#x27;<br>```<br><br>Then I searched for usage fields:<br><br>```bash<br>rg -n -i &#x27;input_tokens|output_tokens|total_tokens|cached_tokens|cache_read|usage|cost&#x27; \<br>  ~/.codex ~/.claude ~/.opencode ~/.gemini ~/.qwen ~/.local/share/goose ~/.openhands ~/.lmstudio<br>```<br><br>For Codex, the useful event shape was:<br><br>```json<br>{<br>  &quot;type&quot;: &quot;event_msg&quot;,<br>  &quot;payload&quot;: {<br>    &quot;type&quot;: &quot;token_count&quot;,<br>    &quot;info&quot;: {<br>      &quot;total_token_usage&quot;: {<br>        &quot;input_tokens&quot;: 123,<br>        &quot;cached_input_tokens&quot;: 100,<br>        &quot;output_tokens&quot;: 20,<br>        &quot;reasoning_output_tokens&quot;: 10,<br>        &quot;total_tokens&quot;: 143<br>      },<br>      &quot;last_token_usage&quot;: {<br>        &quot;input_tokens&quot;: 12,<br>        &quot;cached_input_tokens&quot;: 10,<br>        &quot;output_tokens&quot;: 2,<br>        &quot;reasoning_output_tokens&quot;: 1,<br>        &quot;total_tokens&quot;: 14<br>      }<br>    }<br>  }<br>}<br>```<br><br>The key discovery was that `total_token_usage` is cumulative within a session. If you sum every `total_token_usage` row, you will wildly overcount. For billing-style accounting, you want per-request `last_token_usage`, or a reconciled usage report.<br><br>A simplified Codex parser looks like this:<br><br>```js<br>const fs = require(&quot;fs&quot;);<br>const path = require(&quot;path&quot;);<br><br>function walk(dir, files = []) {<br>  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {<br>    const p = path.join(dir, <a href="http://entry.name">entry.name</a>);<br>    if (entry.isDirectory()) walk(p, files);<br>    else if (entry.name.endsWith(&quot;.jsonl&quot;)) files.push(p);<br>  }<br>  return files;<br>}<br><br>const totals = {<br>  input: 0,<br>  cached: 0,<br>  output: 0,<br>  reasoning: 0,<br>  total: 0,<br>};<br><br>for (const file of walk(`${process.env.HOME}/.codex/sessions`)) {<br>  for (const line of fs.readFileSync(file, &quot;utf8&quot;).split(/\n/)) {<br>    if (!line.includes(&quot;token_count&quot;)) continue;<br><br>    let row;<br>    try {<br>      row = JSON.parse(line);<br>    } catch {<br>      continue;<br>    }<br><br>    const usage = row.payload?.info?.last_token_usage;<br>    if (!usage) continue;<br><br>    totals.input += usage.input_tokens || 0;<br>    totals.cached += usage.cached_input_tokens || 0;<br>    totals.output += usage.output_tokens || 0;<br>    totals.reasoning += usage.reasoning_output_tokens || 0;<br>    totals.total += usage.total_tokens || 0;<br>  }<br>}<br><br>console.log(totals);<br>```<br><br>For SQLite-backed tools like opencode, the method was different:<br><br>```bash<br>sqlite3 ~/.local/share/opencode/opencode.db &quot;.schema&quot;<br>```<br><br>Then parse the JSON fields in the message table, specifically the `tokens` object, not the duplicated part rows.<br><br>For Aider, the usage was plain text:<br><br>```bash<br>rg -n &#x27;Tokens: .* sent, .* received|Cost:&#x27; ~/Developer ~/.aider<br>```<br><br>For OpenRouter current-key usage:<br><br>```bash<br>curl <a href="https://openrouter.ai/api/v1/key">https://openrouter.ai/api/v1/key</a> \<br>  -H &quot;Authorization: Bearer $OPENROUTER_API_KEY&quot;<br>```<br><br>For OpenRouter account-wide activity:<br><br>```bash<br>curl <a href="https://openrouter.ai/api/v1/activity">https://openrouter.ai/api/v1/activity</a> \<br>  -H &quot;Authorization: Bearer $OPENROUTER_MANAGEMENT_KEY&quot;<br>```<br><br>The second command requires a management key.<br><br>## The Pricing Assumptions<br><br>I used three kinds of cost data:<br><br>1. Costs directly logged by the tool.<br>2. Costs shown in the Codex monthly usage report.<br>3. Estimates from current public pricing where the local logs had tokens but no cost.<br><br>The most important pricing references:<br><br>- OpenAI API pricing lists current per-1M-token prices for GPT-5.5, GPT-5.4, and GPT-5.3-Codex.<br>- OpenAI&#x27;s Codex rate card explains the move to token-based Codex accounting and separates input, cached input, and output credits.<br>- Anthropic publishes Claude pricing by model and token class.<br>- OpenRouter exposes current-key usage via `/api/v1/key`; full activity requires a management key.<br>- <a href="http://fal.ai">fal.ai</a> bills model APIs by successful outputs and model-specific billing units, funded with prepaid credits.<br><br>The cost estimate is not a perfect invoice. It is a &quot;what would this look like at API-style rates?&quot; estimate. Some usage may be included in subscriptions, free tiers, research previews, or internal tool allocations. Some local logs record estimated cost instead of settled provider billing.<br><br>## Why Agent Usage Gets So Large<br><br>The surprising thing is not that the machine used AI. The surprising thing is how quickly agents multiply context.<br><br>A normal chat might be:<br><br>1. User prompt.<br>2. Assistant answer.<br><br>An agentic coding loop is more like:<br><br>1. User asks for a change.<br>2. Agent reads repo files.<br>3. Model call.<br>4. Agent runs searches.<br>5. Model call.<br>6. Agent runs tests.<br>7. Model call.<br>8. Agent reads errors.<br>9. Model call.<br>10. Agent edits files.<br>11. Model call.<br>12. Agent verifies.<br>13. Model call.<br><br>Each step can include system instructions, developer instructions, tool definitions, prior conversation, file excerpts, command output, diffs, test failures, screenshots, browser state, and safety policies.<br><br>That is why cache-read tokens were almost as large as fresh request tokens in Codex:<br><br>| Codex category | Tokens |<br>|---|---:|<br>| Fresh input + output + reasoning | 23.05B |<br>| Cache read | 21.58B |<br><br>The cache makes this cheaper than it would otherwise be, but it also reveals the core shape of agent usage: context is the real fuel.<br><br>## What I Learned<br><br>First, &quot;total tokens&quot; is an overloaded phrase. A dashboard total, a session counter, a per-request raw event, and a provider invoice can all be true while showing different numbers.<br><br>Second, local logs are incredibly useful. Many tools quietly keep enough metadata to reconstruct usage without sending prompts anywhere.<br><br>Third, provider dashboards still matter. OpenRouter, <a href="http://fal.ai">fal.ai</a>, Lovable, Replit, and similar services may not leave full billing histories locally. For those, you need dashboard exports or scoped management keys.<br><br>Fourth, agentic coding is not expensive because output is long. It is expensive because input context is huge and repeatedly revisited.<br><br>In my case, the visible model answers were only a tiny slice of the total. The real burn was in context, tool output, repository inspection, and cached prompt reuse.<br><br>## The Shareable One-Liner<br><br>&gt; I audited every AI tool I could find on my Mac. The machine had evidence of about 45 billion token-events and roughly $9.3k of API-equivalent usage. Almost all of it came from Codex doing agentic coding work.<br><br>## References<br><br>- OpenAI API pricing: <a href="https://developers.openai.com/api/docs/pricing">https://developers.openai.com/api/docs/pricing</a><br>- OpenAI Codex rate card: <a href="https://help.openai.com/en/articles/20001106-codex-rate-card">https://help.openai.com/en/articles/20001106-codex-rate-card</a><br>- Anthropic Claude pricing: <a href="https://platform.claude.com/docs/en/about-claude/pricing">https://platform.claude.com/docs/en/about-claude/pricing</a><br>- OpenRouter current key endpoint: <a href="https://openrouter.ai/docs/api/api-reference/api-keys/get-current-key">https://openrouter.ai/docs/api/api-reference/api-keys/get-current-key</a><br>- OpenRouter activity endpoint: <a href="https://openrouter.ai/docs/api/api-reference/analytics/get-user-activity">https://openrouter.ai/docs/api/api-reference/analytics/get-user-activity</a><br>- <a href="http://fal.ai">fal.ai</a> pricing model: <a href="https://fal.ai/docs/documentation/model-apis/pricing">https://fal.ai/docs/documentation/model-apis/pricing</a><br>- <a href="http://fal.ai">fal.ai</a> authentication: <a href="https://fal.ai/docs/documentation/setting-up/authentication">https://fal.ai/docs/documentation/setting-up/authentication</a><br></div>
+
+<div>
+<div>
+<div>
+<div></div>
+</div>
+</div>
+</div>
+</div>
+
+<p><img src="/media/i-asked-my-mac-how-much-ai-i-burned-it-found-45-billion-toke/cover.webp" alt="cover"></p>
+
+<hr><p><em>Post created via email from emin@nuri.com</em></p>
+
+---
+## Untitled Post
+
+
+
+<div>
+<div># AF Fine Adjustment: Fixing the Camera That Lies About Focus<br><br>You line up the shot, the focus point lights up green, the camera tells you it&#x27;s sharp. You press the shutter, feel good about it, and move on. Then you get home, zoom in, and the eyes are soft — the real plane of focus has landed on an eyelash, an ear, the collar, somewhere just in front of or just behind where you aimed. The camera said yes. The camera was wrong.<br><br>That gap between *confirmed* and *actually sharp* is what AF Fine Adjustment exists to close. It&#x27;s one of the more misunderstood features buried in modern DSLR menus, partly because it sounds like a fussy pro-only tool and partly because the camera never advertises that it might need calibrating in the first place. This article explains what the feature does, why the problem happens, and how to dial it in without losing an afternoon.<br><br>## What&#x27;s actually going wrong<br><br>Most DSLRs focus using a dedicated **phase-detection autofocus sensor** sitting in the bottom of the mirror box. Light bounces off the main mirror, through a secondary mirror, and down onto this sensor, which measures focus by comparing two views of the scene. It&#x27;s fast and it works well — but it&#x27;s a separate optical path from the one that actually exposes your image at the sensor plane.<br><br>Because it&#x27;s a separate path, it has to be calibrated so that &quot;in focus according to the AF sensor&quot; matches &quot;in focus at the imaging sensor.&quot; Camera makers do this at the factory, but the calibration is never perfect, and it can drift. Three things commonly throw it off:<br><br>- **Sample variation between camera and lens.** Your specific body and your specific lens each have tiny tolerances. Most of the time they cancel out. Sometimes they stack up in the same direction, and that particular pairing consistently misses.<br>- **Manual lenses on a body calibrated for autofocus glass.** This is the big one for adapted and vintage lenses. The focus-confirmation light still fires when you focus by hand, but it&#x27;s driven by that same AF sensor, calibrated for the maker&#x27;s own lenses. With a manual lens it can confirm a hair early or a hair late, every time.<br>- **Shooting wide open.** None of this matters at f/8, where depth of field is generous enough to hide a small error. At f/1.4 or f/1.8 the in-focus zone is millimetres deep, and the same small offset that was invisible stopped down becomes an obvious miss.<br><br>The tell-tale sign that fine adjustment can help is **consistency**. If your misses always land in front of the target, that&#x27;s *front-focus*. If they always land behind, that&#x27;s *back-focus*. A consistent, repeatable offset is exactly what this feature corrects. Random misses that land in front one frame and behind the next are a different problem — usually focus technique, subject movement, or a confirmation that&#x27;s simply at the edge of its tolerance — and fine adjustment won&#x27;t save you there.<br><br>## Confirming the problem before you touch anything<br><br>Don&#x27;t adjust on a hunch. Spend ten minutes proving the error is real, consistent, and in a known direction. The classic test:<br><br>1. Lay a ruler, a tape measure, or a row of objects on a table, running away from you at roughly **45 degrees**.<br>2. Put the camera on a tripod if you have one — it removes you as a variable. Handheld works, but be disciplined.<br>3. Open the lens to its **widest aperture**, where the error shows most clearly.<br>4. Pick one specific mark — say, the 20cm line — and focus on it. With autofocus, put the point there and let it lock. With a manual lens, focus by eye and/or to the confirmation light on that exact spot.<br>5. Shoot several frames, refocusing from scratch each time.<br>6. Zoom in on the results. Where is the genuinely sharp line? On your target, or in front, or behind?<br><br>If the sharp plane sits consistently in front of your target across multiple frames, you have consistent front-focus and you&#x27;ll correct *toward the back*. Consistently behind means back-focus, corrected *toward the front*. If it&#x27;s all over the place, stop here — fine adjustment is the wrong tool.<br><br>## Dialling it in<br><br>The feature lives in the custom settings menu. Names and exact locations vary by brand and model, but the logic is identical everywhere:<br><br>- **Pentax:** *AF Fine Adjustment*, in the Custom (C) menus.<br>- **Canon:** *AF Microadjustment*, in the autofocus custom menus.<br>- **Nikon:** *AF Fine-tune*, in the setup menu.<br><br>You&#x27;ll generally get two modes:<br><br>- **Apply All / Adjust All** — a single global correction applied to every lens you mount.<br>- **Apply One / per-lens** — a correction stored individually for each lens, recalled automatically when that lens is recognised.<br><br>Per-lens is the better choice when it works, because each lens can have its own offset and they may differ. But it relies on the lens reporting an electronic identity to the body. **Fully manual and adapted lenses usually can&#x27;t be stored individually**, so for those you fall back on the global *Apply All* setting — with the important consequence that it shifts the calibration for *everything*, including your autofocus lenses. If you swap constantly between adapted glass and native AF lenses, keep that in mind: a global tweak tuned for the manual lens may nudge your AF lenses off.<br><br>The adjustment itself is a scale, commonly **−10 to +10** with zero in the middle. The direction convention is the part everyone second-guesses, so anchor it like this:<br><br>- Shots **front-focus** (sharp plane too close to you) → move toward **+** to push focus back.<br>- Shots **back-focus** (sharp plane too far) → move toward **−** to pull focus forward.<br><br>Change a few steps, not the whole range. Re-shoot your 45-degree test. Look again. Repeat. You&#x27;re hunting for the setting where the sharp plane sits right on the line the camera confirmed. It&#x27;s genuinely iterative — expect three or four rounds, not a single lucky guess. When you get close, fine-tune one step at a time.<br><br>## On the Pentax K-50 specifically<br><br>Here&#x27;s the concrete version for the K-50 and the lenses in question — the **Cosinon-S 50mm f/1.8** (K-mount, mounts natively) and the **Super-Takumar 50mm f/1.4** (M42, on an adapter). Both are fully manual, so the camera focuses nothing itself; you turn the ring by hand and the K-50&#x27;s green focus-confirmation dot lights up when its AF sensor thinks you&#x27;ve nailed it. That dot is the thing that&#x27;s been lying — confirming focus that lands a little in front of or behind the real subject when you&#x27;re shooting wide open.<br><br>The setting on the K-50 is here:<br><br>1. Press **MENU** and go to the **Custom Setting** menus.<br>2. Find **C3**, item **21 — AF Fine Adjustment**.<br>3. Set it to **On / Apply All**. (Apply All is the right choice, not per-lens: your Cosinon and Takumar are manual and don&#x27;t report an electronic identity, so the camera can&#x27;t store a separate value for each. The global correction is what affects them.)<br>4. On the −10 to +10 scale, move it a few steps **toward the back** — i.e. the **plus (+)** direction.<br><br>Why the back/plus direction for your situation: you&#x27;ve been seeing the focus land slightly in front of where the dot confirmed (front-focus). Pushing the adjustment toward + shifts the confirmation point rearward so the sharp plane moves back onto your subject. Start with something like **+3 or +4**, then test and refine.<br><br>Then re-shoot the 45-degree ruler test wide open (f/1.8 on the Cosinon, f/1.4 on the Takumar) and check where the sharp line actually falls. Nudge one or two steps at a time until the confirmed point and the real sharp plane agree.<br><br>Two K-50 caveats worth holding onto:<br><br>- Because it&#x27;s a **global** setting, it nudges *every* lens — including any autofocus lens you mount later. If you tune it for the manual fifties and then put an AF lens on, remember the offset is still applied. Reset to 0 when you go back to AF glass if you notice it drifting.<br>- The adjustment fixes a **consistent** front-focus. The Takumar has the extra variable of adapter thickness, which can also affect where focus lands and can cost you infinity focus outright — so if the Takumar still misses after you&#x27;ve calibrated, suspect the adapter, not the camera.<br><br>For absolute certainty wide open with either lens, the fallback never changes: switch to **Live View, magnify to 100%, and focus by eye** on the subject. That reads focus straight off the imaging sensor and ignores the AF dot entirely, so there&#x27;s nothing to calibrate.<br><br>## When the menu isn&#x27;t the answer<br><br>Fine adjustment is a fix for a *consistent* offset, and it has real limits. Two situations call for a different approach.<br><br>**Random misses.** If your test frames scatter — in front, then behind, then on target — there&#x27;s no single number that corrects them. This is often technique (focus-and-recompose shifting the plane), a subject that moved, or a confirmation light that&#x27;s simply imprecise with your lens. The cure is better focusing, not menu diving.<br><br>**Manual lenses you want dead-on, wide open.** The most reliable answer here bypasses the phase-detect sensor entirely: **use Live View, magnify the image to 100%, and focus by eye on the actual feed off the imaging sensor.** Because you&#x27;re looking at the real sensor image, there&#x27;s no calibration gap to correct — what you see sharp *is* sharp. It&#x27;s slower and it wants a steady camera, but for adapted vintage glass at f/1.4 it&#x27;s how most people get consistent results. Fine adjustment tightens up the viewfinder-and-confirmation-light workflow; Live View magnification sidesteps the whole issue when you need certainty.<br><br>A third, humble option: **stop down**. At f/2.8 to f/4 the depth of field deepens enough to swallow a small focus error. If the shot allows it, closing the aperture a stop or two is the fastest &quot;fix&quot; of all — no menus, no testing.<br><br>## The short version<br><br>The green dot is a calibrated guess, not a guarantee, and on some camera-and-lens pairings — especially manual lenses on bodies tuned for autofocus — that guess is consistently a few hairs off. AF Fine Adjustment lets you shift the guess back into agreement with reality:<br><br>1. Prove the error is **consistent** and note its **direction** with a 45-degree ruler test, wide open.<br>2. Open the feature, choose **per-lens** if the lens reports electronically, otherwise **global**.<br>3. Nudge **toward +** for front-focus, **toward −** for back-focus, a few steps at a time.<br>4. **Re-test and iterate** until the sharp plane lands where the camera confirmed.<br>5. For manual glass you want perfect wide open, skip all of it and **focus in magnified Live View** — or just **stop down** and let depth of field cover you.<br><br>Done once per troublesome lens, it turns a camera that quietly lies about focus into one you can trust through the viewfinder again.<br></div>
+
+<div><img></div>
+
+<div>
+<div>
+<div>
+<div></div>
+</div>
+</div>
+</div>
+</div>
+
+<p><img src="/media/untitled-post/IMG_0899.jpeg" alt="IMG_0899"></p>
+
+<hr><p><em>Post created via email from emin@nuri.com</em></p>
+
+---
+## Could the Shape of Randomness Help Explain Why Matter Won?
+
+
+
+<div>
+<div>
+<p><b>Could the Shape of Randomness Help Explain Why Matter Won?</b></p>
+
+<h2><span><b>A proposal for a research conversation about Boltzmann statistics, radiation, matter, antimatter, and the early universe</b></span></h2>
+
+<p>I want to propose an idea carefully.</p>
+
+<p>I am not saying this is proven.<br>
+I am not saying current physics is wrong.<br>
+I am not saying I have solved the matter–antimatter problem.</p>
+
+<p>I am saying there may be a connection worth discussing:</p>
+
+<p><b>Maybe the imbalance between matter and antimatter is not only about a tiny starting difference. Maybe it is also about how randomness distributes itself.</b></p>
+
+<p>The basic mystery is famous. In the early universe, matter and antimatter should have been created together. When matter and antimatter meet, they annihilate. If the balance had been perfect, almost everything would have disappeared into radiation. But that is not what we observe. We observe galaxies, stars, planets, and ourselves. CERN describes the puzzle as a tiny excess of matter — roughly one extra matter particle per billion antiparticles — surviving after annihilation and becoming everything we see today. <span> </span></p>
+
+<p>That is already an astonishing idea:</p>
+
+<p><b>Almost everything cancelled out, and the tiny leftover became the universe we live in.</b></p>
+
+<p>My question begins there.</p>
+
+<p>When particles collide randomly, the result is not pure disorder. Randomness can create structure. In gases, random motion leads to the Maxwell–Boltzmann distribution: a predictable distribution of speeds with a clear peak and a long tail. OpenStax describes this as the predictable speed distribution of many randomly moving molecules. <span> </span></p>
+
+<p>That shape interests me.</p>
+
+<p>My first intuition was simple:</p>
+
+<p><b>max peak = matter?</b></p>
+
+<p>Maybe the most likely region of the distribution — the peak, the maximum, the place where most events happen — somehow becomes the matter side.</p>
+
+<p>But I know that this cannot be taken literally. Matter and antimatter are not just “slow particles” and “fast particles.” They are particle and antiparticle partners. A proton and antiproton are not different just because of speed. In fact, CERN’s BASE experiment found the proton and antiproton charge-to-mass ratios equal within 16 parts per trillion, which strongly supports the idea that matter and antimatter have matching basic properties under known physics. <span> </span></p>
+
+<p>So I want to refine the idea.</p>
+
+<p>Maybe the peak is not matter itself.</p>
+
+<p><b>Maybe the peak is the amplifier.</b></p>
+
+<p>That means the Boltzmann distribution does not directly choose matter. But if there is even a tiny matter-favoring rule somewhere — a tiny asymmetry in decay, scattering, interaction, or freeze-out — then the shape of the distribution could matter enormously.</p>
+
+<p>Why?</p>
+
+<p>Because most particles and events happen near the peak, not in the far tail. So a tiny asymmetry near the peak could have a much bigger effect than the same asymmetry in a rare part of the distribution.</p>
+
+<p>So the better version of the idea is:</p>
+
+<p><b>The peak is not matter. The peak is where a tiny matter advantage could become statistically powerful.</b></p>
+
+<p>This connects to existing physics. Scientists already study the matter–antimatter problem through baryogenesis and leptogenesis. A classic starting point is Sakharov’s 1967 idea that a universe with more matter than antimatter requires certain ingredients: matter-number violation, C/CP violation, and departure from thermal equilibrium. CERN Courier describes current searches around these Sakharov conditions, including CP violation, baryon/lepton-number violation, and out-of-equilibrium physics. <span> </span></p>
+
+<p>That already sounds close to the direction I am thinking in:</p>
+
+<p><b>not just particles, but processes; not just symmetry, but symmetry breaking; not just equilibrium, but the moment when equilibrium fails.</b></p>
+
+<p>CERN’s LHCb experiment recently observed CP violation in a baryon decay. That means a matter particle and its antimatter partner did not behave as perfect mirror images in that decay. The measured asymmetry was about 2.45%, with a significance of 5.2 standard deviations. CERN also notes that the CP violation currently known in the Standard Model is still far too small to explain the cosmic matter excess. <span> </span></p>
+
+<p>So there is a real direction here:</p>
+
+<p><b>tiny matter–antimatter differences exist, but we still do not know how the universe amplified them enough.</b></p>
+
+<p>That is where I want to bring in Boltzmann thinking.</p>
+
+<p>Maybe the question should not only be:</p>
+
+<p><b>Where did the tiny bias come from?</b></p>
+
+<p>Maybe we should also ask:</p>
+
+<p><b>How did the statistical shape of the early universe amplify, preserve, or erase that tiny bias?</b></p>
+
+<p>The Boltzmann equation is already used in this research. Kolb and Wolfram’s classic paper on baryon-number generation in the early universe used the Boltzmann equation to calculate how an excess of baryons over antibaryons could develop over time. <span>  </span>Modern papers also study full Boltzmann equations for leptogenesis, sometimes without assuming kinetic equilibrium, and show that the detailed distribution can change the final asymmetry. <span> </span></p>
+
+<p>That is important for my idea.</p>
+
+<p>Because I am not only interested in the total number of particles. I am interested in the <span><b>shape</b></span> of the distribution — where most events happen, where rare events happen, and how a tiny rule could be amplified depending on where it acts.</p>
+
+<p>There is also research on CP-violating scatterings. Nardi, Racker, and Roulet studied Boltzmann equations including decay and scattering processes and computed CP-violating scattering asymmetries. <span>  </span>Baldes and collaborators studied CP-violating scatterings in baryogenesis and found that scatterings can play a dominant role in part of the parameter space. <span> </span></p>
+
+<p>This is very close to the intuition I am trying to express:</p>
+
+<p><b>collisions are not just noise. Under the right conditions, collisions may help shape the final imbalance.</b></p>
+
+<p>Now I want to add another part of the idea: radiation.</p>
+
+<p>When people say matter and antimatter annihilate and leave “only radiation,” the word “only” can be misleading. Radiation is not nothing. Radiation carries energy, momentum, and sometimes subtle correlations. Fermilab describes matter–antimatter annihilation as producing photons or gamma rays, and electron–positron annihilation commonly produces two gamma-ray photons. <span> </span></p>
+
+<p>So maybe we should not think of annihilation as simple destruction.</p>
+
+<p>Maybe we should think of it as transformation:</p>
+
+<p><b>matter + antimatter become radiation.</b></p>
+
+<p>And radiation can also become matter again, if the energy is high enough. Brookhaven reported evidence for the Breit–Wheeler process, where collisions of light can produce matter–antimatter pairs. The DOE describes this as generating matter and antimatter from collisions of real photons. <span> </span></p>
+
+<p>This does not mean radiation creates matter alone. Normally, radiation creates <span><b>matter and antimatter together</b></span>.</p>
+
+<p>But it does suggest a possible recycling picture:</p>
+
+<p><b>matter + antimatter → radiation → matter + antimatter again</b></p>
+
+<p>In the early universe, when everything was extremely hot and dense, this kind of transformation loop may have been part of the active system. Particles annihilate into radiation. Radiation produces pairs. Collisions redistribute energy. Expansion cools the system. Eventually some processes stop happening. That stopping is what physicists call freeze-out.</p>
+
+<p>So my extended proposal becomes:</p>
+
+<p><b>Maybe the early universe was not just a one-time matter-versus-antimatter event. Maybe it was a recycling system: particles, antiparticles, radiation, collisions, pair creation, annihilation, and freeze-out.</b></p>
+
+<p>In that system, radiation is not the final trash. It is part of the engine.</p>
+
+<p>This also makes me think about black holes. Black-hole radiation is not the same mechanism as matter–antimatter annihilation. Hawking radiation is a quantum effect where black holes emit particles as if they have a temperature. Hawking’s classic 1975 paper showed that quantum mechanical effects cause black holes to emit particles like hot bodies. <span> </span></p>
+
+<p>But black holes are interesting here for a different reason: information.</p>
+
+<p>The black-hole information problem asks whether information is destroyed or preserved when black holes radiate. Modern work on Hawking radiation, the Page curve, and “islands” suggests that information may be encoded in subtle correlations in the radiation, at least in certain theoretical models. <span> </span></p>
+
+<p>So maybe radiation should not be treated as “just leftover heat.”</p>
+
+<p>Maybe radiation is a carrier layer.</p>
+
+<p>Maybe in the early universe, radiation carried energy, structure, and possibly correlations through repeated cycles of annihilation and pair creation.</p>
+
+<p>Again, this alone does not explain why matter wins. Radiation normally creates matter and antimatter together. So we still need a tiny asymmetry somewhere. But radiation could be the <span><b>middle step</b></span>, and the Boltzmann distribution could be the <span><b>statistical amplifier</b></span>.</p>
+
+<p>So the full idea becomes:</p>
+
+<p><b>random collisions → Boltzmann-shaped distribution → annihilation → radiation → pair creation → tiny asymmetry → freeze-out → leftover matter</b></p>
+
+<p>This is not a finished theory.</p>
+
+<p>It is a research direction.</p>
+
+<p>The strongest version is:</p>
+
+<p><b>The universe’s matter excess may not come only from a tiny microscopic asymmetry. It may also depend on where that asymmetry acts inside the statistical distribution of the early universe.</b></p>
+
+<p>If the tiny asymmetry acts near the peak, where most particles and interactions are, it could become much more important. If it acts only in the tail, it may have much less effect.</p>
+
+<p>That is why the “max peak” still feels important to me.</p>
+
+<p>Not because the peak literally means matter.</p>
+
+<p>But because the peak may be where matter’s tiny advantage becomes visible.</p>
+
+<h2><span><b>A mechanical analogy</b></span></h2>
+
+<p>I think this idea could be explored with a simple mechanical model.</p>
+
+<p>Imagine a tabletop device with many small balls. The balls are randomly agitated, collide, and exit at different speeds. Their speed sorts them into different bins, similar to a mechanical Maxwell–Boltzmann demonstrator.</p>
+
+<p>Now use two colors:</p>
+
+<p>White balls = matter<br>
+Black balls = antimatter</p>
+
+<p>First, run a control test. The machine is completely color-blind. Same ball size, same weight, same material, same rules. If everything is truly symmetric, the machine should not produce a stable excess of white or black. It may produce random fluctuations, but not a reproducible winner.</p>
+
+<p>That is important. It would show that the distribution shape alone does not magically choose matter.</p>
+
+<p>Then add a tiny controlled bias — a mechanical version of a CP-like asymmetry. For example, a tiny difference in how balls near the peak-speed region are routed or retained.</p>
+
+<p>Then add an annihilation stage, where white and black balls can remove each other in pairs.</p>
+
+<p>The question becomes:</p>
+
+<p><b>Does a tiny bias near the peak leave a much larger visible excess after many rounds than the same tiny bias in the tail?</b></p>
+
+<p>If yes, the device would not prove the universe works exactly this way. But it would demonstrate the principle:</p>
+
+<p><b>random collisions + peaked distribution + tiny asymmetry + annihilation = visible leftover imbalance</b></p>
+
+<p>That is the core intuition.</p>
+
+<h2><span><b>Why this idea is interesting</b></span></h2>
+
+<p>The idea is interesting because it connects several real pieces of physics:</p>
+
+<p>Random collisions create distributions.<br>
+Matter and antimatter nearly cancel.<br>
+Tiny CP-violating differences exist.<br>
+Boltzmann equations are already used in baryogenesis.<br>
+Full distributions can matter, not only total particle counts.<br>
+Radiation can be produced by annihilation and can later create particle–antiparticle pairs.<br>
+Freeze-out can preserve a leftover imbalance.</p>
+
+<p>It also gives a visual way to think about the matter–antimatter problem.</p>
+
+<p>Instead of imagining the early universe as a simple coin toss between matter and antimatter, we can imagine it as a dynamic system:</p>
+
+<p><b>a sea of collisions, radiation, pair creation, annihilation, and statistical filtering.</b></p>
+
+<p>In that sea, a tiny asymmetry might not matter equally everywhere. It may matter most where the distribution is densest.</p>
+
+<h2><span><b>What could be wrong</b></span></h2>
+
+<p>There are serious challenges.</p>
+
+<p>First, the Maxwell–Boltzmann curve by itself cannot choose matter. A speed distribution is not a matter–antimatter label. Matter and antimatter partners should have the same speed distribution if they have the same mass and are in the same thermal environment.</p>
+
+<p>Second, radiation normally creates matter and antimatter together. So radiation alone cannot explain a net matter excess.</p>
+
+<p>Third, a color-blind mechanical device should not create a stable color excess. If it does, there is probably a hidden bias in the device.</p>
+
+<p>Fourth, large nearby matter–antimatter domains are strongly constrained. Cohen, De Rujula, and Glashow argued that a matter–antimatter patchwork universe would produce annihilation signals at boundaries, including gamma-ray and cosmic microwave background effects, and concluded that a matter–antimatter symmetric universe is empirically excluded unless our matter domain is basically the whole visible universe. <span>  </span>CERN Courier also reported in 2026 that diffuse gamma-ray background and cosmic microwave background observations show no evidence for antimatter on large scales and rule out a matter–antimatter symmetric universe in the observable region. <span> </span></p>
+
+<p>So the proposal should not be:</p>
+
+<p><b>“The Boltzmann peak is matter.”</b></p>
+
+<p>The stronger proposal is:</p>
+
+<p><b>“Boltzmann-shaped collision statistics may amplify a tiny matter-favoring asymmetry, especially if that asymmetry acts near the most populated region of the distribution.”</b></p>
+
+<p>That is much more careful and much more interesting.</p>
+
+<h2><span><b>The proposal in one sentence</b></span></h2>
+
+<p><b>Maybe matter won not only because there was a tiny microscopic bias, but because the statistical shape of the early universe amplified that bias in the right place, before annihilation and freeze-out locked in the leftover matter.</b></p>
+
+<h2><span><b>What I would like to explore next</b></span></h2>
+
+<p>This idea could be explored in three ways.</p>
+
+<p>First, with a simple simulation: particles are created, annihilate, scatter, and freeze out. The simulation can test whether a tiny bias near the distribution peak produces a larger surviving excess than the same bias in the tail.</p>
+
+<p>Second, with a mechanical tabletop model: random agitation creates a speed distribution; two colors represent matter and antimatter; a tiny controlled bias is added; an annihilation stage removes pairs; the leftover imbalance is measured.</p>
+
+<p>Third, with a literature bridge: compare this intuition to existing work on Boltzmann equations, CP-violating scatterings, leptogenesis, baryogenesis, freeze-out, non-equilibrium physics, and radiation/information.</p>
+
+<p>I am not presenting this as a conclusion.</p>
+
+<p>I am presenting it as a question:</p>
+
+<p><b>Could the shape of randomness be part of why matter won?</b></p>
+
+<p>Could the shape of randomness help explain why matter won over antimatter?</p>
+
+<p>This is not a finished theory. It is a proposal for a research conversation.</p>
+
+<p>The idea is that random collisions in the early universe may have created Boltzmann-like distributions with a peak and a tail. The peak does not literally “equal matter.” But the peak may act as an amplifier: if a tiny matter-favoring asymmetry acts where most particles and interactions are, it could become much more important before annihilation and freeze-out.</p>
+
+<p>Radiation may also be part of the loop. Matter and antimatter annihilate into radiation, but high-energy radiation can also create matter–antimatter pairs again. So the early universe may have been a recycling system: particles, antiparticles, radiation, pair creation, annihilation, collisions, and freeze-out.</p>
+
+<p>The question is:</p>
+
+<p><b>Did matter win only because of a tiny microscopic asymmetry, or also because the statistical shape of the early universe amplified that asymmetry in the right place?</b></p>
+
+<h2><span><b>Core background: antimatter and the cosmic puzzle</b></span></h2>
+
+<p>CERN — Antimatter<br>
+<a href="https://home.cern/science/physics/antimatter/">https://home.cern/science/physics/antimatter/</a></p>
+
+<p>CERN — The matter–antimatter asymmetry problem<br>
+<a href="https://cds.cern.ch/record/1998489?ln=en">https://cds.cern.ch/record/1998489?ln=en</a></p>
+
+<p>CERN Courier — Exploring the origins of matter–antimatter asymmetry<br>
+<a href="https://cerncourier.com/a/exploring-the-origins-of-matter-antimatter-asymmetry/">https://cerncourier.com/a/exploring-the-origins-of-matter-antimatter-asymmetry/</a></p>
+
+<p>CERN Courier — All that antimatters in the universe<br>
+<a href="https://cerncourier.com/all-that-antimatters-in-the-universe/">https://cerncourier.com/all-that-antimatters-in-the-universe/</a></p>
+
+<h2><span><b>Maxwell–Boltzmann distribution and statistical mechanics</b></span></h2>
+
+<p>OpenStax — Distribution of Molecular Speeds / Maxwell–Boltzmann distribution<br>
+<a href="https://openstax.org/books/university-physics-volume-2/pages/2-4-distribution-of-molecular-speeds">https://openstax.org/books/university-physics-volume-2/pages/2-4-distribution-of-molecular-speeds</a></p>
+
+<p>Khan Academy — What is the Maxwell–Boltzmann distribution?<br>
+<a href="https://www.khanacademy.org/science/ap-physics-2/x0e2f5a2c%3Athermodynamics/x0e2f5a2c%3Agases/a/what-is-the-maxwell-boltzmann-distribution">https://www.khanacademy.org/science/ap-physics-2/x0e2f5a2c%3Athermodynamics/x0e2f5a2c%3Agases/a/what-is-the-maxwell-boltzmann-distribution</a></p>
+
+<p>David Tong — Cosmology notes, thermal distributions and chemical potentials<br>
+<a href="https://www.davidtong.org/teaching/cosmology/cosmohtml/S2">https://www.davidtong.org/teaching/cosmology/cosmohtml/S2</a></p>
+
+<h2><span><b>Foundational baryogenesis papers and reviews</b></span></h2>
+
+<p>Sakharov — Violation of CP Invariance, C Asymmetry, and Baryon Asymmetry of the Universe<br>
+<a href="https://inspirehep.net/literature/51345">https://inspirehep.net/literature/51345</a></p>
+
+<p>Sakharov original paper listing, OSTI<br>
+<a href="https://www.osti.gov/biblio/4449128">https://www.osti.gov/biblio/4449128</a></p>
+
+<p>Kolb &amp; Wolfram — Baryon Number Generation in the Early Universe<br>
+<a href="https://inspirehep.net/literature/8589">https://inspirehep.net/literature/8589</a></p>
+
+<p>Kolb &amp; Wolfram PDF<br>
+<a href="https://content.wolfram.com/sw-publications/2020/07/baryon-number-generation-early-universe.pdf">https://content.wolfram.com/sw-publications/2020/07/baryon-number-generation-early-universe.pdf</a></p>
+
+<p>Kolb &amp; Wolfram — The Development of Baryon Asymmetry in the Early Universe<br>
+<a href="https://content.wolfram.com/sw-publications/2020/07/development-baryon-asymmetry-early-universe.pdf">https://content.wolfram.com/sw-publications/2020/07/development-baryon-asymmetry-early-universe.pdf</a></p>
+
+<p>James Cline — Baryogenesis<br>
+<a href="https://arxiv.org/abs/hep-ph/0609145">https://arxiv.org/abs/hep-ph/0609145</a></p>
+
+<p>Antonio Riotto — Theories of Baryogenesis<br>
+<a href="https://arxiv.org/abs/hep-ph/9807454">https://arxiv.org/abs/hep-ph/9807454</a></p>
+
+<p>Björn Garbrecht — Why is there more matter than antimatter?<br>
+<a href="https://arxiv.org/abs/1812.02651">https://arxiv.org/abs/1812.02651</a></p>
+
+<p>Davidson, Nardi &amp; Nir — Leptogenesis<br>
+<a href="https://arxiv.org/abs/0802.2962">https://arxiv.org/abs/0802.2962</a></p>
+
+<h2><span><b>Boltzmann equations, full distributions, and leptogenesis</b></span></h2>
+
+<p>Enomoto, Su, Zheng &amp; Zhang — Boltzmann Equation and Its Cosmological Applications<br>
+<a href="https://arxiv.org/abs/2301.11819">https://arxiv.org/abs/2301.11819</a></p>
+
+<p>Published version:<br>
+<a href="https://www.mdpi.com/2073-8994/17/6/921">https://www.mdpi.com/2073-8994/17/6/921</a></p>
+
+<p>Hahn-Woernle, Plumacher &amp; Wong — Full Boltzmann equations for leptogenesis including scattering<br>
+<a href="https://arxiv.org/abs/0907.0205">https://arxiv.org/abs/0907.0205</a></p>
+
+<p>Garayoa, Pastor, Pinto, Rius &amp; Vives — On the full Boltzmann equations for Leptogenesis<br>
+<a href="https://arxiv.org/abs/0905.4834">https://arxiv.org/abs/0905.4834</a></p>
+
+<p>Nardi, Racker &amp; Roulet — CP violation in scatterings, three body processes and the Boltzmann equations for leptogenesis<br>
+<a href="https://arxiv.org/abs/0707.0378">https://arxiv.org/abs/0707.0378</a></p>
+
+<p>Baldes, Bell, Millar, Petraki &amp; Volkas — The role of CP violating scatterings in baryogenesis<br>
+<a href="https://arxiv.org/abs/1410.0108">https://arxiv.org/abs/1410.0108</a></p>
+
+<p>Kainulainen — CP-violating transport theory for Electroweak Baryogenesis with thermal corrections<br>
+<a href="https://arxiv.org/abs/2108.08336">https://arxiv.org/abs/2108.08336</a></p>
+
+<h2><span><b>Freeze-out, annihilation, and dark-matter-related baryogenesis</b></span></h2>
+
+<p>Yanou Cui — A Review of WIMP Baryogenesis Mechanisms<br>
+<a href="https://arxiv.org/abs/1510.04298">https://arxiv.org/abs/1510.04298</a></p>
+
+<p>Bernal, Colucci, Josse-Michaux, Racker &amp; Ubaldi — On baryogenesis from dark matter annihilation<br>
+<a href="https://arxiv.org/abs/1307.6878">https://arxiv.org/abs/1307.6878</a></p>
+
+<p>Cui &amp; Sundrum — A WIMPy Baryogenesis Miracle<br>
+<a href="https://arxiv.org/abs/1112.2704">https://arxiv.org/abs/1112.2704</a></p>
+
+<h2><span><b>Statistical-distribution variations and related speculative directions</b></span></h2>
+
+<p>Dehpour — Thermal leptogenesis in nonextensive cosmology<br>
+<a href="https://arxiv.org/abs/2401.00229">https://arxiv.org/abs/2401.00229</a></p>
+
+<p>Dehpour — Thermal leptogenesis in anisotropic cosmology<br>
+<a href="https://arxiv.org/abs/2312.10677">https://arxiv.org/abs/2312.10677</a></p>
+
+<h2><span><b>CERN / experimental matter–antimatter tests</b></span></h2>
+
+<p>CERN — A new piece in the matter–antimatter puzzle / LHCb CP violation in baryon decay<br>
+<a href="https://home.cern/new-piece-matter-antimatter-puzzle/">https://home.cern/new-piece-matter-antimatter-puzzle/</a></p>
+
+<p>LHCb paper — Observation of charge-parity symmetry breaking in baryon decays<br>
+<a href="https://arxiv.org/abs/2503.16954">https://arxiv.org/abs/2503.16954</a></p>
+
+<p>CERN — BASE breaks new ground in matter–antimatter comparisons<br>
+<a href="https://home.cern/base-breaks-new-ground-matter-antimatter-comparisons/">https://home.cern/base-breaks-new-ground-matter-antimatter-comparisons/</a></p>
+
+<p>Nature — 16-parts-per-trillion measurement of antiproton-to-proton charge-to-mass ratio<br>
+<a href="https://www.nature.com/articles/s41586-021-04203-w">https://www.nature.com/articles/s41586-021-04203-w</a></p>
+
+<p>CERN — ALPHA experiment observes influence of gravity on antimatter<br>
+<a href="https://home.cern/alpha-experiment-at-cern-observes-the-influence-of-gravity-on-antimatter/">https://home.cern/alpha-experiment-at-cern-observes-the-influence-of-gravity-on-antimatter/</a></p>
+
+<p>Nature — Observation of the effect of gravity on the motion of antimatter<br>
+<a href="https://www.nature.com/articles/s41586-023-06527-1">https://www.nature.com/articles/s41586-023-06527-1</a></p>
+
+<h2><span><b>Radiation, annihilation, and matter from light</b></span></h2>
+
+<p>Fermilab — What is annihilation?<br>
+<a href="https://www.fnal.gov/pub/science/inquiring/questions/annihilation.html">https://www.fnal.gov/pub/science/inquiring/questions/annihilation.html</a></p>
+
+<p>Fermilab — Electron–positron annihilation and gamma rays<br>
+<a href="https://www.fnal.gov/pub/science/inquiring/questions/annihilation2.html">https://www.fnal.gov/pub/science/inquiring/questions/annihilation2.html</a></p>
+
+<p>Symmetry Magazine — What is annihilation?<br>
+<a href="https://www.symmetrymagazine.org/article/what-is-annihilation?language_content_entity=und">https://www.symmetrymagazine.org/article/what-is-annihilation?language_content_entity=und</a></p>
+
+<p>Brookhaven — Collisions of Light Produce Matter/Antimatter from Pure Energy<br>
+<a href="https://www.bnl.gov/newsroom/news.php?a=119023">https://www.bnl.gov/newsroom/news.php?a=119023</a></p>
+
+<p>DOE — Making Matter from Collisions of Light<br>
+<a href="https://www.energy.gov/science/np/articles/making-matter-collisions-light">https://www.energy.gov/science/np/articles/making-matter-collisions-light</a></p>
+
+<p>OSTI version — Making Matter from Collisions of Light<br>
+<a href="https://science.osti.gov/np/Highlights/2022/NP-2022-01-a">https://science.osti.gov/np/Highlights/2022/NP-2022-01-a</a></p>
+
+<h2><span><b>Cosmic radiation / CMB</b></span></h2>
+
+<p>ESA — Cosmic Microwave Background radiation<br>
+<a href="https://www.esa.int/Science_Exploration/Space_Science/Cosmic_Microwave_Background_CMB_radiation">https://www.esa.int/Science_Exploration/Space_Science/Cosmic_Microwave_Background_CMB_radiation</a></p>
+
+<p>ESA — Planck and the cosmic microwave background<br>
+<a href="https://www.esa.int/Science_Exploration/Space_Science/Planck/Planck_and_the_cosmic_microwave_background">https://www.esa.int/Science_Exploration/Space_Science/Planck/Planck_and_the_cosmic_microwave_background</a></p>
+
+<p>NASA WMAP overview<br>
+<a href="https://science.nasa.gov/mission/wmap/wmap-overview/">https://science.nasa.gov/mission/wmap/wmap-overview/</a></p>
+
+<h2><span><b>Matter–antimatter domains / “two regions” question</b></span></h2>
+
+<p>Cohen, De Rujula &amp; Glashow — A Matter-Antimatter Universe?<br>
+<a href="https://arxiv.org/abs/astro-ph/9707087">https://arxiv.org/abs/astro-ph/9707087</a></p>
+
+<p>PDF:<br>
+<a href="https://arxiv.org/pdf/astro-ph/9707087">https://arxiv.org/pdf/astro-ph/9707087</a></p>
+
+<p>von Ballmoos — Antimatter in the Universe: Constraints from Gamma-Ray Astronomy<br>
+<a href="https://arxiv.org/abs/1401.7258">https://arxiv.org/abs/1401.7258</a></p>
+
+<h2><span><b>Black-hole radiation and information</b></span></h2>
+
+<p>Hawking — Particle Creation by Black Holes<br>
+<a href="https://link.springer.com/article/10.1007/BF02345020">https://link.springer.com/article/10.1007/BF02345020</a></p>
+
+<p>DOI link:<br>
+<a href="https://doi.org/10.1007/BF02345020">https://doi.org/10.1007/BF02345020</a></p>
+
+<p>Caltech record:<br>
+<a href="https://authors.library.caltech.edu/records/2wsvj-qrt68">https://authors.library.caltech.edu/records/2wsvj-qrt68</a></p>
+
+<p>Almheiri, Hartman, Maldacena, Shaghoulian &amp; Tajdini — The entropy of Hawking radiation<br>
+<a href="https://arxiv.org/abs/2006.06872">https://arxiv.org/abs/2006.06872</a></p>
+
+<p>Replica Wormholes and the Entropy of Hawking Radiation<br>
+<a href="https://arxiv.org/abs/1911.12333">https://arxiv.org/abs/1911.12333</a></p>
+
+<p>Replica Wormholes and the Black Hole Interior<br>
+<a href="https://arxiv.org/abs/1911.11977">https://arxiv.org/abs/1911.11977</a></p>
+
+<p>Raju — Lessons from the Information Paradox<br>
+<a href="https://arxiv.org/abs/2012.05770">https://arxiv.org/abs/2012.05770</a></p>
+
+<h2><span><b>Speculative black-hole / antimatter-related ideas</b></span></h2>
+
+<p>Popławski — Spinors with torsion and matter–antimatter asymmetry<br>
+<a href="https://arxiv.org/abs/2101.04212">https://arxiv.org/abs/2101.04212</a></p>
+
+<p>Popławski — Matter–antimatter asymmetry and dark matter from torsion<br>
+<a href="https://arxiv.org/abs/1101.4012">https://arxiv.org/abs/1101.4012</a></p>
+
+<p>Baryon asymmetry, dark matter, and density perturbation from primordial black holes<br>
+<a href="https://arxiv.org/abs/1401.1909">https://arxiv.org/abs/1401.1909</a></p>
+
+<p>Gravitational baryogenesis and dark matter from primordial black holes<br>
+<a href="https://arxiv.org/abs/2110.14660">https://arxiv.org/abs/2110.14660</a></p>
+
+<hr>
+
+<p><br></p>
+</div>
+
+<div>
+<div>
+<div>
+<div></div>
+</div>
+</div>
+</div>
+</div>
+
+<p><img src="/media/could-the-shape-of-randomness-help-explain-why-matter-won/cover.svg" alt="cover"></p>
+
+<hr><p><em>Post created via email from emin@nuri.com</em></p>
 
 ---
 ## Building an AI-Optimized Blog with Hugo: A Complete DevOps Journey

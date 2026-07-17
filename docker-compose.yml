@@ -1,27 +1,30 @@
 version: "3.9"
 
 services:
+  nginx:
+    build:
+      context: .
+      target: final
+    ports:
+      - "80:80"
+    depends_on:
+      - admin
+    restart: unless-stopped
+
   admin:
-    build: .
-    command: gunicorn --bind 0.0.0.0:5000 --workers 2 admin_server:app
+    build:
+      context: .
+      target: admin
     ports:
       - "5000:5000"
     environment:
-      - FLASK_ENV=development
+      - FLASK_ENV=production
       - EMINO_BLOG_DIR=/app
-      - EMINO_MAILDIR=/maildir
-      - EMINO_EMAIL_LOG=/logs/email_processing.log
-      - EMINO_SYNC_LOG=/logs/github-sync.log
     volumes:
-      - .:/app
-      - ./.dev/maildir:/maildir
-      - ./.dev/logs:/logs
+      - blog_content:/app/content
+      - blog_static:/app/static
+    restart: unless-stopped
 
-  hugo:
-    image: klakegg/hugo:0.148.2-ext-alpine
-    working_dir: /src
-    command: server --bind 0.0.0.0 --baseURL http://localhost:1313 --appendPort=false
-    ports:
-      - "1313:1313"
-    volumes:
-      - .:/src
+volumes:
+  blog_content:
+  blog_static:

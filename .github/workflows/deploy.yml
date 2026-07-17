@@ -1,38 +1,31 @@
-name: Deploy to Server
+name: Deploy emino.app
 
 on:
   push:
-    branches: [ main ]
-  workflow_dispatch:
+    branches: [main]
 
 jobs:
-  deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
-    
     steps:
-    - uses: actions/checkout@v4
-      with:
-        submodules: true
-        fetch-depth: 0
-    
-    - name: Setup Hugo
-      uses: peaceiris/actions-hugo@v3
-      with:
-        hugo-version: "latest"
-        extended: true
-    
-    - name: Build
-      run: hugo --minify
-    
-    - name: Deploy to Server
-      uses: appleboy/ssh-action@v1.0.3
-      with:
-        host: ${{ secrets.HOST }}
-        username: ${{ secrets.USERNAME }}
-        key: ${{ secrets.SSH_KEY }}
-        script: |
-          cd /var/www/emino-blog
-          git pull origin main
-          hugo --minify
-          rsync -av --delete public/ /var/www/apps/main/
-          bash /var/www/emino-blog/seo-optimizer.sh
+      - uses: actions/checkout@v4
+
+      - name: Build Hugo
+        uses: peaceiris/actions-hugo@v3
+        with:
+          hugo-version: "0.148.2"
+          extended: true
+
+      - name: Build site
+        run: hugo --minify --gc
+
+      - name: Deploy to server
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          script: |
+            cd /var/www/emino-blog
+            git pull origin main
+            docker compose up -d --build

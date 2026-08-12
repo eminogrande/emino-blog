@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Open-source MCP publishing harness for websites humans and agents can browse.">
+  <meta property="og:title" content="Web MCP Publisher">
+  <meta property="og:description" content="One content model. Website, MCP, API and CLI.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://emino.app/web-mcp/">
+  <title>Web MCP Publisher</title>
+  <link rel="stylesheet" href="./app.css">
+  <script type="module" src="./app.js"></script>
+</head>
+<body>
+  <header>
+    <a class="brand" href="./" aria-label="Web MCP Publisher home">WEB<br>MCP</a>
+    <nav aria-label="Primary">
+      <a href="#browse">Browse</a><a href="#publish">Publish</a><a href="#connect">Connect</a>
+    </nav>
+    <a class="github" href="https://github.com/eminogrande/emino-blog/tree/main/web-mcp">GitHub ↗</a>
+  </header>
+
+  <main>
+    <section class="hero">
+      <p class="eyebrow">OPEN-SOURCE PUBLISHING HARNESS</p>
+      <h1>Your website should speak <em>human</em> and <em>machine</em>.</h1>
+      <p class="lede">Set it up once. Browse, search, draft and publish through the web, MCP, HTTP API or CLI. Every interface uses the same files.</p>
+      <div class="actions"><a class="primary" href="#publish">Create a draft</a><a href="#connect">Connect an agent</a></div>
+      <dl><div><dt id="article-count">—</dt><dd>articles found</dd></div><div><dt>7</dt><dd>MCP tools</dd></div><div><dt>0</dt><dd>frameworks</dd></div></dl>
+    </section>
+
+    <section id="browse" class="panel">
+      <div><p class="eyebrow">BROWSE</p><h2>The machine sees what you see.</h2></div>
+      <form id="search-form" class="search"><label for="query">Search content</label><div><input id="query" name="query" placeholder="consciousness, Bitcoin, film…"><button>Search</button></div></form>
+      <div id="results" class="results" aria-live="polite"></div>
+    </section>
+
+    <section id="publish" class="panel split">
+      <div><p class="eyebrow">PUBLISH</p><h2>Draft first. Publish deliberately.</h2><p>Writes require a local bearer token. The public playground stays read-only.</p></div>
+      <form id="draft-form">
+        <label>Bearer token<input name="token" type="password" autocomplete="off"></label>
+        <label>Title<input name="title" required></label>
+        <div class="row"><label>Language<input name="language" value="en"></label><label>Kind<select name="kind"><option>writing</option><option>film</option><option>photography</option><option>code</option><option>music</option></select></label></div>
+        <label>Summary<input name="summary"></label>
+        <label>Markdown<textarea name="body" required rows="10"></textarea></label>
+        <button class="primary">Save draft</button>
+        <output id="draft-output"></output>
+      </form>
+    </section>
+
+    <section id="connect" class="panel split dark">
+      <div><p class="eyebrow">CONNECT</p><h2>One harness. Four doors.</h2></div>
+      <div class="code-list">
+        <div><span>MCP</span><code>https://emino.app/web-mcp/mcp</code></div>
+        <div><span>HTTP</span><code>GET /web-mcp/api/articles</code></div>
+        <div><span>CLI</span><code>npx web-mcp article:list</code></div>
+        <div><span>Files</span><code>content/{language}/{kind}/{slug}.md</code></div>
+      </div>
+    </section>
+  </main>
+
+  <footer><span>Web MCP Publisher</span><span>MIT licensed · Built in the open</span></footer>
+</body>
+</html>

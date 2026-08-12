@@ -4,6 +4,7 @@ Static Hugo blog that powers [https://emino.app](https://emino.app) together wit
 
 ## Repository layout
 
+- `web-mcp/` – Open-source MCP, HTTP API, CLI, and browser publishing harness. See [`web-mcp/README.md`](web-mcp/README.md).
 - `content/` – Markdown sources for Hugo posts.
 - `static/` – Static assets that are copied verbatim during builds (`static/media/<slug>` holds post images and email attachments).
 - `scripts/` – Operational helpers (email ingestion, GitHub sync, SEO / health automation).

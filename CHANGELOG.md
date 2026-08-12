@@ -4,6 +4,8 @@
 
 ### Added
 
+- Added a static `/web-mcp/` playground shell so the existing server cron can publish and browse live content before SSH-based service activation.
+- Fixed the repository ignore rule that omitted the browser assets from clean clones and Docker builds.
 - Open-source Web MCP Publisher harness under `web-mcp/`.
 - Shared file-backed operations exposed through MCP, HTTP API, CLI, and browser playground.
 - Draft-first article creation with explicit publishing.

@@ -16,6 +16,9 @@ jobs:
           hugo-version: "0.148.2"
           extended: true
 
+      - name: Install Hugo theme
+        run: git clone --depth 1 https://github.com/adityatelange/hugo-PaperMod.git themes/PaperMod
+
       - name: Build site
         run: hugo --minify --gc
 

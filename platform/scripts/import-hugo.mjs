@@ -1,0 +1,11 @@
+import { readFile, readdir, writeFile } from "node:fs/promises";
+import { basename, resolve } from "node:path";
+import { createHash } from "node:crypto";
+const posts=resolve(import.meta.dirname,"../../content/posts"), out=resolve(import.meta.dirname,"../import.sql");
+const q=v=>`'${String(v??"").replaceAll("'","''")}'`;
+function split(raw){for(const marker of ["+++","---"]){if(raw.startsWith(marker+"\n")){const end=raw.indexOf(`\n${marker}\n`,4);if(end>0)return [raw.slice(4,end),raw.slice(end+marker.length+2).trim()]}}return ["",raw.trim()]}
+function field(front,key){const m=front.match(new RegExp(`^\\s*${key}\\s*[:=]\\s*(.+?)\\s*$`,`mi`));if(!m)return "";let v=m[1].trim().split(/\s+#/)[0].trim();if((v.startsWith('"')&&v.endsWith('"'))||(v.startsWith("'")&&v.endsWith("'")))v=v.slice(1,-1);return v}
+function slugify(v){return v.toLowerCase().normalize("NFKD").replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"").slice(0,120)}
+const files=(await readdir(posts)).filter(x=>x.endsWith(".md")).sort(), rows=[], seen=new Set();
+for(const file of files){const raw=await readFile(resolve(posts,file),"utf8"),[front,body]=split(raw);if(!body)continue;const title=field(front,"title")||basename(file,".md"),baseSlug=field(front,"slug")||slugify(file.replace(/^\d{4}-\d{2}-\d{2}-\d{6}-/,"").replace(/\.md$/,"")),date=field(front,"date")||new Date().toISOString(),draft=field(front,"draft").toLowerCase()==="true",image=field(front,"image"),summary=(field(front,"description")||body.replace(/<[^>]*>/g," ").replace(/&[a-z#0-9]+;/gi," ").replace(/[#>*_`\[\]()!-]/g," ").replace(/\s+/g," ").trim().slice(0,260)),id=createHash("sha256").update(`legacy:${file}`).digest("hex").slice(0,32),slug=seen.has(baseSlug)?`${baseSlug}-${id.slice(0,8)}`:baseSlug;seen.add(slug);rows.push(`INSERT OR REPLACE INTO articles(id,title,slug,kind,language,summary,body,status,source_url,image_url,created_at,updated_at,published_at) VALUES(${q(id)},${q(title)},${q(slug)},'write','en',${q(summary)},${q(body)},${q(draft?"draft":"published")},${q(`https://emino.app/posts/${baseSlug}/`)},${q(image)},${q(date)},${q(date)},${draft?"NULL":q(date)});`)}
+await writeFile(out,`${rows.join("\n")}\n`);console.log(JSON.stringify({files:files.length,imported:rows.length,output:out}));

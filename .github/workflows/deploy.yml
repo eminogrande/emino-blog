@@ -19,6 +19,10 @@ jobs:
       - name: Build site
         run: hugo --minify --gc
 
+      - name: Verify Web MCP harness
+        working-directory: web-mcp
+        run: npm ci && npm run selfcheck
+
       - name: Deploy to server
         uses: appleboy/ssh-action@v1
         with:

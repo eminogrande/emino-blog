@@ -1,0 +1,22 @@
+{
+  "name": "web-mcp-publisher",
+  "version": "0.1.0",
+  "description": "Open-source MCP, HTTP API and CLI for machine-readable publishing.",
+  "type": "module",
+  "license": "MIT",
+  "bin": {
+    "web-mcp": "src/cli.mjs"
+  },
+  "scripts": {
+    "start": "node src/http.mjs",
+    "mcp": "node src/stdio.mjs",
+    "selfcheck": "node selfcheck.mjs"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.18.0",
+    "zod": "^3.25.0"
+  }
+}

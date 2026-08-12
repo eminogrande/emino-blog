@@ -1,0 +1,8 @@
+{
+  "name": "Emino Web MCP Playground",
+  "description": "Set up, browse and publish a site through one machine-readable content model.",
+  "baseUrl": "https://emino.app",
+  "defaultLanguage": "en",
+  "languages": ["en"],
+  "kinds": ["writing", "film", "photography", "code", "music"]
+}

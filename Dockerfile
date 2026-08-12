@@ -20,6 +20,7 @@ CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "2", "admin_server:app"]
 
 FROM node:22-alpine AS web-mcp
 WORKDIR /app
+RUN apk add --no-cache hugo
 COPY web-mcp/package.json web-mcp/package-lock.json ./
 RUN npm ci --omit=dev
 COPY web-mcp/src ./src

@@ -8,6 +8,8 @@ services:
     depends_on:
       - admin
       - web-mcp
+    volumes:
+      - ./public:/usr/share/nginx/html:ro
     restart: unless-stopped
 
   admin:
@@ -33,6 +35,7 @@ services:
       - WEB_MCP_TOKEN=${WEB_MCP_TOKEN:-}
     volumes:
       - ./:/site
+    command: ["sh", "-c", "cd /site && hugo --minify --gc && cd /app && node src/http.mjs"]
     restart: unless-stopped
 
 volumes:

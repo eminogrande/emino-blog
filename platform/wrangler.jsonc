@@ -1,0 +1,10 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "emin-writing",
+  "pages_build_output_dir": "./dist",
+  "compatibility_date": "2026-08-12",
+  "compatibility_flags": ["nodejs_compat"],
+  "d1_databases": [
+    { "binding": "DB", "database_name": "emin-writing", "database_id": "7ac16f96-8e03-4230-a4cd-30388371adac" }
+  ]
+}

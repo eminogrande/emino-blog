@@ -1,0 +1,5 @@
+node_modules/
+dist/
+.functions-build/
+.dev.vars
+import.sql

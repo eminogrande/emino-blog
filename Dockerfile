@@ -1,6 +1,7 @@
 # Multi-stage: Hugo build → nginx + Flask Admin
 FROM klakegg/hugo:0.148.2-ext-alpine AS hugo
 WORKDIR /src
+RUN git clone --depth 1 https://github.com/adityatelange/hugo-PaperMod.git themes/PaperMod
 COPY . .
 RUN hugo --minify --gc
 

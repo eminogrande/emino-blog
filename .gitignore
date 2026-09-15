@@ -1,1 +1,12 @@
 themes/
+.dev/maildir/cur/*
+.dev/maildir/new/*
+.dev/maildir/tmp/*
+!.dev/maildir/.gitkeep
+.dev/logs/*
+!.dev/logs/.gitkeep
+.admin-trash/
+__pycache__/
+*.py[cod]
+.DS_Store
+*.bak*
